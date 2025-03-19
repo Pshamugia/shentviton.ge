@@ -1,0 +1,8 @@
+/vendor
+/node_modules
+/.env
+/storage/*.key
+/public/storage
+/public/hot
+/public/mix-manifest.json
+/database/*.sqlite

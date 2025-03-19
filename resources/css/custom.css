@@ -1,0 +1,671 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+
+@font-face {
+    font-family: 'arial';
+    src: url('../fonts/bpg_boxo-boxo.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+ 
+   
+
+@font-face {
+    font-family: 'alk-rounded';
+    src: url('../fonts/alk-rounded-mtav-med-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+@font-face {
+    font-family: 'Lobster-Regular';
+    src: url('../fonts/Lobster-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+@font-face {
+    font-family: 'Orbitron';
+    src: url('../fonts/Orbitron-VariableFont_wght.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+
+@font-face {
+    font-family: 'EricaOne';
+    src: url('../fonts/EricaOne-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+@font-face {
+    font-family: 'GloriaHallelujah';
+    src: url('../fonts/GloriaHallelujah-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+
+@font-face {
+    font-family: 'RubikBubbles';
+    src: url('../fonts/RubikBubbles-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+@font-face {
+    font-family: 'BerkshireSwash';
+    src: url('../fonts/BerkshireSwash-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+@font-face {
+    font-family: 'Monoton';
+    src: url('../fonts/Monoton-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+@font-face {
+    font-family: 'Creepster';
+    src: url('../fonts/GloriaHallelujah-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+
+@font-face {
+    font-family: 'BlackOpsOne';
+    src: url('../fonts/BlackOpsOne-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+ 
+
+
+@font-face {
+    font-family: 'PlaywriteIN';
+    src: url('../fonts/PlaywriteIN-Thin.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+   
+}
+
+
+
+
+.col-md-8 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    height: 100vh;
+}
+
+#design-area {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    /* Adjust max width to your preference */
+    height: auto;
+}
+
+#tshirtCanvas {
+    width: 100%;
+    height: auto;
+}
+
+
+
+@font-face {
+    font-family: "arial";
+    src: url("../fonts/bpg_boxo-boxo.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Arial";
+    src: url("../fonts/bpg_boxo-boxo.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "alk-rounded";
+    src: url("../fonts/alk-rounded-mtav-med-webfont.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Lobster-Regular";
+    src: url("../fonts/Lobster-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Orbitron";
+    src: url("../fonts/Orbitron-VariableFont_wght.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "EricaOne";
+    src: url("../fonts/EricaOne-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "GloriaHallelujah";
+    src: url("../fonts/GloriaHallelujah-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "RubikBubbles";
+    src: url("../fonts/RubikBubbles-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "BerkshireSwash";
+    src: url("../fonts/BerkshireSwash-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Monoton";
+    src: url("../fonts/Monoton-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Creepster";
+    src: url("../fonts/GloriaHallelujah-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "BlackOpsOne";
+    src: url("../fonts/BlackOpsOne-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "PlaywriteIN";
+    src: url("../fonts/PlaywriteIN-Thin.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+#design-area {
+    position: relative;
+}
+
+select,
+input {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+.text-style-btn {
+    font-size: 20px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.text-style-btn i {
+    pointer-events: none;
+}
+
+#clipartSidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 250px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    transition: 0.3s;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#clipartContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+#clipartSidebar.open {
+    left: 0;
+}
+
+.clipart-header {
+    margin-bottom: 10px;
+}
+
+.clipart-item {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.clipart-img {
+    width: 100%;
+    cursor: pointer;
+
+    padding: 5px;
+}
+
+.select-clipart {
+    width: 100%;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.clipart-img {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.3s ease;
+}
+
+.clipart-img:hover {
+    border: 2px solid #ff6b6b;
+}
+.clipart-btn {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4); /* Gradient color */
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 25px; /* Rounded button */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon & text */
+}
+
+.clipart-btn:hover {
+    background: linear-gradient(135deg, #f6d365, #fda085); /* Hover effect */
+    transform: scale(1.05); /* Slight enlargement */
+}
+
+/* Optional: If using Font Awesome, make the icon stylish */
+.clipart-btn i {
+    font-size: 18px;
+}
+
+/* Style for the search input */
+#searchCliparts {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ff6b6b;
+    border-radius: 25px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+#searchCliparts::placeholder {
+    color: #ff6b6b;
+    opacity: 0.7;
+}
+
+#searchCliparts:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 8px rgba(255, 0, 76, 0.5);
+    background-color: #fff;
+}
+
+/* Style for the select dropdown */
+#clipartCategory {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ff6b6b;
+    border-radius: 25px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    appearance: none; /* Remove default arrow */
+    -webkit-appearance: none; /* Remove default arrow for Safari */
+    -moz-appearance: none; /* Remove default arrow for Firefox */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23FF0000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom arrow with red color */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+}
+
+#clipartCategory:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 8px rgba(255, 0, 76, 0.5);
+    background-color: #fff;
+}
+
+/* Optional: Add hover effect for the select dropdown */
+#clipartCategory:hover {
+    border-color: #ff6b6b;
+}
+
+.side-modal {
+    position: fixed;
+    left: -300px; /* Hidden by default */
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: #fff;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: left 0.3s ease-in-out; /* Smooth transition */
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.side-modal.active {
+    left: 0; /* Slide in when active */
+}
+
+.modal-content {
+    text-align: center;
+}
+
+.close {
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+/* Prevent content from disappearing */
+.custom-file-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #ccc;
+    cursor: pointer;
+    background: #f9f9f9;
+    text-align: center;
+}
+
+/* Upload Sidebar Styles */
+#uploadSidebar {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: left 0.3s ease-in-out;
+    overflow-y: auto;
+}
+
+#uploadSidebar.open {
+    left: 0;
+}
+
+.upload-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.upload-btn i {
+    margin-right: 10px;
+}
+
+.upload-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#imagePreviewContainer img {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.upload-btn,
+.clipart-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(
+        135deg,
+        #d6336c,
+        #f56a79
+    ); /* Adjust to match your site */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.upload-btn i,
+.clipart-btn i {
+    margin-right: 8px;
+}
+
+.upload-btn:hover,
+.clipart-btn:hover {
+    background: linear-gradient(135deg, #f56a79, #d6336c);
+    transform: translateY(-2px);
+}
+
+.upload-btn:active,
+.clipart-btn:active {
+    transform: scale(0.98);
+}
+
+/* General Button Style */
+.custom-btn {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.custom-btn:hover {
+    background-color: #e63946;
+}
+
+/* Customization Box */
+.customization-box {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Styled Input Fields */
+.input-styled {
+    border: 2px solid #ff6b6b;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.input-styled:focus {
+    border-color: #e63946;
+    outline: none;
+}
+
+/* Styled Color Picker */
+.color-picker {
+    width: 100%;
+    height: 40px;
+    border: 2px solid #ff6b6b;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Styled Text Style Buttons */
+.text-style-group {
+    display: flex;
+    gap: 10px;
+}
+
+.text-style-btn {
+    background: #fff;
+    border: 2px solid #ff6b6b;
+    color: #ff6b6b;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.text-style-btn:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+.text-effect-btn {
+    background: #fff;
+    border: 2px solid #ff6b6b;
+    color: #ff6b6b;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.text-effect-btn:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Save Button */
+.save-btn {
+    background-color: #4caf50;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #388e3c;
+}
+
+.color-selection {
+    margin-top: 10px;
+}
+.color-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.navbar .navbar-collapse {
+   float:right !important;
+}
