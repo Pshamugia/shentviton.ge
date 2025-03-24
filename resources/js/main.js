@@ -1108,5 +1108,3 @@ function handleAddToCart() {
                 .catch((error) => {});
         });
 }
-
-

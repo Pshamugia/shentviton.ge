@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\ProductColor;
+use App\Models\Cart;
 use App\Models\Clipart;
 use App\Models\Product;
+use App\Models\ProductColor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -23,6 +24,70 @@ class ProductController extends Controller
         $products = Product::all();
         return view('admin.products.index', compact('products')); // Update path
     }
+
+ 
+
+    public function showByType($type)
+{
+
+    $slugToType = [
+        't-shirt' => 'მაისური',
+        'hoodie' => 'ჰუდი',
+        'phone-case' => 'ქეისი',
+        'cap' => 'კეპი',
+    ];
+    
+    $typeSlug = $type;
+    $type = $slugToType[$typeSlug] ?? $typeSlug;
+    
+    $subtype = request()->query('subtype', 'მზა');
+    $sort = request()->query('sort', 'newest');
+
+    $query = Product::where('subtype', $subtype);
+
+    if ($type !== 'all') {
+        $query->where('type', $type);
+    }
+
+    // Sorting
+    switch ($sort) {
+        case 'price_asc':
+            $query->orderBy('price', 'asc');
+            break;
+        case 'price_desc':
+            $query->orderBy('price', 'desc');
+            break;
+        case 'newest':
+        default:
+            $query->orderBy('created_at', 'desc');
+            break;
+    }
+
+    $products = $query->paginate(12)->withQueryString();
+
+    // 🛒 Cart logic
+    $auth_id = auth()->id();
+    $visitor_hash = session('v_hash');
+
+    $cartItems = Cart::where('user_id', $auth_id)
+        ->orWhere('visitor_hash', $visitor_hash)
+        ->get();
+
+    $productIdsInCart = $cartItems->pluck('product_id')->toArray();
+
+    return view('products.by_type', compact(
+        'products',
+        'type',
+        'subtype',
+        'sort',
+        'cartItems',
+        'productIdsInCart'
+    ));
+}
+
+
+    
+    
 
 
     public function edit($id)
@@ -52,14 +117,16 @@ class ProductController extends Controller
         'title' => 'required|string|max:255',
         'description' => 'required|string',
         'full_text' => 'nullable|string',
-        'size' => 'nullable|string|max:50',
+        'size' => 'nullable|array',
+'size.*' => 'string|max:50', // each item in the size array
         'type' => 'nullable|string|max:50',
+        'subtype' => 'required|string|max:50',
         'quantity' => 'required|integer|min:0',
         'price' => 'required|numeric|min:0',
-        'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'image4' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        'image4' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
     ]);
 
     // Update product details
@@ -67,10 +134,11 @@ class ProductController extends Controller
         'title' => $request->title,
         'description' => $request->description,
         'full_text' => $request->full_text,
-        'size' => $request->size,
+        'size' => is_array($request->size) ? implode(',', $request->size) : $request->size,
         'quantity' => $request->quantity,
         'price' => $request->price,
         'type' => $request->type,
+        'subtype' => $request->subtype,
     ]);
 
     // ✅ Update Images
@@ -118,8 +186,9 @@ class ProductController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'full_text' => $request->full_text,
-            'size' => $request->size,
+            'size' => is_array($request->size) ? implode(',', $request->size) : $request->size,
             'type' => $request->type,
+            'subtype' => $request->subtype, // ✅ Added here
             'quantity' => $request->quantity,
             'price' => $request->price,
             'image1' => $request->file('image1')->store('products', 'public'),

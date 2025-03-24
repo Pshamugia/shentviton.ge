@@ -10,7 +10,7 @@ class Product extends Model
 {
     protected $fillable = [
         'title', 'description', 'full_text', 'image1', 'image2', 'image3', 'image4',
-        'size', 'quantity', 'price'
+        'size', 'type', 'subtype', 'quantity', 'price'
     ];
 
     public function colors(): HasMany

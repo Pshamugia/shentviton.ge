@@ -12,19 +12,30 @@ use Illuminate\Support\Facades\Storage;
 class CartController extends Controller
 {
     public function index()
-    {
-        $auth_id = auth()->id();
-        $visitor_hash = session('v_hash');
-        $cartItems = Cart::where('user_id', $auth_id)
-            ->orWhere('visitor_hash', $visitor_hash)
-            ->get();
+{
+    $auth_id = auth()->id();
+    $visitor_hash = session('v_hash');
+    $cartItems = Cart::pluck('product_id')->toArray();
 
-        foreach ($cartItems as $item) {
-            $item->product = Product::find($item->product_id);
-        }
+    $cartItems = Cart::where('user_id', $auth_id)
+        ->orWhere('visitor_hash', $visitor_hash)
+        ->get();
 
-        return view('cart.index', compact('cartItems'));
+    // Store product IDs in a session or pass to view for button logic
+    $productIdsInCart = $cartItems->pluck('product_id')->toArray();
+
+    // Store cart count in session (for menu display)
+    session(['cart_count' => $cartItems->count()]);
+
+    // Attach product info to each item
+    foreach ($cartItems as $item) {
+        $item->product = Product::find($item->product_id);
     }
+
+    return view('cart.index', compact('cartItems', 'productIdsInCart'));
+}
+
+    
 
     public function store(Request $request)
     {
@@ -62,6 +73,12 @@ class CartController extends Controller
                 'updated_at' => now(),
             ]);
 
+            $cartCount = Cart::where('user_id', $auth_user_id)
+    ->orWhere('visitor_hash', $visitor_id)
+    ->count();
+
+session(['cart_count' => $cartCount]);
+
             if ($request->front_image || $request->back_image) {
                 $imagePaths = $this->saveDesignImages($request, $cartId);
 
@@ -75,8 +92,19 @@ class CartController extends Controller
 
             DB::commit();
 
-            if (request()->ajax) {
-                return response()->json(['success' => 'Item added to cart successfully!'], 200);
+          
+            if ($request->expectsJson() || $request->ajax()) {
+                $cartCount = Cart::where('user_id', $auth_user_id)
+                    ->orWhere('visitor_hash', $visitor_id)
+                    ->count();
+            
+                return response()->json([
+                    'success' => true,
+                    'cartCount' => $cartCount,
+                    'productId' => $request->product_id,
+                    'cartItemId' => $cartId  // <-- this line is necessary
+
+                ]);
             }
 
             return back()->with('success', 'Item added to cart successfully!');
@@ -132,7 +160,20 @@ class CartController extends Controller
         $cart = Cart::find($id);
         if ($cart) {
             $cart->delete();
-            return response()->json(['success' => 'Item removed from cart successfully!'], 200);
+    
+            $auth_id = auth()->id();
+            $visitor_hash = session('v_hash');
+    
+            $cartCount = Cart::where('user_id', $auth_id)
+                ->orWhere('visitor_hash', $visitor_hash)
+                ->count();
+    
+            session(['cart_count' => $cartCount]);
+    
+            return response()->json([
+                'success' => 'Item removed from cart successfully!',
+                'cartCount' => $cartCount
+            ]);
         } else {
             return response()->json(['error' => 'Failed to remove item from cart!'], 400);
         }
@@ -160,14 +201,31 @@ class CartController extends Controller
     }
 
     public function show($id)
-    {
+{
+    // This loads the cart item and its related product in one query
+    $cart_item = Cart::with('product')->findOrFail($id);
 
-        $cart_item = DB::table('carts')->where('id', $id)->first();
+    $images = (object) [];
 
-        $images = (object) [];
+    // Custom uploaded front image from cart
+    if (!empty($cart_item->design_front_image)) {
         $images->first_image = Storage::url($cart_item->design_front_image);
-        $images->second_image = Storage::url($cart_item->design_back_image);
-
-        return view('cart.show', ['images' => $images]);
+    } else {
+        $images->first_image = null;
     }
+
+    // Back image from the related product
+    if (!empty($cart_item->product) && !empty($cart_item->product->back_image)) {
+        $images->second_image = Storage::url($cart_item->product->back_image);
+    } else {
+        $images->second_image = null;
+    }
+
+ return view('cart.show', [
+    'images' => $images,
+    'cart_item' => $cart_item,
+]);
+}
+
+ 
 }

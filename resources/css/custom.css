@@ -5,16 +5,17 @@ body {
 
 @font-face {
     font-family: 'arial';
-    src: url('../fonts/bpg_boxo-boxo.ttf') format('truetype');
+    src: url('fonts/bpg_boxo-boxo.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+   
 }
  
    
 
 @font-face {
     font-family: 'alk-rounded';
-    src: url('../fonts/alk-rounded-mtav-med-webfont.ttf') format('truetype');
+    src: url('fonts/alk-rounded-mtav-med-webfont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
    
@@ -23,7 +24,7 @@ body {
 
 @font-face {
     font-family: 'Lobster-Regular';
-    src: url('../fonts/Lobster-Regular.ttf') format('truetype');
+    src: url('fonts/Lobster-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
    
@@ -32,7 +33,7 @@ body {
 
 @font-face {
     font-family: 'Orbitron';
-    src: url('../fonts/Orbitron-VariableFont_wght.ttf');
+    src: url('fonts/Orbitron-VariableFont_wght.ttf');
     font-weight: normal;
     font-style: normal;
    
@@ -42,7 +43,7 @@ body {
 
 @font-face {
     font-family: 'EricaOne';
-    src: url('../fonts/EricaOne-Regular.ttf');
+    src: url('fonts/EricaOne-Regular.ttf');
     font-weight: normal;
     font-style: normal;
    
@@ -51,7 +52,7 @@ body {
 
 @font-face {
     font-family: 'GloriaHallelujah';
-    src: url('../fonts/GloriaHallelujah-Regular.ttf');
+    src: url('fonts/GloriaHallelujah-Regular.ttf');
     font-weight: normal;
     font-style: normal;
    
@@ -61,7 +62,7 @@ body {
 
 @font-face {
     font-family: 'RubikBubbles';
-    src: url('../fonts/RubikBubbles-Regular.ttf');
+    src: url('fonts/RubikBubbles-Regular.ttf');
     font-weight: normal;
     font-style: normal;
    
@@ -116,6 +117,201 @@ body {
 
 
 
+#im_news {
+    transition: all .2s ease-in-out;
+    height: 250px; 
+}
+
+.cover_news {
+    width: 100%; 
+    object-fit: cover;
+}
+
+.cover_news:hover {
+    transform: scale(1.0);
+    /* rotate(2.1deg) */
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    transition: all .7s;
+    cursor: pointer;
+}
+
+.custom-icon-facebook {
+    font-size: 21px; /* Adjust size as needed */
+}
+
+.custom-icon-facebook:hover {
+
+color:#1877F2;
+}
+
+.custom-icon-instagram {
+    font-size: 22px; /* Adjust size as needed */
+    
+}
+
+.custom-icon-instagram:hover {
+    background: #f09433; 
+    background: -moz-linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); 
+    background: -webkit-linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
+    background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
+ 
+}
+
+
+.custom-icon-youtube {
+    font-size: 27px; /* Adjust size as needed */
+ top:1px;
+position: relative;
+}
+
+.custom-icon-youtube:hover {
+
+color:#FF0000;
+}
+
+
+.hr-with-text {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #333;
+    margin: 40px 0;
+}
+
+.hr-with-text::before,
+.hr-with-text::after {
+    content: '';
+    flex: 1;
+    border-bottom: 2px solid #333;
+    margin-top: -12px;
+}
+
+.hr-with-text:not(:empty)::before {
+    margin-right: 10px;
+}
+
+.hr-with-text:not(:empty)::after {
+    margin-left: 10px;
+}
+
+/* Animation on hover */
+.hr-with-text:hover::before,
+.hr-with-text:hover::after {
+    border-bottom: 2px solid rgb(45, 131, 218); /* Change color on hover */
+    transition: width 0.4s ease-in-out, border-color 0.4s ease-in-out;
+}
+
+.hr-with-text:hover::before {
+    width: 120%;
+}
+
+.hr-with-text:hover::after {
+    width: 120%;
+}
+
+
+.overlay-section {
+    position: relative;
+    height: 300px; /* Adjust height as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.5); /* Overlay effect */
+}
+
+.overlay-section .fixed-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("{{ asset('uploads/book1.jpg') }}") no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed; /* Fixes the background within this section */
+    z-index: -1; /* Ensure it stays behind the content */
+}
+
+@media (max-width: 768px) {
+    .fixed-background {
+        background-attachment: scroll !important; /* Disable fixed background on mobile */
+        background-size: auto !important; /* Adjust background size on mobile */
+    }
+}
+
+
+.overlay-content {
+    position: relative;
+    z-index: 1;
+}
+
+.overlay-content h2, .overlay-content p, .overlay-content a {
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+
+
+.icon-color
+{
+    color:#d6336c !important;
+    text-align: center !important; 
+}
+
+/* Show dropdown on hover */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0; /* Removes the default margin */
+}
+
+.btn-outline-secondary
+{
+    height: 38px !important;
+}
+
+.price-color
+{
+    background-color: #57595c;
+    padding: 5px;;
+    color:white;
+}
+
+
+/* Optional: Add a smooth transition effect */
+.dropdown-menu {
+    transition: all 0.3s ease;
+}
+
+/* Apply only to the payment dropdown */
+#paymentDropdown {
+    position: relative !important; /* Ensures it pushes the footer */
+    z-index: 10; /* Keeps it above other elements */
+}
+
+/* Push the footer down only when the payment dropdown is open */
+.payment-open .footer {
+    margin-top: 100px; /* Adjust based on the dropdown height */
+}
+
+
+#forimage {
+    height: 230px;
+    transition: all .2s ease-in-out;
+  }
+  
+  .forimage {
+    width: 100%;
+    object-fit: cover;
+     
+  }
+
 
 .col-md-8 {
     display: flex;
@@ -147,12 +343,7 @@ body {
     font-style: normal;
 }
 
-@font-face {
-    font-family: "Arial";
-    src: url("../fonts/bpg_boxo-boxo.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
-}
+ 
 
 @font-face {
     font-family: "alk-rounded";
@@ -247,19 +438,30 @@ input {
     font-size: 16px;
 }
 
+.input-group-text {
+    height: 100%; /* Makes icon box same height as input field */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.655rem 0.75rem; /* Adjust padding for proper alignment */
+}
+
+
 button {
-    margin-top: 10px;
+   
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
 }
 .btn-group {
     display: flex;
-    gap: 10px;
+  
 }
 
+
+
 .text-style-btn {
-    font-size: 20px;
+    font-size: 17px;
     padding: 10px;
     cursor: pointer;
 }
@@ -609,7 +811,7 @@ button {
 
 .text-style-btn {
     background: #fff;
-    border: 2px solid #ff6b6b;
+    border: 1px solid #ff6b6b;
     color: #ff6b6b;
     padding: 8px 12px;
     border-radius: 5px;
@@ -664,8 +866,4 @@ button {
     border: none;
     cursor: pointer;
     margin: 5px;
-}
-
-.navbar .navbar-collapse {
-   float:right !important;
 }

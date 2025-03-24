@@ -1,14 +1,17 @@
 @extends('layouts.app')
 
 @section('title', 'Cart')
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
 @section('content')
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">Your Cart</h1>
+            <h1 class="mb-0">კალათა</h1>
             @if (!$cartItems->isEmpty())
                 <button class="btn btn-warning clear-cart">
-                    <i class="fas fa-trash me-2"></i>Clear Cart
+                    <i class="fas fa-trash me-2"></i>კალათის გასუფთავება
                 </button>
             @endif
         </div>
@@ -17,7 +20,7 @@
             <div class="card shadow-sm">
                 <div class="card-body text-center py-5">
                     <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                    <p class="lead mb-0">Your cart is empty</p>
+                    <p class="lead mb-0">შენი კალათა ცარიელია</p>
                 </div>
             </div>
         @else
@@ -26,12 +29,12 @@
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr class="table-dark">
-                                <th scope="col" style="width: 40%">Product</th>
-                                <th scope="col" class="text-center">Type</th>
-                                <th scope="col" class="text-center">Quantity</th>
-                                <th scope="col" class="text-center">Price</th>
-                                <th scope="col" class="text-center">Total</th>
-                                <th scope="col" class="text-center">Action</th>
+                                <th scope="col" style="width: 40%">პროდუქცია</th>
+                                <th scope="col" class="text-center">ტიპი</th>
+                                <th scope="col" class="text-center">რაოდენობა</th>
+                                <th scope="col" class="text-center">ფასი</th>
+                                <th scope="col" class="text-center">სულ</th>
+                                <th scope="col" class="text-center">ქმედება</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,12 +63,12 @@
                                         @endif
                                     </td>
                                     <td class="text-center align-middle">
-                                        <span class="badge bg-light text-dark border">
-                                            {{ $item->quantity }}
-                                        </span>
+                                        <input type="number" min="1" class="form-control cart-qty-input" value="{{ $item->quantity }}"
+                                               data-id="{{ $item->id }}" style="width: 70px; display: inline-block;">
+                                       
                                     </td>
-                                    <td class="text-center align-middle">${{ number_format($item->product->price, 2) }}</td>
-                                    <td class="text-center align-middle fw-bold">${{ number_format($item->total_price, 2) }}
+                                    <td class="text-center align-middle">{{ number_format($item->product->price) }} ლარი </td>
+                                    <td class="text-center align-middle fw-bold">{{ number_format($item->total_price) }} ლარი
                                     </td>
                                     <td class="text-center align-middle">
                                         <button class="btn btn-sm btn-outline-danger delete-cart-item"
@@ -89,16 +92,90 @@
             <div class="card shadow-sm mt-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Cart Total</h5>
-                        <h5 class="mb-0">${{ number_format($cartItems->sum('total_price'), 2) }}</h5>
+                        <h5 class="mb-0">სრული გადასახდელი თანხა</h5>
+                        <h5 class="mb-0">{{ number_format($cartItems->sum('total_price')) }} ლარი</h5>
                     </div>
                 </div>
             </div>
+ 
+            <div class="dropdown">
+                <!-- Payment Button -->
+                <button id="paymentButton" class="btn btn-success" type="button">
+                    გადახდა
+                </button>
+            
+                <!-- Hidden Form -->
+                <div id="paymentDropdown" class="dropdown-menu show p-4" style="min-width: 300px; display: none;">
+                    <form>
+                        <!-- Name Field -->
+                        <div class="mb-2">
+                            <label for="name" class="form-label">სახელი</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <label for="email" class="form-label">ელ.ფოსტა</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <label for="phone" class="form-label">ტელეფონი</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                                <input type="text" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <label for="address" class="form-label">მისამართი</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                        </div>
+            
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-success w-100">გადახდა</button>
+            
+                        <!-- Close Button -->
+                        <button id="closeDropdown" class="btn btn-danger w-100 mt-2">დახურვა</button>
+                    </form>
+                </div>
+            </div>
+            <!-- JavaScript -->
+            <script>
+         document.getElementById("paymentButton").addEventListener("click", function () {
+    this.style.display = "none"; // Hide button
+    document.getElementById("paymentDropdown").style.display = "block"; // Show dropdown
+
+    document.body.classList.add("payment-open"); // Push footer down
+});
+
+document.getElementById("closeDropdown").addEventListener("click", function () {
+    document.getElementById("paymentDropdown").style.display = "none"; // Hide dropdown
+    document.getElementById("paymentButton").style.display = "block"; // Show button again
+
+    document.body.classList.remove("payment-open"); // Restore footer
+});
+
+            </script>
+            
+
+        
+
+
         @endif
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Delete single item
             document.querySelectorAll(".delete-cart-item").forEach(button => {
                 button.addEventListener("click", function() {
                     const cartItemId = this.getAttribute("data-id");
@@ -108,8 +185,16 @@
                                 const row = document.getElementById(`cart-item-${cartItemId}`);
                                 row.classList.add('fade');
                                 setTimeout(() => row.remove(), 300);
-
-                                // Check if cart is empty after removal
+        
+                                // ✅ Update cart count in menu
+                                if (response.data.cartCount !== undefined) {
+                                    const cartCountElem = document.getElementById("cart-count");
+                                    if (cartCountElem) {
+                                        cartCountElem.textContent = response.data.cartCount;
+                                    }
+                                }
+        
+                                // Reload if cart is now empty
                                 if (document.querySelectorAll('tbody tr').length === 1) {
                                     location.reload();
                                 }
@@ -121,12 +206,19 @@
                     }
                 });
             });
-
+        
+            // Clear entire cart
             document.querySelector(".clear-cart")?.addEventListener("click", function() {
                 if (confirm("Are you sure you want to clear your cart?")) {
                     axios.post(`/cart/clear`)
                         .then(response => {
-                            location.reload();
+                            // ✅ Update cart count to 0
+                            const cartCountElem = document.getElementById("cart-count");
+                            if (cartCountElem) {
+                                cartCountElem.textContent = 0;
+                            }
+        
+                            location.reload(); // optional
                         })
                         .catch(error => {
                             console.error(error);
@@ -135,7 +227,8 @@
                 }
             });
         });
-    </script>
+        </script>
+        
 
     <style>
         .fade {

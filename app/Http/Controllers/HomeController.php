@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -10,6 +11,16 @@ class HomeController extends Controller
     public function index()
     {
         $products = Product::orderBy('id', 'desc')->get();
-        return view('home.index', compact('products'));
+    
+        $auth_id = auth()->id();
+        $visitor_hash = session('v_hash');
+    
+        $cartItems = Cart::where('user_id', $auth_id)
+            ->orWhere('visitor_hash', $visitor_hash)
+            ->get();
+    
+        $productIdsInCart = $cartItems->pluck('product_id')->toArray();
+    
+        return view('home.index', compact('products', 'cartItems', 'productIdsInCart'));
     }
 }

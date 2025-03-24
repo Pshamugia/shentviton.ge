@@ -14,6 +14,7 @@
                 <th>Title</th>
                 <th>Price</th>
                 <th>Quantity</th>
+                <th>subtype</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -23,6 +24,7 @@
                 <td>{{ $product->title }}</td>
                 <td>${{ number_format($product->price, 2) }}</td>
                 <td>{{ $product->quantity }}</td>
+                <td>{{ $product->subtype }}</td>
                 <td>
                     <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-primary btn-sm">Edit</a>
                     <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">

@@ -7,9 +7,13 @@
             <div class="col-md-6 text-center">
                 <img src="{{ $images->first_image }}" alt="Front Design" class="img-fluid border rounded shadow">
             </div>
+          
             <div class="col-md-6 text-center">
                 <img src="{{ $images->second_image }}" alt="Back Design" class="img-fluid border rounded shadow">
             </div>
+     
+   
+        
         </div>
     </div>
 @endsection

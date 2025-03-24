@@ -1,7 +1,11 @@
 @extends('layouts.admin')
 
 @section('title', 'Add a New Product')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+        
 @section('content')
 <div class="container">
     <h3 class="mb-4">Add a New Product</h3>
@@ -36,9 +40,24 @@
         </div>
 
         <div class="mb-3">
-            <label for="size" class="form-label">Size</label>
-            <input type="text" name="size" id="size" class="form-control">
+            <label for="size" class="form-label">Sizes</label>
+            <select name="size[]" id="size" class="form-control" multiple>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+            </select>
         </div>
+        <script>
+            $(document).ready(function () {
+                $('#size').chosen({
+                    width: '100%',
+                    placeholder_text_multiple: 'აირჩიეთ ზომები'
+                });
+            });
+        </script>        
 
         <div class="mb-3">
             <label for="quantity" class="form-label">Quantity</label>
@@ -70,6 +89,32 @@
             <input type="file" name="image4" id="image4" class="form-control">
         </div>
 
+        <div class="mb-3">
+            <label for="type" class="form-label">Product Type</label>
+            <select class="form-control" id="type" name="type" required>
+                <option value="">-- Select Type --</option>
+                <option value="მაისური">მაისური</option>
+                <option value="ქუდი">ქუდი</option>
+                <option value="ტელეფონის ქეისი">ტელეფონის ქეისი</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Subtype</label><br>
+        
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="subtype" id="მზა" value="მზა"
+                       {{ old('subtype', $product->subtype ?? '') == 'მზა' ? 'checked' : '' }} required>
+                <label class="form-check-label" for="მზა">მზა</label>
+            </div>
+        
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="subtype" id="custom" value="custom"
+                       {{ old('subtype', $product->subtype ?? '') == 'custom' ? 'checked' : '' }}>
+                <label class="form-check-label" for="custom">custom</label>
+            </div> 
+        </div>
+
         <button type="submit" class="btn btn-primary">Save Product</button>
     </form>
 </div>
@@ -92,11 +137,11 @@
             </div>
             <div class="mb-2">
                 <label>Upload Front Image</label>
-                <input type="file" name="colors[${colorIndex}][front_image]" class="form-control" accept="image/*" required>
+                <input type="file" name="colors[${colorIndex}][front_image]" class="form-control" accept="image/*">
             </div>
             <div class="mb-2">
                 <label>Upload Back Image</label>
-                <input type="file" name="colors[${colorIndex}][back_image]" class="form-control" accept="image/*" required>
+                <input type="file" name="colors[${colorIndex}][back_image]" class="form-control" accept="image/*">
             </div>
             <button type="button" class="btn btn-danger remove-color">Remove</button>
         `;
