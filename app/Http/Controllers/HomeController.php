@@ -23,4 +23,13 @@ class HomeController extends Controller
     
         return view('home.index', compact('products', 'cartItems', 'productIdsInCart'));
     }
+
+
+    public function terms()
+    {
+        $products = Product::orderBy('id', 'desc')->get(); 
+    
+        return view('terms_and_conditions', compact('products'));
+    }
+
 }

@@ -142,7 +142,7 @@
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}"
                                 class="text-white">კალათა</a>
                         </li><br>
-                        <li class="list-inline-item"><a href="{{ route('home') }}" class="text-white">წესები და
+                        <li class="list-inline-item"><a href="{{ route('terms') }}" class="text-white">წესები და
                                 პირობები</a></li><br>
                         <li class="list-inline-item"><a href="{{ route('home') }}" class="text-white">კონტაქტი</a>
                         </li>

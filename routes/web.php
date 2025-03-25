@@ -56,6 +56,8 @@ Route::post('/register', [RegisterController::class, 'register']);
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/terms_and_conditions', [App\Http\Controllers\HomeController::class, 'terms'])->name('terms');
+
 
 Auth::routes();
 
