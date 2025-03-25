@@ -8,10 +8,10 @@
 @section('content')
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">კალათა</h1>
+            <i class="fas fa-shopping-cart"> კალათა </i> 
             @if (!$cartItems->isEmpty())
                 <button class="btn btn-warning clear-cart">
-                    <i class="fas fa-trash me-2"></i>კალათის გასუფთავება
+                    <i class="fas fa-trash me-1"></i>კალათის გასუფთავება
                 </button>
             @endif
         </div>

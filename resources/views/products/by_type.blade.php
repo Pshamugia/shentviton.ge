@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="justify-content-start">
-            პროდუქტები / {{ $type === 'all' ? 'ყველა' : $type }}
+            <i class="bi bi-app-indicator"></i>  {{ $subtype }} / {{ $type === 'all' ? 'ყველა' : $type }}
         </div>
     
         <div class="d-flex justify-content-end">

@@ -23,6 +23,9 @@ Route::get('/cart/{id}', [CartController::class, 'show'])->name('cart.item.show'
 Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity']);
 
 
+Route::get('/search', [App\Http\Controllers\SearchController::class, 'search'])->name('search');
+
+
 Route::get('/preview/{key}', [DesignController::class, 'preview'])->name('design.preview');
 
 // ✅ AUTH ROUTES (LOGIN / REGISTER)

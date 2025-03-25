@@ -79,8 +79,21 @@
                         </a>
                     </li>
 
+                    <li class="nav-item dropdown">
+                        <a class="nav-link search-toggle" href="#" role="button">
+                            <i class="fas fa-search"></i>
+                        </a>
+                        <div class="search-dropdown">
+                            <form action="{{ route('search') }}" method="GET" class="d-flex">
+                                <input type="text" name="query" class="form-control me-2" placeholder="საძიებო სიტყვა..." required>
+                                <button type="submit" class="btn search-button" style="">ძებნა</button>
+                            </form>
+                        </div>
+                    </li>
+                    
 
-                    @guest
+
+              <!--      @guest
                         <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
                     @else
@@ -93,7 +106,8 @@
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
-                    @endguest
+                    @endguest -->
+                    
                 </ul>
             </div>
         </div>
@@ -152,105 +166,110 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
+            // Navbar close on item click (for mobile)
             let navLinks = document.querySelectorAll(".navbar-nav a");
             let navbarCollapse = document.querySelector(".navbar-collapse");
             let navbarToggler = document.querySelector(".navbar-toggler");
-
+    
             navLinks.forEach(link => {
-                link.addEventListener("click", function() {
+                link.addEventListener("click", function () {
                     if (window.innerWidth <= 992) {
-                        console.log("Navbar item clicked, forcing close...");
-
-                        // Force Bootstrap to fully close the navbar
                         navbarCollapse.classList.remove("collapsing", "show");
                         let bsCollapse = new bootstrap.Collapse(navbarCollapse);
                         bsCollapse.hide();
-
-                        // Simulate toggler button click
                         navbarToggler.click();
+                    }
+                });
+            });
+    
+            // Scroll effect for navbar
+            window.addEventListener('scroll', function () {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+    
+            // Search button toggle
+            const toggle = document.querySelector('.search-toggle');
+            const dropdown = document.querySelector('.search-dropdown');
+    
+            if (toggle && dropdown) {
+                toggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+                });
+    
+                document.addEventListener('click', function (e) {
+                    if (!toggle.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+    
+            // Add to cart forms
+            const forms = document.querySelectorAll(".add-to-cart-form");
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+    
+            forms.forEach(form => {
+                const button = form.querySelector(".add-to-cart-btn");
+    
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const cartItemId = button.dataset.cartItemId;
+    
+                    if (button.classList.contains("btn-success") && cartItemId) {
+                        // REMOVE from cart
+                        fetch(`/cart/${cartItemId}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: new URLSearchParams({ _method: 'DELETE' })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                button.innerHTML = '<i class="fas fa-shopping-cart"></i> კალათაში დამატება';
+                                button.classList.remove('btn-success');
+                                button.classList.add('btn-primary');
+                                delete button.dataset.cartItemId;
+    
+                                document.getElementById('cart-count').textContent = data.cartCount;
+                            }
+                        });
+                    } else {
+                        // ADD to cart
+                        fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                button.innerHTML = '<i class="fas fa-check-circle"></i> დამატებულია';
+                                button.classList.remove('btn-primary');
+                                button.classList.add('btn-success');
+                                button.dataset.cartItemId = data.cartItemId;
+    
+                                document.getElementById('cart-count').textContent = data.cartCount;
+                            }
+                        });
                     }
                 });
             });
         });
     </script>
-
-
-<script>
-
-// scroll efect
-window.addEventListener('scroll', function () {
-        const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-
-
-
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const forms = document.querySelectorAll(".add-to-cart-form");
     
-        forms.forEach(form => {
-            const button = form.querySelector(".add-to-cart-btn");
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-    
-            form.addEventListener("submit", function (e) {
-                e.preventDefault();
-    
-                const formData = new FormData(form);
-                const cartItemId = button.dataset.cartItemId;
-    
-                if (button.classList.contains("btn-success") && cartItemId) {
-                    // REMOVE from cart
-                    fetch(`/cart/${cartItemId}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: new URLSearchParams({ _method: 'DELETE' })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            button.innerHTML = '<i class="fas fa-shopping-cart"></i> კალათაში დამატება';
-                            button.classList.remove('btn-success');
-                            button.classList.add('btn-primary');
-                            delete button.dataset.cartItemId;
-    
-                            document.getElementById('cart-count').textContent = data.cartCount;
-                        }
-                    });
-                } else {
-                    // ADD to cart
-                    fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: formData
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            button.innerHTML = '<i class="fas fa-check-circle"></i> დამატებულია';
-                            button.classList.remove('btn-primary');
-                            button.classList.add('btn-success');
-                            button.dataset.cartItemId = data.cartItemId;
-    
-                            document.getElementById('cart-count').textContent = data.cartCount;
-                        }
-                    });
-                }
-            });
-        });
-    });
-    </script>
     
     
 
