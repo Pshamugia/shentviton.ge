@@ -2,18 +2,23 @@
 
 @section('content')
 <div class="container">
-    <h2 class="mb-4">პროდუქტები ტიპით: {{ $type === 'all' ? 'ყველა' : $type }}</h2>
-
-    <div class="mb-3 d-flex justify-content-end">
-        <form method="GET" action="{{ route('products.byType', $type) }}">
-            <input type="hidden" name="subtype" value="{{ $subtype }}">
-            <select name="sort" onchange="this.form.submit()" class="form-select w-auto">
-                <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>უახლესი</option>
-                <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>ფასი: ზრდადობით</option>
-                <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>ფასი: კლებადობით</option>
-            </select>
-        </form>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="justify-content-start">
+            პროდუქტები / {{ $type === 'all' ? 'ყველა' : $type }}
+        </div>
+    
+        <div class="d-flex justify-content-end">
+            <form method="GET" action="{{ route('products.byType', $type) }}">
+                <input type="hidden" name="subtype" value="{{ $subtype }}">
+                <select name="sort" onchange="this.form.submit()" class="form-select w-auto">
+                    <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>უახლესი</option>
+                    <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>ფასი: ზრდადობით</option>
+                    <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>ფასი: კლებადობით</option>
+                </select>
+            </form>
+        </div>
     </div>
+    
     
     <div class="row">
         @forelse ($products as $product)

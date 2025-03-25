@@ -160,8 +160,8 @@
                 <select class="form-control" id="type" name="type" required>
                     <option value="">-- Select Type --</option>
                     <option value="მაისური" {{ $product->type == 'მაისური' ? 'selected' : '' }}>მაისური</option>
-                    <option value="ქუდი" {{ $product->type == 'ქუდი' ? 'selected' : '' }}>ქუდი</option>
-                    <option value="ტელეფონის ქეისი" {{ $product->type == 'ტელეფონის ქეისი' ? 'selected' : '' }}>ტელეფონის ქეისი</option>
+                    <option value="კეპი" {{ $product->type == 'კეპი' ? 'selected' : '' }}>კეპი</option>
+                    <option value="ქეისი" {{ $product->type == 'ქეისი' ? 'selected' : '' }}>ქეისი</option>
                 </select>
 
             </div>

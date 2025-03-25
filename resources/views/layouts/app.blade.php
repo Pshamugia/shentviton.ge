@@ -39,7 +39,13 @@
                         <div class="dropdown-toggle-wrapper">
                             <a class="nav-link dropdown-toggle" href="#" id="readyDesignsDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false"
-                                style="background-color: #d6336c; border-radius:5px; color:#fff; display:block; text-align:left;">
+                                style="background-color: #d6336c;  border-radius: 25px;
+                                padding: 6px 15px;
+                                color: #fff9f9 !important;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 8px; 
+                                transition: background 0.3s ease;">
                                 გააფორმე შენ თვითონ
                             </a>
                         </div>
@@ -66,8 +72,10 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('cart.index') }}">
-                            კალათა (<span id="cart-count">{{ session('cart_count', 0) }}</span>)
+                        <a class="nav-link cart-link" href="{{ route('cart.index') }}">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-text">კალათა</span>
+                            <span class="badge bg-danger" id="cart-count">{{ session('cart_count', 0) }}</span>
                         </a>
                     </li>
 
@@ -169,47 +177,61 @@
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".add-to-cart-form").forEach(form => {
-            const button = form.querySelector(".add-to-cart-btn");
-            const productId = form.getAttribute("data-product-id");
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
+// scroll efect
+window.addEventListener('scroll', function () {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll(".add-to-cart-form");
+    
+        forms.forEach(form => {
+            const button = form.querySelector(".add-to-cart-btn");
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+    
             form.addEventListener("submit", function (e) {
                 e.preventDefault();
-
-                const cartItemId = button.dataset.cartItemId;
+    
                 const formData = new FormData(form);
-
+                const cartItemId = button.dataset.cartItemId;
+    
                 if (button.classList.contains("btn-success") && cartItemId) {
-                    // Remove from cart
+                    // REMOVE from cart
                     fetch(`/cart/${cartItemId}`, {
                         method: 'POST',
                         headers: {
-                            "X-CSRF-TOKEN": csrfToken,
-                            "Accept": "application/json"
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
                         },
-                        body: new URLSearchParams({ _method: "DELETE" })
+                        body: new URLSearchParams({ _method: 'DELETE' })
                     })
                     .then(res => res.json())
                     .then(data => {
                         if (data.success) {
                             button.innerHTML = '<i class="fas fa-shopping-cart"></i> კალათაში დამატება';
-                            button.classList.remove("btn-success");
-                            button.classList.add("btn-primary");
+                            button.classList.remove('btn-success');
+                            button.classList.add('btn-primary');
                             delete button.dataset.cartItemId;
-
-                            const cartCountElem = document.getElementById("cart-count");
-                            if (cartCountElem) cartCountElem.textContent = data.cartCount;
+    
+                            document.getElementById('cart-count').textContent = data.cartCount;
                         }
                     });
                 } else {
-                    // Add to cart
+                    // ADD to cart
                     fetch(form.action, {
                         method: 'POST',
                         headers: {
-                            "X-CSRF-TOKEN": csrfToken,
-                            "Accept": "application/json"
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
                         },
                         body: formData
                     })
@@ -217,20 +239,19 @@
                     .then(data => {
                         if (data.success) {
                             button.innerHTML = '<i class="fas fa-check-circle"></i> დამატებულია';
-                            button.classList.remove("btn-primary");
-                            button.classList.add("btn-success");
+                            button.classList.remove('btn-primary');
+                            button.classList.add('btn-success');
                             button.dataset.cartItemId = data.cartItemId;
-
-                            const cartCountElem = document.getElementById("cart-count");
-                            if (cartCountElem) cartCountElem.textContent = data.cartCount;
+    
+                            document.getElementById('cart-count').textContent = data.cartCount;
                         }
                     });
                 }
             });
         });
     });
-</script>
-
+    </script>
+    
     
 
 

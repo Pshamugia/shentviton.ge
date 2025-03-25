@@ -64,12 +64,15 @@
                                     </td>
                                     <td class="text-center align-middle">
                                         <input type="number" min="1" class="form-control cart-qty-input" value="{{ $item->quantity }}"
-                                               data-id="{{ $item->id }}" style="width: 70px; display: inline-block;">
+    data-id="{{ $item->id }}" data-price="{{ $item->product->price }}"
+    style="width: 70px; display: inline-block;">
                                        
                                     </td>
                                     <td class="text-center align-middle">{{ number_format($item->product->price) }} ლარი </td>
-                                    <td class="text-center align-middle fw-bold">{{ number_format($item->total_price) }} ლარი
+                                    <td class="text-center align-middle fw-bold item-total" id="item-total-{{ $item->id }}">
+                                        {{ number_format($item->total_price) }} ლარი
                                     </td>
+                                    
                                     <td class="text-center align-middle">
                                         <button class="btn btn-sm btn-outline-danger delete-cart-item"
                                             data-id="{{ $item->id }}">
@@ -93,7 +96,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">სრული გადასახდელი თანხა</h5>
-                        <h5 class="mb-0">{{ number_format($cartItems->sum('total_price')) }} ლარი</h5>
+                        <h5 class="mb-0" id="grand-total">{{ number_format($cartItems->sum('total_price')) }} ლარი</h5>
                     </div>
                 </div>
             </div>
@@ -162,6 +165,43 @@ document.getElementById("closeDropdown").addEventListener("click", function () {
     document.getElementById("paymentButton").style.display = "block"; // Show button again
 
     document.body.classList.remove("payment-open"); // Restore footer
+});
+
+
+document.querySelectorAll(".cart-qty-input").forEach(input => {
+    input.addEventListener("change", function () {
+        const id = this.dataset.id;
+        const unitPrice = parseFloat(this.dataset.price);
+        const qty = parseInt(this.value);
+
+        // Prevent invalid numbers
+        if (qty < 1 || isNaN(qty)) {
+            this.value = 1;
+            return;
+        }
+
+        const itemTotal = unitPrice * qty;
+        const formattedTotal = new Intl.NumberFormat().format(itemTotal) + " ლარი";
+
+        // Update item's total price
+        const totalElem = document.getElementById(`item-total-${id}`);
+        if (totalElem) {
+            totalElem.textContent = formattedTotal;
+        }
+
+        // Update overall total
+        let grandTotal = 0;
+        document.querySelectorAll(".cart-qty-input").forEach(input => {
+            const price = parseFloat(input.dataset.price);
+            const quantity = parseInt(input.value);
+            if (!isNaN(price) && !isNaN(quantity)) {
+                grandTotal += price * quantity;
+            }
+        });
+
+        document.getElementById("grand-total").textContent =
+            new Intl.NumberFormat().format(grandTotal) + " ლარი";
+    });
 });
 
             </script>

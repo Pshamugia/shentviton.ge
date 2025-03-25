@@ -94,8 +94,8 @@
             <select class="form-control" id="type" name="type" required>
                 <option value="">-- Select Type --</option>
                 <option value="მაისური">მაისური</option>
-                <option value="ქუდი">ქუდი</option>
-                <option value="ტელეფონის ქეისი">ტელეფონის ქეისი</option>
+                <option value="კეპი">კეპი</option>
+                <option value="ქეისი">ტელეფონის ქეისი</option>
             </select>
         </div>
 
