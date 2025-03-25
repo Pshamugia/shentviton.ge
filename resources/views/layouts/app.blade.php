@@ -144,8 +144,7 @@
                         </li><br>
                         <li class="list-inline-item"><a href="{{ route('terms') }}" class="text-white">წესები და
                                 პირობები</a></li><br>
-                        <li class="list-inline-item"><a href="{{ route('home') }}" class="text-white">კონტაქტი</a>
-                        </li>
+                       
                     </ul>
                 </div>
 
