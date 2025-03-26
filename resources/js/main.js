@@ -1087,7 +1087,8 @@ function handleAddToCart() {
                     .querySelector("#product-image")
                     .getAttribute("data-id"),
                 v_hash: localStorage.getItem("v_hash"),
-                quantity: 1,
+                quantity: localStorage.getItem("quantity") || 1,
+
                 price: null,
                 default_img: 0,
             };

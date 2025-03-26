@@ -93,7 +93,7 @@
                 <div id="product" class="tabcontent" >
 
                     <p>
-                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span class="price-color"> {{ intval($product->price) }} ლარი </span> </label> </div>
+                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label> </div>
 
                     @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
@@ -139,6 +139,7 @@
                                         <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
                                     </div>
                                 </div>
+                              
 
                                 
                             </div>
@@ -409,19 +410,40 @@
             const incrementBtn = document.getElementById("increment");
             const decrementBtn = document.getElementById("decrement");
             const quantityInput = document.getElementById("quantity");
+            const totalPrice = document.getElementById("total-price");
+            const basePrice = {{ intval($product->price) }};
+    
+            function updateQuantityAndPrice() {
+                const qty = parseInt(quantityInput.value) || 1;
+                quantityInput.value = qty;
+    
+                const total = qty * basePrice;
+                totalPrice.textContent = new Intl.NumberFormat().format(total) + " ლარი";
+    
+                localStorage.setItem("quantity", qty); // Save to localStorage for main.js
+            }
     
             incrementBtn.addEventListener("click", function () {
-                let currentValue = parseInt(quantityInput.value) || 1;
-                quantityInput.value = currentValue + 1;
+                quantityInput.value = parseInt(quantityInput.value || 1) + 1;
+                updateQuantityAndPrice();
             });
     
             decrementBtn.addEventListener("click", function () {
-                let currentValue = parseInt(quantityInput.value) || 1;
-                if (currentValue > 1) {
-                    quantityInput.value = currentValue - 1;
+                let current = parseInt(quantityInput.value || 1);
+                if (current > 1) {
+                    quantityInput.value = current - 1;
+                    updateQuantityAndPrice();
                 }
             });
+    
+            quantityInput.addEventListener("change", updateQuantityAndPrice);
+    
+            // Initial update
+            updateQuantityAndPrice();
         });
     </script>
+    
+    
+    
     
 @endsection
