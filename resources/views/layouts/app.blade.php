@@ -136,13 +136,13 @@
                 <!-- Second Column -->
                 <div class="col-md-4 text-start">
                     <ul class="list-inline">
-                        <li class="list-inline-item"><a href="{{ route('home') }}" class="text-white">საწყისი</a>
+                        <li class="list-inline-item"><a href="{{ route('home') }}" class="nav-link"> <i class="bi bi-house-door"></i> საწყისი</a>
                         </li>
                         <br>
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}"
-                                class="text-white">კალათა</a>
+                                class="nav-link"> <i class="bi bi-cart2"></i> კალათა</a>
                         </li><br>
-                        <li class="list-inline-item"><a href="{{ route('terms') }}" class="text-white">წესები და
+                        <li class="list-inline-item"><a href="{{ route('terms') }}" class="nav-link"> <i class="bi bi-newspaper"></i> წესები და
                                 პირობები</a></li><br>
                        
                     </ul>
