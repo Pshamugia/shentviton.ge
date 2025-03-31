@@ -9,7 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductColor extends Model
 {
     protected $fillable = [
-        'product_id', 'color_name', 'color_code', 'front_image', 'back_image'
+        'product_id',
+        'color_name',
+        'color_code',
+        'front_image',
+        'back_image',
+        'price'
     ];
 
     public function product(): BelongsTo

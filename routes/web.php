@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DesignController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\ClipartController;
@@ -14,7 +15,7 @@ use App\Http\Controllers\Admin\DashboardController;
 
 
 // ✅ HOME PAGE (PUBLIC)
-Route::get('/', [HomeController::class, 'index'])->name('home');// ✅ CART PAGE (PUBLIC)
+Route::get('/', [HomeController::class, 'index'])->name('home'); // ✅ CART PAGE (PUBLIC)
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
@@ -78,3 +79,16 @@ Route::get('/cart/count', function () {
 
 
 Route::post('/api/visitor', [App\Http\Controllers\VisitorController::class, 'createVisitor']);
+
+
+/**
+ * Payment routes
+ */
+Route::get('/payment_info', [PaymentController::class, 'info'])->name('payment.info');
+Route::get('/pay', [PaymentController::class, 'pay'])->name('payment.pay');
+/**
+ * Route below is passed to the payment gateway. It is not a public route.
+ */
+Route::get('/payment/status/closed', [PaymentController::class, 'status'])->middleware('signed')->name('payment.status.closed');
+Route::get('/payment/status/{id}', [PaymentController::class, 'publicStatus'])->name('payment.status.public');
+Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');

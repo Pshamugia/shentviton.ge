@@ -44,33 +44,45 @@
                                 color: #fff9f9 !important;
                                 display: inline-flex;
                                 align-items: center;
-                                gap: 8px; 
+                                gap: 8px;
                                 transition: background 0.3s ease;">
                                 გააფორმე შენ თვითონ
                             </a>
                         </div>
                         <ul class="dropdown-menu" aria-labelledby="readyDesignsDropdown">
-                            
-                            <li><a class="dropdown-item" href="{{ route('products.byType', ['type' => 'all', 'subtype' => 'custom']) }}">ყველას ჩვენება</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}">მაისური</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byType', ['type' => 'cap', 'subtype' => 'custom']) }}">კეპი</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byType', ['type' => 'phone-case', 'subtype' => 'custom']) }}">ტელეფონის ქეისი</a></li>
+
+                            <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'all', 'subtype' => 'custom']) }}">ყველას
+                                    ჩვენება</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}">მაისური</a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'cap', 'subtype' => 'custom']) }}">კეპი</a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'phone-case', 'subtype' => 'custom']) }}">ტელეფონის
+                                    ქეისი</a></li>
                         </ul>
                     </li>
-                    
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="readyDesignsDropdown" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             მზა დიზაინები
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="readyDesignsDropdown">
                             <li><a class="dropdown-item" href="{{ route('products.byType', 'all') }}">ყველა</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byType', ['type' => 't-shirt']) }}">მაისური</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byType', ['type' => 'cap']) }}">კეპი</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.byType', ['type' => 'phone-case']) }}">ტელეფონის ქეისი</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 't-shirt']) }}">მაისური</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'cap']) }}">კეპი</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'phone-case']) }}">ტელეფონის ქეისი</a>
+                            </li>
                         </ul>
                     </li>
-                    
+
                     <li class="nav-item">
                         <a class="nav-link cart-link" href="{{ route('cart.index') }}">
                             <i class="fas fa-shopping-cart"></i>
@@ -85,29 +97,30 @@
                         </a>
                         <div class="search-dropdown">
                             <form action="{{ route('search') }}" method="GET" class="d-flex">
-                                <input type="text" name="query" class="form-control me-2" placeholder="საძიებო სიტყვა..." required>
+                                <input type="text" name="query" class="form-control me-2"
+                                    placeholder="საძიებო სიტყვა..." required>
                                 <button type="submit" class="btn search-button" style="">ძებნა</button>
                             </form>
                         </div>
                     </li>
-                    
 
 
-              <!--      @guest
-                        <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                Logout
-                            </a>
-                        </li>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
+
+                    <!--      @guest
+                                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
+@else
+    <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        Logout
+                                    </a>
+                                </li>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
                     @endguest -->
-                    
+
                 </ul>
             </div>
         </div>
@@ -136,15 +149,17 @@
                 <!-- Second Column -->
                 <div class="col-md-4 text-start">
                     <ul class="list-inline">
-                        <li class="list-inline-item"><a href="{{ route('home') }}" class="nav-link"> <i class="bi bi-house-door"></i> საწყისი</a>
+                        <li class="list-inline-item"><a href="{{ route('home') }}" class="nav-link"> <i
+                                    class="bi bi-house-door"></i> საწყისი</a>
                         </li>
                         <br>
-                        <li class="list-inline-item"><a href="{{ route('cart.index') }}"
-                                class="nav-link"> <i class="bi bi-cart2"></i> კალათა</a>
+                        <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="nav-link"> <i
+                                    class="bi bi-cart2"></i> კალათა</a>
                         </li><br>
-                        <li class="list-inline-item"><a href="{{ route('terms') }}" class="nav-link"> <i class="bi bi-newspaper"></i> წესები და
+                        <li class="list-inline-item"><a href="{{ route('terms') }}" class="nav-link"> <i
+                                    class="bi bi-newspaper"></i> წესები და
                                 პირობები</a></li><br>
-                       
+
                     </ul>
                 </div>
 
@@ -165,14 +180,14 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Navbar close on item click (for mobile)
             let navLinks = document.querySelectorAll(".navbar-nav a");
             let navbarCollapse = document.querySelector(".navbar-collapse");
             let navbarToggler = document.querySelector(".navbar-toggler");
-    
+
             navLinks.forEach(link => {
-                link.addEventListener("click", function () {
+                link.addEventListener("click", function() {
                     if (window.innerWidth <= 992) {
                         navbarCollapse.classList.remove("collapsing", "show");
                         let bsCollapse = new bootstrap.Collapse(navbarCollapse);
@@ -181,9 +196,9 @@
                     }
                 });
             });
-    
+
             // Scroll effect for navbar
-            window.addEventListener('scroll', function () {
+            window.addEventListener('scroll', function() {
                 const navbar = document.querySelector('.navbar');
                 if (window.scrollY > 50) {
                     navbar.classList.add('scrolled');
@@ -191,86 +206,92 @@
                     navbar.classList.remove('scrolled');
                 }
             });
-    
+
             // Search button toggle
             const toggle = document.querySelector('.search-toggle');
             const dropdown = document.querySelector('.search-dropdown');
-    
+
             if (toggle && dropdown) {
-                toggle.addEventListener('click', function (e) {
+                toggle.addEventListener('click', function(e) {
                     e.preventDefault();
                     dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
                 });
-    
-                document.addEventListener('click', function (e) {
+
+                document.addEventListener('click', function(e) {
                     if (!toggle.contains(e.target) && !dropdown.contains(e.target)) {
                         dropdown.style.display = 'none';
                     }
                 });
             }
-    
+
             // Add to cart forms
             const forms = document.querySelectorAll(".add-to-cart-form");
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
-    
+
             forms.forEach(form => {
                 const button = form.querySelector(".add-to-cart-btn");
-    
-                form.addEventListener("submit", function (e) {
+
+                form.addEventListener("submit", function(e) {
                     e.preventDefault();
                     const formData = new FormData(form);
                     const cartItemId = button.dataset.cartItemId;
-    
+
                     if (button.classList.contains("btn-success") && cartItemId) {
                         // REMOVE from cart
                         fetch(`/cart/${cartItemId}`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: new URLSearchParams({ _method: 'DELETE' })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                button.innerHTML = '<i class="fas fa-shopping-cart"></i> კალათაში დამატება';
-                                button.classList.remove('btn-success');
-                                button.classList.add('btn-primary');
-                                delete button.dataset.cartItemId;
-    
-                                document.getElementById('cart-count').textContent = data.cartCount;
-                            }
-                        });
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                                body: new URLSearchParams({
+                                    _method: 'DELETE'
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    button.innerHTML =
+                                        '<i class="fas fa-shopping-cart"></i> კალათაში დამატება';
+                                    button.classList.remove('btn-success');
+                                    button.classList.add('btn-primary');
+                                    delete button.dataset.cartItemId;
+
+                                    document.getElementById('cart-count').textContent = data
+                                        .cartCount;
+                                }
+                            });
                     } else {
                         // ADD to cart
                         fetch(form.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: formData
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                button.innerHTML = '<i class="fas fa-check-circle"></i> დამატებულია';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-success');
-                                button.dataset.cartItemId = data.cartItemId;
-    
-                                document.getElementById('cart-count').textContent = data.cartCount;
-                            }
-                        });
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                                body: formData
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    button.innerHTML =
+                                        '<i class="fas fa-check-circle"></i> დამატებულია';
+                                    button.classList.remove('btn-primary');
+                                    button.classList.add('btn-success');
+                                    button.dataset.cartItemId = data.cartItemId;
+
+                                    document.getElementById('cart-count').textContent = data
+                                        .cartCount;
+                                }
+                            });
                     }
                 });
             });
         });
     </script>
-    
-    
-    
+
+
+
 
 
 
