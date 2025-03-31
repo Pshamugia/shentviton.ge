@@ -6,7 +6,7 @@ const close_btn = document.querySelector("#closeClipartSidebar");
 const canvas = new fabric.Canvas("tshirtCanvas");
 const product_image = document.querySelector("#product-image");
 const designArea = document.querySelector("#design-area");
-const product_type = product_image.getAttribute("data-type");
+const product_type = product_image?.getAttribute("data-type") || 'default';
 const default_stroke_width = 2;
 const default_stoke_fill = "#ccc";
 
