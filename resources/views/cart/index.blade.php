@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('title', 'Cart')
- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
 @section('content')
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <i class="fas fa-shopping-cart"> კალათა </i> 
+            <i class="fas fa-shopping-cart"> კალათა </i>
             @if (!$cartItems->isEmpty())
                 <button class="btn btn-warning clear-cart">
                     <i class="fas fa-trash me-1"></i>კალათის გასუფთავება
@@ -63,16 +63,19 @@
                                         @endif
                                     </td>
                                     <td class="text-center align-middle">
-                                        <input type="number" min="1" class="form-control cart-qty-input" value="{{ $item->quantity }}"
-    data-id="{{ $item->id }}" data-price="{{ $item->product->price }}"
-    style="width: 70px; display: inline-block;">
-                                       
+                                        <input type="number" min="1" class="form-control cart-qty-input"
+                                            value="{{ $item->quantity }}" data-id="{{ $item->id }}"
+                                            data-price="{{ $item->product->price }}"
+                                            style="width: 70px; display: inline-block;">
+
                                     </td>
-                                    <td class="text-center align-middle">{{ number_format($item->product->price) }} ლარი </td>
-                                    <td class="text-center align-middle fw-bold item-total" id="item-total-{{ $item->id }}">
+                                    <td class="text-center align-middle">{{ number_format($item->product->price) }} ლარი
+                                    </td>
+                                    <td class="text-center align-middle fw-bold item-total"
+                                        id="item-total-{{ $item->id }}">
                                         {{ number_format($item->total_price) }} ლარი
                                     </td>
-                                    
+
                                     <td class="text-center align-middle">
                                         <button class="btn btn-sm btn-outline-danger delete-cart-item"
                                             data-id="{{ $item->id }}">
@@ -100,16 +103,16 @@
                     </div>
                 </div>
             </div>
- 
+
             <div class="dropdown">
                 <!-- Payment Button -->
                 <button id="paymentButton" class="btn btn-success" type="button">
                     გადახდა
                 </button>
-            
+
                 <!-- Hidden Form -->
                 <div id="paymentDropdown" class="dropdown-menu show p-4" style="min-width: 300px; display: none;">
-                    <form>
+                    <form action="{{ route('payment.pay') }}">
                         <!-- Name Field -->
                         <div class="mb-2">
                             <label for="name" class="form-label">სახელი</label>
@@ -118,7 +121,7 @@
                                 <input type="text" class="form-control" id="name" name="name" required>
                             </div>
                         </div>
-                        
+
                         <div class="mb-2">
                             <label for="email" class="form-label">ელ.ფოსტა</label>
                             <div class="input-group">
@@ -126,7 +129,7 @@
                                 <input type="email" class="form-control" id="email" name="email" required>
                             </div>
                         </div>
-                        
+
                         <div class="mb-2">
                             <label for="phone" class="form-label">ტელეფონი</label>
                             <div class="input-group">
@@ -134,7 +137,7 @@
                                 <input type="text" class="form-control" id="phone" name="phone" required>
                             </div>
                         </div>
-                        
+
                         <div class="mb-2">
                             <label for="address" class="form-label">მისამართი</label>
                             <div class="input-group">
@@ -142,10 +145,10 @@
                                 <input type="text" class="form-control" id="address" name="address" required>
                             </div>
                         </div>
-            
+
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-success w-100">გადახდა</button>
-            
+
                         <!-- Close Button -->
                         <button id="closeDropdown" class="btn btn-danger w-100 mt-2">დახურვა</button>
                     </form>
@@ -153,61 +156,60 @@
             </div>
             <!-- JavaScript -->
             <script>
-         document.getElementById("paymentButton").addEventListener("click", function () {
-    this.style.display = "none"; // Hide button
-    document.getElementById("paymentDropdown").style.display = "block"; // Show dropdown
+                document.getElementById("paymentButton").addEventListener("click", function() {
+                    this.style.display = "none"; // Hide button
+                    document.getElementById("paymentDropdown").style.display = "block"; // Show dropdown
 
-    document.body.classList.add("payment-open"); // Push footer down
-});
+                    document.body.classList.add("payment-open"); // Push footer down
+                });
 
-document.getElementById("closeDropdown").addEventListener("click", function () {
-    document.getElementById("paymentDropdown").style.display = "none"; // Hide dropdown
-    document.getElementById("paymentButton").style.display = "block"; // Show button again
+                document.getElementById("closeDropdown").addEventListener("click", function() {
+                    document.getElementById("paymentDropdown").style.display = "none"; // Hide dropdown
+                    document.getElementById("paymentButton").style.display = "block"; // Show button again
 
-    document.body.classList.remove("payment-open"); // Restore footer
-});
+                    document.body.classList.remove("payment-open"); // Restore footer
+                });
 
 
-document.querySelectorAll(".cart-qty-input").forEach(input => {
-    input.addEventListener("change", function () {
-        const id = this.dataset.id;
-        const unitPrice = parseFloat(this.dataset.price);
-        const qty = parseInt(this.value);
+                document.querySelectorAll(".cart-qty-input").forEach(input => {
+                    input.addEventListener("change", function() {
+                        const id = this.dataset.id;
+                        const unitPrice = parseFloat(this.dataset.price);
+                        const qty = parseInt(this.value);
 
-        // Prevent invalid numbers
-        if (qty < 1 || isNaN(qty)) {
-            this.value = 1;
-            return;
-        }
+                        // Prevent invalid numbers
+                        if (qty < 1 || isNaN(qty)) {
+                            this.value = 1;
+                            return;
+                        }
 
-        const itemTotal = unitPrice * qty;
-        const formattedTotal = new Intl.NumberFormat().format(itemTotal) + " ლარი";
+                        const itemTotal = unitPrice * qty;
+                        const formattedTotal = new Intl.NumberFormat().format(itemTotal) + " ლარი";
 
-        // Update item's total price
-        const totalElem = document.getElementById(`item-total-${id}`);
-        if (totalElem) {
-            totalElem.textContent = formattedTotal;
-        }
+                        // Update item's total price
+                        const totalElem = document.getElementById(`item-total-${id}`);
+                        if (totalElem) {
+                            totalElem.textContent = formattedTotal;
+                        }
 
-        // Update overall total
-        let grandTotal = 0;
-        document.querySelectorAll(".cart-qty-input").forEach(input => {
-            const price = parseFloat(input.dataset.price);
-            const quantity = parseInt(input.value);
-            if (!isNaN(price) && !isNaN(quantity)) {
-                grandTotal += price * quantity;
-            }
-        });
+                        // Update overall total
+                        let grandTotal = 0;
+                        document.querySelectorAll(".cart-qty-input").forEach(input => {
+                            const price = parseFloat(input.dataset.price);
+                            const quantity = parseInt(input.value);
+                            if (!isNaN(price) && !isNaN(quantity)) {
+                                grandTotal += price * quantity;
+                            }
+                        });
 
-        document.getElementById("grand-total").textContent =
-            new Intl.NumberFormat().format(grandTotal) + " ლარი";
-    });
-});
-
+                        document.getElementById("grand-total").textContent =
+                            new Intl.NumberFormat().format(grandTotal) + " ლარი";
+                    });
+                });
             </script>
-            
 
-        
+
+
 
 
         @endif
@@ -225,7 +227,7 @@ document.querySelectorAll(".cart-qty-input").forEach(input => {
                                 const row = document.getElementById(`cart-item-${cartItemId}`);
                                 row.classList.add('fade');
                                 setTimeout(() => row.remove(), 300);
-        
+
                                 // ✅ Update cart count in menu
                                 if (response.data.cartCount !== undefined) {
                                     const cartCountElem = document.getElementById("cart-count");
@@ -233,7 +235,7 @@ document.querySelectorAll(".cart-qty-input").forEach(input => {
                                         cartCountElem.textContent = response.data.cartCount;
                                     }
                                 }
-        
+
                                 // Reload if cart is now empty
                                 if (document.querySelectorAll('tbody tr').length === 1) {
                                     location.reload();
@@ -246,7 +248,7 @@ document.querySelectorAll(".cart-qty-input").forEach(input => {
                     }
                 });
             });
-        
+
             // Clear entire cart
             document.querySelector(".clear-cart")?.addEventListener("click", function() {
                 if (confirm("Are you sure you want to clear your cart?")) {
@@ -257,7 +259,7 @@ document.querySelectorAll(".cart-qty-input").forEach(input => {
                             if (cartCountElem) {
                                 cartCountElem.textContent = 0;
                             }
-        
+
                             location.reload(); // optional
                         })
                         .catch(error => {
@@ -267,8 +269,8 @@ document.querySelectorAll(".cart-qty-input").forEach(input => {
                 }
             });
         });
-        </script>
-        
+    </script>
+
 
     <style>
         .fade {

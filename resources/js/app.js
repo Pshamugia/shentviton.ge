@@ -3,6 +3,7 @@ import "/node_modules/@fortawesome/fontawesome-free/css/all.min.css";
 import main from "./main";
 
 document.addEventListener("DOMContentLoaded", function () {
+    checkVisitor();
     let current_url = window.location.href;
     if (current_url.includes("customize")) {
         main();
@@ -11,8 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (current_url.includes("home")) {
         //
     }
-
-    checkVisitor();
 });
 
 function checkVisitor() {
