@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'payments' => [
+        'driver' => env('PAYMENT_DRIVER'),
+        'bog' => [
+            'id' => env('BOG_CLIENT_ID'),
+            'secret' => env('BOG_SECRET'),
+        ],
+    ]
 ];
