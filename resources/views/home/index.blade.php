@@ -46,7 +46,7 @@
 
 
     <div class="row">
-        @foreach ($products as $product)
+        @foreach ($readyDesigns as $product)
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <a href="{{ route('products.show', $product->id) }}">
@@ -106,7 +106,7 @@
     </div>
 
     <div class="row">
-        @foreach ($products as $product)
+        @foreach ($customDesigns as $product)
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <a href="{{ route('products.show', $product->id) }}">

@@ -32,13 +32,19 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-CSJw1Bjw.css",
+    "file": "assets/app-ClxbZzOu.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/sass/app.scss": {
     "file": "assets/app-DqME6eCz.css",
     "src": "resources/css/sass/app.scss",
+    "isEntry": true
+  },
+  "resources/css/tabmenu.css": {
+    "file": "assets/tabmenu-l0sNRNKZ.js",
+    "name": "tabmenu",
+    "src": "resources/css/tabmenu.css",
     "isEntry": true
   },
   "resources/fonts/BerkshireSwash-Regular.ttf": {
@@ -86,7 +92,7 @@
     "src": "resources/fonts/bpg_boxo-boxo.ttf"
   },
   "resources/js/app.js": {
-    "file": "assets/app-Dckg0-J9.js",
+    "file": "assets/app-89VynUZP.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -105,7 +111,7 @@
     ]
   },
   "resources/js/product.js": {
-    "file": "assets/product-DE80Pz_P.js",
+    "file": "assets/product-D1XgAkCP.js",
     "name": "product",
     "src": "resources/js/product.js",
     "isEntry": true

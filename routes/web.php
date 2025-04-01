@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DesignController;
@@ -47,7 +48,7 @@ Route::post('/products/{id}/customize', [ProductController::class, 'saveCustomiz
 Route::get('/products/{type}', [ProductController::class, 'showByType'])->name('products.byType');
 
 Auth::routes();
-
+ 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);

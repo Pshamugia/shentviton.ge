@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
-    <link rel="stylesheet" href="{{ asset('resources/css/custom.css') }}">
+ 
     <link rel="icon" href="{{ asset('storage/designs/favicon.ico') }}" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
@@ -13,8 +13,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    @vite(['resources/js/app.js', 'resources/js/product.js', 'resources/css/sass/app.scss', 'resources/css/app.css'])
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite([
+        'resources/css/sass/app.scss',
+        'resources/css/app.css',
+        'resources/css/tabmenu.css',
+        'resources/js/app.js',
+        'resources/js/product.js',
+    ])    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
 </head>
