@@ -209,7 +209,7 @@
         </div>
         <div class="mb-2">
             <label>Upload Back Image</label>
-            <input type="file" name="colors[${colorIndex}][back_image]" class="form-control" accept="image/*" required>
+            <input type="file" name="colors[${colorIndex}][back_image]" class="form-control" accept="image/*">
         </div>
         <button type="button" class="btn btn-danger remove-color">Remove</button>
     `;
