@@ -973,19 +973,23 @@ function save_state(image_url) {
     localStorage.setItem(image_url, JSON.stringify(canvas));
 }
 
+
+
+let final_design = {
+    front_image: "",
+    back_image: "",
+};
+
 function handleDesignSave() {
     document
         .querySelector("#saveDesign")
         .addEventListener("click", function (e) {
             e.preventDefault();
 
-            // Save current side design first
             const currentSide = state.current_image_side;
             saveDesignAndImage(currentSide);
 
-            // Determine if we have a back image to save
             if (selectedBackImage) {
-                // If we're currently on front, switch to back to save it
                 if (currentSide === "front" && selectedBackImage) {
                     loadImage(selectedBackImage, "pos");
 
@@ -995,7 +999,6 @@ function handleDesignSave() {
                         alert("Item design successfully saved");
                     }, 500);
                 } else if (currentSide === "back" && selectedFrontImage) {
-                    // If we're on back, switch to front to save it
                     loadImage(selectedFrontImage, "pos");
 
                     setTimeout(() => {
@@ -1005,7 +1008,6 @@ function handleDesignSave() {
                     }, 500);
                 }
             } else {
-                // We only have a front image
                 showButtons();
                 alert("Item design successfully saved");
             }
@@ -1048,15 +1050,11 @@ function saveDesignAndImage(side) {
             canvas.renderAll();
         });
 
-        try {
-            localStorage.setItem(`${rand_key}.${side}_image`, imageData);
-        } catch (err) {
-            if (err.name === "QuotaExceededError") {
-                clearOldDesigns(rand_key);
-                localStorage.setItem(`${rand_key}.${side}_image`, imageData);
-            } else {
-                throw err;
-            }
+        // Save the image in final_design instead of localStorage
+        if (side === "front") {
+            final_design.front_image = imageData;
+        } else {
+            final_design.back_image = imageData;
         }
     } catch (err) {
         alert(
@@ -1076,17 +1074,16 @@ function handleAddToCart() {
         .addEventListener("click", function (e) {
             e.preventDefault();
 
-            const frontImage = localStorage.getItem(`${rand_key}.front_image`);
-            if (!frontImage) {
+            if (!final_design.front_image) {
                 alert("Please save your design first");
                 return;
             }
 
             const backImage =
-                localStorage.getItem(`${rand_key}.back_image`) || frontImage;
+                final_design.back_image || final_design.front_image;
 
             let form = {
-                front_image: frontImage,
+                front_image: final_design.front_image,
                 back_image: backImage,
                 product_id: product_image.getAttribute("data-id"),
                 v_hash: localStorage.getItem("v_hash"),
@@ -1114,3 +1111,4 @@ function handleAddToCart() {
                 });
         });
 }
+
