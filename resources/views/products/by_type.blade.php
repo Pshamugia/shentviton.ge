@@ -15,7 +15,13 @@
                 <input type="hidden" name="sort" value="{{ $sort }}">
             
                 <select name="size" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
-                    <option value="">აირჩიეთ</option>
+                    <option value=""> 
+                        @if($type === 'ქეისი') აირჩიეთ მოდელი  
+                        @elseif($type === 'მაისური') აირჩიეთ ზომა 
+                        @else {{ "" }}
+                        @endif
+                    </option> 
+                       
                     @foreach ($allSizes as $size)
                         <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>
                             {{ $size }}

@@ -27,7 +27,10 @@
 <div class="mb-3">
     <label for="size" class="form-label">აირჩიეთ</label>
     <select name="size" id="size" class="form-select" required>
-        <option value="">აირჩიეთ</option>
+        <option value=""> @if($product->type === 'ქეისი') აირჩიეთ მოდელი  
+            @elseif($product->type === 'მაისური') აირჩიეთ ზომა 
+            @else {{ "" }}
+            @endif</option>
 
         @foreach ($availableSizes as $size)
             <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>

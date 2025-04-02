@@ -119,7 +119,10 @@
                                     <form id="customizationForm">
                                         @if (!empty($product->size))
                                         <div class="d-flex align-items-center mb-3">
-                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">აირჩიე ზომა:</label>
+                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">@if($product->type === 'ქეისი') აირჩიეთ მოდელი  
+                                                @elseif($product->type === 'მაისური') აირჩიეთ ზომა 
+                                                @else {{ "" }}
+                                                @endif</label>
                                                  <select id="sizeSelect" name="size" class="form-select">
                                                     @foreach (explode(',', $product->size) as $sizes)
                                                         <option value="{{ trim($sizes) }}">{{ trim($sizes) }}</option>
