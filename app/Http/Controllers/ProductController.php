@@ -28,62 +28,82 @@ class ProductController extends Controller
  
 
     public function showByType($type)
-{
-
-    $slugToType = [
-        't-shirt' => 'მაისური',
-        'hoodie' => 'ჰუდი',
-        'phone-case' => 'ქეისი',
-        'cap' => 'კეპი',
-    ];
+    {
+        $slugToType = [
+            't-shirt' => 'მაისური',
+            'hoodie' => 'ჰუდი',
+            'phone-case' => 'ქეისი',
+            'cap' => 'კეპი',
+        ];
     
-    $typeSlug = $type;
-    $type = $slugToType[$typeSlug] ?? $typeSlug;
+        $typeSlug = $type;
+        $type = $slugToType[$typeSlug] ?? $typeSlug;
     
-    $subtype = request()->query('subtype', 'მზა');
-    $sort = request()->query('sort', 'newest');
-
-    $query = Product::where('subtype', $subtype);
-
-    if ($type !== 'all') {
-        $query->where('type', $type);
+        $subtype = request()->query('subtype', 'მზა');
+        $sort = request()->query('sort', 'newest');
+        $selectedSize = request()->query('size');
+    
+        $query = Product::where('subtype', $subtype);
+        
+        if ($type !== 'all') {
+            $query->where('type', $type);
+        }
+    
+        // 👉 Clone query before applying size filter
+        $sizeQuery = (clone $query);
+    
+        if ($selectedSize) {
+            $query->where('size', 'LIKE', '%' . $selectedSize . '%');
+        }
+    
+        // Sorting
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+    
+        $products = $query->paginate(12)->withQueryString();
+    
+        // 🛒 Cart logic
+        $auth_id = auth()->id();
+        $visitor_hash = session('v_hash');
+    
+        $cartItems = Cart::where('user_id', $auth_id)
+            ->orWhere('visitor_hash', $visitor_hash)
+            ->get();
+    
+        $productIdsInCart = $cartItems->pluck('product_id')->toArray();
+    
+        // ✅ Now use the unfiltered query to get all available sizes
+        $allSizes = $sizeQuery->pluck('size')
+            ->filter()
+            ->flatMap(function ($sizes) {
+                return array_map('trim', explode(',', $sizes));
+            })
+            ->unique()
+            ->sort()
+            ->values();
+    
+        return view('products.by_type', compact(
+            'products',
+            'type',
+            'subtype',
+            'sort',
+            'cartItems',
+            'productIdsInCart',
+            'allSizes',
+            'selectedSize'
+        ));
     }
-
-    // Sorting
-    switch ($sort) {
-        case 'price_asc':
-            $query->orderBy('price', 'asc');
-            break;
-        case 'price_desc':
-            $query->orderBy('price', 'desc');
-            break;
-        case 'newest':
-        default:
-            $query->orderBy('created_at', 'desc');
-            break;
-    }
-
-    $products = $query->paginate(12)->withQueryString();
-
-    // 🛒 Cart logic
-    $auth_id = auth()->id();
-    $visitor_hash = session('v_hash');
-
-    $cartItems = Cart::where('user_id', $auth_id)
-        ->orWhere('visitor_hash', $visitor_hash)
-        ->get();
-
-    $productIdsInCart = $cartItems->pluck('product_id')->toArray();
-
-    return view('products.by_type', compact(
-        'products',
-        'type',
-        'subtype',
-        'sort',
-        'cartItems',
-        'productIdsInCart'
-    ));
-}
+    
 
 
     

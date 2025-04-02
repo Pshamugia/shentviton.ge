@@ -9,13 +9,20 @@
     
         <div class="d-flex justify-content-end">
             <form method="GET" action="{{ route('products.byType', $type) }}">
+                {{-- keep current subtype and sort in the query --}}
                 <input type="hidden" name="subtype" value="{{ $subtype }}">
-                <select name="sort" onchange="this.form.submit()" class="form-select w-auto">
-                    <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>უახლესი</option>
-                    <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>ფასი: ზრდადობით</option>
-                    <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>ფასი: კლებადობით</option>
+                <input type="hidden" name="sort" value="{{ $sort }}">
+            
+                <select name="size" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
+                    <option value="">აირჩიეთ</option>
+                    @foreach ($allSizes as $size)
+                        <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>
+                            {{ $size }}
+                        </option>
+                    @endforeach
                 </select>
             </form>
+            
         </div>
     </div>
     
@@ -30,7 +37,7 @@
                 </a>
                 <div class="card-body">
                     <h5 class="card-title">{{ $product->title }}</h5>
-                     <p><strong>ფასი:</strong> {{ $product->price }}</p>
+                     <p><strong>ფასი:</strong> {{ intval($product->price) }} ლარი</p>
                     <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form" data-product-id="{{ $product->id }}">
                         @csrf
                         <input type="hidden" name="v_hash" value="{{ session('v_hash') }}">
