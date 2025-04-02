@@ -29,6 +29,8 @@ const form = {
     font_size: document.querySelector("#font_size"),
     text_color: document.querySelector("#text_color"),
     btns: cbtns,
+    text_container: document.querySelector("#textInputsContainer"),
+    add_text_btn: document.querySelector("#addTextInput"),
 };
 
 let selectedFrontImage = "";
@@ -186,15 +188,53 @@ function addInnerBorder() {
 }
 
 function initForm() {
-    handleTextInputs([form.top_text, form.bottom_text]);
+    let initialTextInputs = [form.top_text, form.bottom_text].filter(input => input);
+    handleTextInputs(initialTextInputs);
     handleInlineTextInputs(text_objects);
     handleFontFamilyInput(form.font_family);
     handleTextColorInput(form.text_color);
     handleFontSizeInput(form.font_size);
     handleTextStyleButtons(form.btns);
+    setupDynamicTextInputs();
 }
 
-//****_________________________________________________________________________________________****//
+function setupDynamicTextInputs() {
+    if (!form.add_text_btn || !form.text_container) {
+        console.error("Add text button or text container not found");
+        return;
+    }
+
+    form.add_text_btn.addEventListener("click", function() {
+        const inputId = "text_" + Date.now();
+        const newInputHTML = `
+            <div class="text-input-group" data-input-id="${inputId}">
+                <div class="input-wrapper">
+                    <input type="text" id="${inputId}" class="form-control input-styled my-2" placeholder="Enter text...">
+                </div>
+                <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
+            </div>
+        `;
+
+        form.text_container.insertAdjacentHTML('beforeend', newInputHTML);
+
+        const newInput = document.getElementById(inputId);
+        if (newInput) {
+            handleTextInputs([newInput]);
+
+            const removeBtn = newInput.closest('.text-input-group').querySelector('.remove-text-btn');
+            removeBtn.addEventListener('click', function() {
+                if (text_objects[inputId]) {
+                    canvas.remove(text_objects[inputId]);
+                    delete text_objects[inputId];
+                    canvas.renderAll();
+                    save_side();
+                    save_state(state.current_image_url);
+                }
+                newInput.closest('.text-input-group').remove();
+            });
+        }
+    });
+}
 
 function mapTextObjectsToFormInputs() {
     Object.keys(text_objects).forEach((key) => {
@@ -727,35 +767,9 @@ function handleFontFamilyInput(input) {
 function handleTextInputs(inputs) {
     let canvas_defaults = getCanvasDefaults(canvas);
 
-    if (inputs.length < 2) {
-        let missing = inputs[0].id === "top_text" ? "bottom_text" : "top_text";
-
-        let clipHeight = canvas.height * 0.2;
-        let clipTop = canvas.height / 2 - clipHeight / 2;
-        text_objects[missing] = new fabric.Textbox("", {
-            left: canvas.width / 2,
-            input_id: missing,
-            top:
-                clipTop +
-                (missing === "top_text"
-                    ? clipHeight * 0.25
-                    : clipHeight * 0.75),
-            originX: "center",
-            originY: "center",
-            textAlign: "center",
-            selectable: true,
-            evented: true,
-            ...canvas_defaults[missing],
-        });
-
-        text_objects[missing].set({ text: "" });
-        canvas.add(text_objects[missing]);
-        canvas.setActiveObject(text_objects[missing]);
-        canvas.renderAll();
-        localStorage.setItem(state.current_image_url, JSON.stringify(canvas));
-    }
-
     for (let input of inputs) {
+        if (!input) continue;
+
         input.addEventListener("input", (e) => {
             if (text_objects[input.id]) {
                 text_objects[input.id].set({ text: input.value });
@@ -810,7 +824,6 @@ function handleInlineTextInputs(objects) {
             form[key].value = obj.text;
         }
 
-        // save_side();
         save_state(state.current_image_url);
     });
 }
@@ -948,7 +961,6 @@ function addClipArtToCanvas() {
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();
-        // save_side();
         save_state(state.current_image_url);
     });
 }
@@ -1065,7 +1077,6 @@ function saveDesignAndImage(side) {
             canvas.renderAll();
         });
 
-        // Save the image in final_design instead of localStorage
         if (side === "front") {
             final_design.front_image = imageData;
         } else {
@@ -1094,7 +1105,7 @@ function handleAddToCart() {
                 return;
             }
 
-            const backImage = final_design.back_image || null; // Set to null if not available
+            const backImage = final_design.back_image || null;
 
             let form = {
                 front_image: final_design.front_image,
@@ -1113,7 +1124,6 @@ function handleAddToCart() {
             formData.append("quantity", form.quantity);
             formData.append("default_img", form.default_img);
 
-            // Only append back_image if it's not null
             if (backImage) {
                 formData.append("back_image", backImage);
             }

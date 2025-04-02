@@ -203,15 +203,18 @@
                     <div class="side-modals" style="padding:5px !important; background-color:#ccc">
 
                         <div class="customization-boxs">
-                            <div class="mb-3">
-                                <label for="top_text" class="form-label">ზედა ტექსტი</label>
-                                <input type="text" id="top_text" class="form-control input-styled"
-                                    placeholder="Enter top text">
-                            </div>
-                            <div class="mb-3">
-                                <label for="bottom_text" class="form-label">ქვედა ტექსტი</label>
-                                <input type="text" id="bottom_text" class="form-control input-styled"
-                                    placeholder="Enter bottom text">
+                            <div id="textInputsContainer">
+                                {{-- <div class="mb-3">
+                                    <label for="top_text" class="form-label">ზედა ტექსტი</label>
+                                    <input type="text" id="top_text" class="form-control input-styled"
+                                        placeholder="Enter top text">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bottom_text" class="form-label">ქვედა ტექსტი</label>
+                                    <input type="text" id="bottom_text" class="form-control input-styled"
+                                        placeholder="Enter bottom text">
+                                </div> --}}
+                                <button type="button" id="addTextInput" class="btn btn-primary">+ Add Text</button>
                             </div>
                             <div class="mb-3">
                                 <label for="text_color" class="form-label">ტექსტის ფერი</label>
