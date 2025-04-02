@@ -16,15 +16,28 @@
             <input type="hidden" name="product_id" value="{{ $product->id }}">
     
             <!-- Size Selection -->
-            <div class="mb-3">
-                <label for="size" class="form-label">ზომა:</label>
-                <select name="size" id="size" class="form-select">
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                </select>
-            </div>
+           
+            
+            @php
+    // These are the sizes selected in admin, stored in the DB as comma-separated string
+    $availableSizes = explode(',', $product->size);
+    $selectedSize = old('size', $selectedSize ?? null); // for preselecting in form if needed
+@endphp
+
+<div class="mb-3">
+    <label for="size" class="form-label">აირჩიეთ</label>
+    <select name="size" id="size" class="form-select" required>
+        <option value="">აირჩიეთ</option>
+
+        @foreach ($availableSizes as $size)
+            <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>
+                {{ $size }}
+            </option>
+        @endforeach
+    </select>
+</div>
+            
+           
     
             <!-- Quantity Adjustment -->
             <div class="mb-3">

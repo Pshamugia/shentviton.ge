@@ -1025,3 +1025,21 @@
 [2025-04-02 15:44:49] local.INFO: IsAdmin Middleware triggered.  
 [2025-04-02 15:44:49] local.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
 [2025-04-02 15:44:49] local.INFO: User is admin. Access granted.  
+[2025-04-02 15:46:31] local.INFO: IsAdmin Middleware triggered.  
+[2025-04-02 15:46:31] local.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-02 15:46:31] local.INFO: User is admin. Access granted.  
+[2025-04-02 15:56:31] local.INFO: IsAdmin Middleware triggered.  
+[2025-04-02 15:56:31] local.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-02 15:56:31] local.INFO: User is admin. Access granted.  
+[2025-04-02 16:03:41] local.INFO: IsAdmin Middleware triggered.  
+[2025-04-02 16:03:41] local.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-02 16:03:41] local.INFO: User is admin. Access granted.  
+[2025-04-02 16:03:44] local.INFO: IsAdmin Middleware triggered.  
+[2025-04-02 16:03:44] local.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-02 16:03:44] local.INFO: User is admin. Access granted.  
+[2025-04-02 16:03:59] local.INFO: IsAdmin Middleware triggered.  
+[2025-04-02 16:03:59] local.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-02 16:03:59] local.INFO: User is admin. Access granted.  
+[2025-04-02 16:04:00] local.INFO: IsAdmin Middleware triggered.  
+[2025-04-02 16:04:00] local.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-02 16:04:00] local.INFO: User is admin. Access granted.  
