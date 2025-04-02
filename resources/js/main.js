@@ -23,8 +23,6 @@ let state = {
 let color_chosen = false;
 
 const form = {
-    top_text: document.querySelector("#top_text"),
-    bottom_text: document.querySelector("#bottom_text"),
     font_family: document.querySelector("#font_family"),
     font_size: document.querySelector("#font_size"),
     text_color: document.querySelector("#text_color"),
@@ -188,8 +186,6 @@ function addInnerBorder() {
 }
 
 function initForm() {
-    let initialTextInputs = [form.top_text, form.bottom_text].filter(input => input);
-    handleTextInputs(initialTextInputs);
     handleInlineTextInputs(text_objects);
     handleFontFamilyInput(form.font_family);
     handleTextColorInput(form.text_color);
@@ -209,7 +205,7 @@ function setupDynamicTextInputs() {
         const newInputHTML = `
             <div class="text-input-group" data-input-id="${inputId}">
                 <div class="input-wrapper">
-                    <input type="text" id="${inputId}" class="form-control input-styled my-2" placeholder="Enter text...">
+                    <input type="text" id="${inputId}" class="form-control input-styled my-2" placeholder="შეიყვანე ტექსტი">
                 </div>
                 <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
             </div>
@@ -238,8 +234,9 @@ function setupDynamicTextInputs() {
 
 function mapTextObjectsToFormInputs() {
     Object.keys(text_objects).forEach((key) => {
-        if (form[key]) {
-            form[key].value = text_objects[key].text;
+        const input = document.getElementById(key);
+        if (input) {
+            input.value = text_objects[key].text;
         }
     });
 }
@@ -438,9 +435,14 @@ function loadImage(
         } else {
             canvas.clear();
 
+            if (form.text_container) {
+                form.text_container.innerHTML = '';
+            }
+
             canvas.loadFromJSON(obj_state, function () {
                 canvas.renderAll();
                 text_objects = {};
+
                 canvas.getObjects().forEach((obj) => {
                     if (obj.type == "rect") {
                         obj.set({
@@ -485,32 +487,22 @@ function loadImage(
                     }
 
                     if (obj.type === "textbox") {
-                        if (obj.top < canvas.height / 2) {
-                            obj.input_id = "top_text";
-                            text_objects["top_text"] = obj;
-                            if (
-                                form.top_text instanceof HTMLElement &&
-                                "value" in form.top_text
-                            ) {
-                                form.top_text.value = obj.text;
-                            } else {
-                            }
+                        if (obj.input_id) {
+                            text_objects[obj.input_id] = obj;
+                            createDynamicTextInput(obj.input_id, obj.text);
                         } else {
-                            obj.input_id = "bottom_text";
-                            text_objects["bottom_text"] = obj;
-
-                            if (
-                                form.bottom_text instanceof HTMLElement &&
-                                "value" in form.bottom_text
-                            ) {
-                                form.bottom_text.value = obj.text;
-                            } else {
-                            }
+                            const inputId = "text_" + Date.now();
+                            obj.input_id = inputId;
+                            text_objects[inputId] = obj;
+                            createDynamicTextInput(inputId, obj.text);
                         }
                     }
                 });
 
-                handleTextInputs([form.top_text, form.bottom_text]);
+                const dynamicInputs = document.querySelectorAll('.dynamic-text-input');
+                if (dynamicInputs.length > 0) {
+                    handleTextInputs(Array.from(dynamicInputs));
+                }
                 handleInlineTextInputs(text_objects);
                 mapTextObjectsToFormInputs();
             });
@@ -781,22 +773,33 @@ function handleTextInputs(inputs) {
                     JSON.stringify(canvas)
                 );
             } else {
+                // Create a new text object - use a better positioning algorithm
+                const numExistingTexts = Object.keys(text_objects).length;
                 const clipHeight = canvas.height * 0.2;
                 const clipTop = canvas.height / 2 - clipHeight / 2;
+
+                // Position text evenly within the design area
+                const index = numExistingTexts % 5; // Cycle through 5 possible positions
+                const yPosition = clipTop + (clipHeight * (index + 1) / 6);
+
+                // Default text properties
+                const textDefaults = canvas_defaults[input.id] || {
+                    fontSize: 20,
+                    fontFamily: 'Arial',
+                    fill: '#000000',
+                    textAlign: 'center'
+                };
+
                 text_objects[input.id] = new fabric.Textbox("", {
                     left: canvas.width / 2,
                     input_id: input.id,
-                    top:
-                        clipTop +
-                        (input.id === "top_text"
-                            ? clipHeight * 0.25
-                            : clipHeight * 0.75),
+                    top: yPosition,
                     originX: "center",
                     originY: "center",
                     textAlign: "center",
                     selectable: true,
                     evented: true,
-                    ...canvas_defaults[input.id],
+                    ...textDefaults,
                 });
 
                 canvas.add(text_objects[input.id]);
@@ -817,15 +820,46 @@ function handleInlineTextInputs(objects) {
     canvas.on("text:changed", (e) => {
         let obj = e.target;
 
-        let key = Object.keys(text_objects).find(
-            (k) => text_objects[k] === obj
-        );
-        if (key && form[key]) {
-            form[key].value = obj.text;
+        if (obj.input_id) {
+            const input = document.getElementById(obj.input_id);
+            if (input) {
+                input.value = obj.text;
+            }
         }
 
         save_state(state.current_image_url);
     });
+}
+
+function createDynamicTextInput(inputId, text) {
+    if (!form.text_container) return;
+
+    const newInputHTML = `
+        <div class="text-input-group" data-input-id="${inputId}">
+            <div class="input-wrapper">
+                <input type="text" id="${inputId}" class="form-control input-styled my-2 dynamic-text-input" placeholder="შეიყვანე ტექსტი" value="${text || ''}">
+            </div>
+            <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
+        </div>
+    `;
+
+    form.text_container.insertAdjacentHTML('beforeend', newInputHTML);
+
+    const newInput = document.getElementById(inputId);
+    if (newInput) {
+        // Setup remove button for this input
+        const removeBtn = newInput.closest('.text-input-group').querySelector('.remove-text-btn');
+        removeBtn.addEventListener('click', function() {
+            if (text_objects[inputId]) {
+                canvas.remove(text_objects[inputId]);
+                delete text_objects[inputId];
+                canvas.renderAll();
+                save_side();
+                save_state(state.current_image_url);
+            }
+            newInput.closest('.text-input-group').remove();
+        });
+    }
 }
 
 function initProductImage() {
