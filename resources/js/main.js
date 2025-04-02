@@ -1,8 +1,5 @@
 import toggleSideBar from "./utils";
 import getCanvasDefaults from "./defaults.js";
-const sidebar = document.querySelector("#clipartSidebar");
-const toggle_btn = document.querySelector("#toggleClipartSidebar");
-const close_btn = document.querySelector("#closeClipartSidebar");
 const canvas = new fabric.Canvas("tshirtCanvas");
 const product_image = document.querySelector("#product-image");
 const designArea = document.querySelector("#design-area");
@@ -239,21 +236,46 @@ function handleImageSwapping() {
             color_chosen = true;
             selectedFrontImage = this.getAttribute("data-front-image");
             selectedBackImage = this.getAttribute("data-back-image");
+            if (!selectedFrontImage.includes("color")) {
+                selectedFrontImage = null;
+            }
+
+            if (!selectedBackImage.includes("color")) {
+                selectedBackImage = null;
+            }
+
             enableFormElements();
-            loadImage(selectedFrontImage, "color", selectedBackImage);
+            if (selectedFrontImage) {
+                loadImage(selectedFrontImage, "color", selectedBackImage);
+            }
         });
     });
 
-    document.querySelector("#showFront").addEventListener("click", function () {
+    let show_front_btn = document.querySelector("#showFront");
 
-        console.log("clicked front");
-        loadImage(selectedFrontImage, "pos");
-    });
+    if (show_front_btn) {
+        show_front_btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("clicked front");
+            if (!selectedFrontImage) {
+                return;
+            }
+            loadImage(selectedFrontImage, "pos");
+        });
+    }
 
-    document.querySelector("#showBack").addEventListener("click", function () {
-        console.log("clicked back");
-        loadImage(selectedBackImage, "pos");
-    });
+    let show_back_btn = document.querySelector("#showBack");
+    if (show_back_btn) {
+        show_back_btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("selectedBackImage: ", selectedBackImage);
+            console.log("clicked back");
+            if (!selectedBackImage) {
+                return;
+            }
+            loadImage(selectedBackImage, "pos");
+        });
+    }
 }
 
 function enableFormElements() {
@@ -789,10 +811,24 @@ function initProductImage() {
         loadImage(first_front_image, "color", "", true);
 
         selectedFrontImage = first_front_image;
+        if (!selectedFrontImage.includes("color")) {
+            selectedFrontImage = null;
+        }
+
         selectedBackImage = first_color.getAttribute("data-back-image");
+
+        if (!selectedBackImage.includes("color")) {
+            selectedBackImage = null;
+        }
     } else {
         selectedFrontImage = first_front_image;
+        if (!selectedFrontImage.includes("color")) {
+            selectedFrontImage = null;
+        }
         selectedBackImage = first_color.getAttribute("data-back-image");
+        if (!selectedBackImage.includes("color")) {
+            selectedBackImage = null;
+        }
         state.front_image_url = first_front_image;
         state.back_image_url = selectedBackImage;
         loadImage(first_front_image, "color", selectedBackImage);
@@ -943,35 +979,48 @@ function handleDesignSave() {
         .addEventListener("click", function (e) {
             e.preventDefault();
 
-            if (!state.front_image_url || !state.back_image_url) {
-                return;
-            }
+            // Save current side design first
+            const currentSide = state.current_image_side;
+            saveDesignAndImage(currentSide);
 
-            const is_front = state.front_image_url === state.current_image_url;
-            const first_side = is_front ? "front" : "back";
-            const second_side = is_front ? "back" : "front";
-            const second_side_url = is_front
-                ? state.back_image_url
-                : state.front_image_url;
+            // Determine if we have a back image to save
+            if (selectedBackImage) {
+                // If we're currently on front, switch to back to save it
+                if (currentSide === "front" && selectedBackImage) {
+                    loadImage(selectedBackImage, "pos");
 
-            saveDesignAndImage(first_side, rand_key);
+                    setTimeout(() => {
+                        saveDesignAndImage("back");
+                        showButtons();
+                        alert("Item design successfully saved");
+                    }, 500);
+                } else if (currentSide === "back" && selectedFrontImage) {
+                    // If we're on back, switch to front to save it
+                    loadImage(selectedFrontImage, "pos");
 
-            loadImage(second_side_url, "pos");
-
-            setTimeout(() => {
-                saveDesignAndImage(second_side, rand_key);
-                showButtons(rand_key);
+                    setTimeout(() => {
+                        saveDesignAndImage("front");
+                        showButtons();
+                        alert("Item design successfully saved");
+                    }, 500);
+                }
+            } else {
+                // We only have a front image
+                showButtons();
                 alert("Item design successfully saved");
-            }, 500);
+            }
         });
 }
 
-function saveDesignAndImage(side, rand_key) {
+function saveDesignAndImage(side) {
     try {
         localStorage.setItem(
             `${rand_key}.${side}_design`,
             JSON.stringify(canvas)
         );
+
+        const stateKey = side === "front" ? front_state_key : back_state_key;
+        localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
 
         const removed_objects = [];
         canvas.getObjects().forEach((obj) => {
@@ -1016,45 +1065,32 @@ function saveDesignAndImage(side, rand_key) {
     }
 }
 
-function clearOldDesigns(currentKey) {
-    const keyPrefix = currentKey.split(".")[0];
-    const keysToRemove = [];
-
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith(keyPrefix) && !key.startsWith(currentKey)) {
-            keysToRemove.push(key);
-        }
-    }
-
-    keysToRemove.forEach((key) => {
-        localStorage.removeItem(key);
-    });
-}
-
-function showButtons(rand_key) {
+function showButtons() {
     const add_to_cart_btn = document.querySelector("#addToCart");
     add_to_cart_btn.style.display = "block";
 }
+
 function handleAddToCart() {
     document
         .querySelector("#addToCart")
         .addEventListener("click", function (e) {
             e.preventDefault();
 
-            if (!state.front_image_url || !state.back_image_url) {
+            const frontImage = localStorage.getItem(`${rand_key}.front_image`);
+            if (!frontImage) {
+                alert("Please save your design first");
                 return;
             }
 
+            const backImage =
+                localStorage.getItem(`${rand_key}.back_image`) || frontImage;
+
             let form = {
-                front_image: localStorage.getItem(rand_key + ".front_image"),
-                back_image: localStorage.getItem(rand_key + ".back_image"),
-                product_id: document
-                    .querySelector("#product-image")
-                    .getAttribute("data-id"),
+                front_image: frontImage,
+                back_image: backImage,
+                product_id: product_image.getAttribute("data-id"),
                 v_hash: localStorage.getItem("v_hash"),
                 quantity: localStorage.getItem("quantity") || 1,
-
                 price: null,
                 default_img: 0,
             };
@@ -1072,6 +1108,9 @@ function handleAddToCart() {
                 .then((response) => {
                     alert("Item successfully added to cart");
                 })
-                .catch((error) => {});
+                .catch((error) => {
+                    console.error("Error adding to cart:", error);
+                    alert("There was an error adding the item to cart");
+                });
         });
 }

@@ -378,13 +378,27 @@
                             <!-- Side Selection (Right Side) -->
 
 
-                            <div class="side-box">
-                                <p class="label">აირჩიეთ მხარე:</p>
-                                <div class="switch-buttons">
-                                    <button id="showFront" class="btn btn-primary" data-image="">წინა</button>
-                                    <button id="showBack" class="btn btn-secondary" data-image="">უკანა</button>
+                            @php
+                                $all_colors_have_front_and_back_images = true;
+
+                                foreach ($productArray['colors'] as $color) {
+                                    if (empty($color['front_image']) || empty($color['back_image'])) {
+                                        $all_colors_have_front_and_back_images = false;
+                                        break;
+                                    }
+                                }
+                            @endphp
+
+                            @if ($all_colors_have_front_and_back_images)
+                                <div class="side-box">
+                                    <p class="label">აირჩიეთ მხარე:</p>
+                                    <div class="switch-buttons">
+
+                                        <button id="showFront" class="btn btn-primary" data-image="">წინა</button>
+                                        <button id="showBack" class="btn btn-secondary" data-image="">უკანა</button>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                     </div>
 
