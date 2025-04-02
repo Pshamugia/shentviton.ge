@@ -102,15 +102,21 @@
                             <div>
                                 <label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
 
-                                @foreach ($productArray['colors'] as $color)
-                                    <button class="color-option" data-color="{{ $color['color_code'] }}"
-                                        data-front-image="{{ asset('storage/' . $color['front_image']) }}"
-                                        data-back-image="{{ asset('storage/' . $color['back_image']) }}"
-                                        data-back-index={{ 'back-' . $color['id'] }}
-                                        data-front-index={{ 'front-' . $color['id'] }} data-index={{ $color['id'] }}
-                                        style="background-color: {{ $color['color_code'] }}; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #000; margin-bottom:22px;">
-                                    </button>
-                                @endforeach
+                                <div class="row row-cols-2 g-2 mb-3">
+                                    @foreach ($productArray['colors'] as $color)
+                                        <div class="col text-center">
+                                            <button class="color-option" data-color="{{ $color['color_code'] }}"
+                                                data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+                                                data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+                                                data-back-index={{ 'back-' . $color['id'] }}
+                                                data-front-index={{ 'front-' . $color['id'] }}
+                                                data-index={{ $color['id'] }}
+                                                style="background-color: {{ $color['color_code'] }};
+                                                 ">
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
 
                                 <div>
 

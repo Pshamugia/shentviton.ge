@@ -186,16 +186,6 @@
             let navbarCollapse = document.querySelector(".navbar-collapse");
             let navbarToggler = document.querySelector(".navbar-toggler");
 
-            // navLinks.forEach(link => {
-            //     link.addEventListener("click", function() {
-            //         if (window.innerWidth <= 992) {
-            //             navbarCollapse.classList.remove("collapsing", "show");
-            //             let bsCollapse = new bootstrap.Collapse(navbarCollapse);
-            //             bsCollapse.hide();
-            //             navbarToggler.click();
-            //         }
-            //     });
-            // });
 
             // Scroll effect for navbar
             window.addEventListener('scroll', function() {

@@ -10,6 +10,9 @@
                 </div>
             @endif
 
+            @php
+                // dd($images);
+            @endphp
             @if ($images->second_image)
                 <div class="col-md-6 text-center">
                     <img src="{{ $images->second_image }}" alt="Back Design" class="img-fluid border rounded shadow">
