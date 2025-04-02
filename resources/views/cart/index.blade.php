@@ -46,6 +46,10 @@
                                                 <img src="{{ asset('storage/' . $item->design_front_image) }}"
                                                     alt="Product design" class="me-3"
                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                            @else
+                                                <img src="{{ asset('storage/' . $item->product->image1) }}"
+                                                    alt="Product image" class="me-3"
+                                                    style="width: 50px; height: 50px; object-fit: cover;">
                                             @endif
                                             <div>
                                                 <h6 class="mb-0">{{ $item->product->title }}</h6>

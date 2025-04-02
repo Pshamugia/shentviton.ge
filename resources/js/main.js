@@ -6,9 +6,12 @@ const close_btn = document.querySelector("#closeClipartSidebar");
 const canvas = new fabric.Canvas("tshirtCanvas");
 const product_image = document.querySelector("#product-image");
 const designArea = document.querySelector("#design-area");
-const product_type = product_image.getAttribute("data-type");
+const product_type = product_image?.getAttribute("data-type") || "default";
 const default_stroke_width = 2;
 const default_stoke_fill = "#ccc";
+const product_id = product_image?.getAttribute("data-id");
+const front_state_key = `${product_id}.front_design`;
+const back_state_key = `${product_id}.back_design`;
 
 const rand_key = Math.random().toString(36).substring(7);
 
@@ -17,6 +20,7 @@ let cbtns = [...document.querySelectorAll(".text-style-btn")];
 
 let state = {
     current_image_url: "",
+    current_image_side: "front",
 };
 
 let color_chosen = false;
@@ -38,6 +42,7 @@ let designGroup;
 let originalAdd;
 
 export default function main() {
+    // NOT IN USE
     sidebarHandler();
     initCanvas();
     initForm();
@@ -60,6 +65,7 @@ function initGlobalEvents() {
     resizeObserve();
 
     canvas.on("object:modified", function (e) {
+        save_side();
         save_state(state.current_image_url);
     });
 
@@ -69,8 +75,6 @@ function initGlobalEvents() {
             ...canvas_defaults[product_type].box,
         };
         canvas.getObjects().forEach((obj) => {
-            console.log("obj:", obj);
-
             if (obj && obj.type == "rect") {
                 obj.set({
                     ...params,
@@ -161,6 +165,7 @@ function addInnerBorder() {
             }
         });
         canvas.renderAll();
+        save_side();
         save_state(state.current_image_url);
         return canvas;
     };
@@ -195,6 +200,7 @@ function mouseDown() {
                     active_text_obj = options.target;
                 }
             }
+            save_side();
             save_state(state.current_image_url);
         }
     });
@@ -220,6 +226,7 @@ function resizeObserve() {
 
         canvas.renderAll();
 
+        save_side();
         save_state(state.current_image_url);
     });
 }
@@ -228,30 +235,23 @@ function handleImageSwapping() {
     let colorSwitcherBtns = document.querySelectorAll(".color-option");
 
     colorSwitcherBtns.forEach((btn) => {
-        console.log("btn: ", btn);
         btn.addEventListener("click", function (e) {
             color_chosen = true;
             selectedFrontImage = this.getAttribute("data-front-image");
             selectedBackImage = this.getAttribute("data-back-image");
-            console.log(
-                "selectedFrontImage: ",
-                this.getAttribute("data-front-image")
-            );
-            console.log(
-                "selectedBackImage: ",
-                this.getAttribute("data-back-image")
-            );
             enableFormElements();
             loadImage(selectedFrontImage, "color", selectedBackImage);
         });
     });
 
     document.querySelector("#showFront").addEventListener("click", function () {
+
+        console.log("clicked front");
         loadImage(selectedFrontImage, "pos");
     });
 
     document.querySelector("#showBack").addEventListener("click", function () {
-        console.log("fired showBack: ", selectedBackImage);
+        console.log("clicked back");
         loadImage(selectedBackImage, "pos");
     });
 }
@@ -284,23 +284,37 @@ function hideBorder(obj) {
     });
 }
 
-function loadImage(imageURL, type = "color", backImageURL = "") {
-    console.log("loadImage fired");
+function loadImage(
+    imageURL,
+    type = "color",
+    backImageURL = "",
+    first_time = false
+) {
     if (!imageURL) return;
 
     if (state.current_image_url == imageURL) {
         return;
     }
 
-    // STATE
     state.current_image_url = imageURL;
-    // console.log("state.current_image_url: ", state.current_image_url);
+
+    console.log("imageURL: ", imageURL);
+    console.log("backImageURL: ", backImageURL);
+
     if (type === "pos") {
-        console.log("pos");
-        let obj_state = localStorage.getItem(imageURL);
+        state.current_image_side == "front"
+            ? (state.current_image_side = "back")
+            : (state.current_image_side = "front");
 
+        console.log("changing side to:  ", state.current_image_side);
+
+        let key =
+            state.current_image_side == "front"
+                ? front_state_key
+                : back_state_key;
+
+        let obj_state = localStorage.getItem(key);
         if (!obj_state) {
-            console.log("no state");
             canvas.getObjects().forEach((obj) => {
                 if (
                     !(
@@ -343,13 +357,12 @@ function loadImage(imageURL, type = "color", backImageURL = "") {
                 localStorage.setItem(imageURL, JSON.stringify(canvas));
             });
         } else {
-            console.log("state is: ");
             canvas.clear();
+
             canvas.loadFromJSON(obj_state, function () {
                 canvas.renderAll();
                 text_objects = {};
                 canvas.getObjects().forEach((obj) => {
-                    console.info("Obj: ", obj);
                     if (obj.type == "rect") {
                         obj.set({
                             stay: true,
@@ -420,44 +433,55 @@ function loadImage(imageURL, type = "color", backImageURL = "") {
 
                 handleTextInputs([form.top_text, form.bottom_text]);
                 handleInlineTextInputs(text_objects);
-                // reapplyClippingPathsAndGroups();
                 mapTextObjectsToFormInputs();
+            });
+
+            fabric.Image.fromURL(imageURL, function (img) {
+                let scale = Math.min(
+                    canvas.width / img.width,
+                    canvas.height / img.height
+                );
+
+                img.set({
+                    product_image: true,
+                    left: canvas.width / 2,
+                    top: canvas.height / 2,
+                    originX: "center",
+                    originY: "center",
+                    scaleX: scale,
+                    scaleY: scale,
+                    selectable: false,
+                    hasControls: false,
+                    excludeFromClipping: true,
+                });
+
+                canvas.add(img);
+                canvas.sendToBack(img);
+                canvas.renderAll();
             });
         }
 
         return;
     }
 
-    // HANDLING COLOR SWITCH
     if (type == "color") {
-        console.log("color");
-        let obj_state = localStorage.getItem(imageURL);
+        if (first_time) {
+            let key =
+                state.current_image_side == "front"
+                    ? front_state_key
+                    : back_state_key;
+            let obj_state = localStorage.getItem(key);
 
-        if (!obj_state) {
-            console.log("no state");
-            canvas.getObjects().forEach((obj) => {
-                if (
-                    !(
-                        obj.stay ||
-                        obj.stay_when_pos ||
-                        obj.type === "rect" ||
-                        obj.type === "group"
-                    )
-                ) {
-                    canvas.remove(obj);
-                }
+            if (obj_state) {
+                canvas.loadFromJSON(obj_state);
+            }
 
-                if (obj.type == "rect") {
-                    hideBorder(obj);
-                }
-            });
-
-            console.log("came here");
             fabric.Image.fromURL(imageURL, function (img) {
                 let scale = Math.min(
                     canvas.width / img.width,
                     canvas.height / img.height
                 );
+
                 img.set({
                     product_image: true,
                     left: canvas.width / 2,
@@ -474,102 +498,43 @@ function loadImage(imageURL, type = "color", backImageURL = "") {
                 canvas.add(img);
                 canvas.sendToBack(img);
                 canvas.renderAll();
-
-                localStorage.setItem(imageURL, JSON.stringify(canvas));
             });
-
-            form.top_text.value = "";
-            form.bottom_text.value = "";
-        } else {
-            console.log("state");
-            canvas.clear();
-
-            console.log(obj_state);
-            canvas.loadFromJSON(obj_state, function () {
-                canvas.renderAll();
-
-                text_objects = {};
-                canvas.getObjects().forEach((obj) => {
-                    if (obj.type == "rect") {
-                        obj.set({
-                            stay: true,
-                            stay_when_pos: true,
-                            hasControls: false,
-                            selectable: false,
-                            lockMovementX: true,
-                            lockMovementY: true,
-                            lockScalingX: true,
-                            lockScalingY: true,
-                            lockRotation: true,
-                        });
-
-                        hideBorder(obj);
-                    }
-                    if (
-                        obj._originalElement &&
-                        obj._originalElement.src.includes("color")
-                    ) {
-                        obj.set({
-                            selectable: false,
-                            hasControls: false,
-                            excludeFromClipping: true,
-                            product_image: true,
-                        });
-
-                        canvas.sendToBack(obj);
-                    }
-
-                    if (
-                        obj.type == "image" &&
-                        obj._originalElement &&
-                        obj._originalElement.src.includes("clipart")
-                    ) {
-                        obj.set({
-                            selectable: true,
-                            hasControls: true,
-                            excludeFromClipping: false,
-                        });
-                    }
-                    if (obj.type === "textbox") {
-                        if (obj.top < canvas.height / 2) {
-                            obj.input_id = "top_text";
-                            text_objects["top_text"] = obj;
-                            if (
-                                form.top_text instanceof HTMLElement &&
-                                "value" in form.top_text
-                            ) {
-                                form.top_text.value = obj.text;
-                            } else {
-                            }
-                        } else {
-                            obj.input_id = "bottom_text";
-                            text_objects["bottom_text"] = obj;
-
-                            if (
-                                form.bottom_text instanceof HTMLElement &&
-                                "value" in form.bottom_text
-                            ) {
-                                form.bottom_text.value = obj.text;
-                            } else {
-                            }
-                        }
-                    }
-                });
-
-                handleTextInputs([form.top_text, form.bottom_text]);
-                handleInlineTextInputs(text_objects);
-                // reapplyClippingPathsAndGroups();
-                mapTextObjectsToFormInputs();
-            });
+            return;
         }
 
-        if (backImageURL) {
-            state.front_image_url = imageURL;
-            state.back_image_url = backImageURL;
-        }
-
+        swapColor(imageURL, backImageURL);
         return;
     }
+}
+
+function swapColor(imageURL, backImageURL) {
+    removeImage();
+
+    let url = state.current_image_side == "front" ? imageURL : backImageURL;
+    state.current_image_url = url;
+    fabric.Image.fromURL(url, function (img) {
+        let scale = Math.min(
+            canvas.width / img.width,
+            canvas.height / img.height
+        );
+
+        img.set({
+            product_image: true,
+            left: canvas.width / 2,
+            top: canvas.height / 2,
+            originX: "center",
+            originY: "center",
+            scaleX: scale,
+            scaleY: scale,
+            selectable: false,
+            hasControls: false,
+            excludeFromClipping: true,
+        });
+
+        canvas.add(img);
+        canvas.sendToBack(img);
+        canvas.renderAll();
+    });
 }
 
 function handleDeleteOnKeyDown() {
@@ -578,11 +543,8 @@ function handleDeleteOnKeyDown() {
             let active = canvas.getActiveObject();
             if (active) {
                 if (active_text_obj === active) {
-                    console.log("was active text object");
                     active_text_obj = null;
-                    console.log("active: ", active.input_id);
                     delete text_objects[active.input_id];
-                    console.log("text objects after delete: ", text_objects);
                     if (form[active.input_id]) {
                         form[active.input_id].value = "";
                     }
@@ -590,8 +552,17 @@ function handleDeleteOnKeyDown() {
                 canvas.remove(active);
                 canvas.renderAll();
 
+                save_side();
                 save_state(state.current_image_url);
             }
+        }
+    });
+}
+
+function removeImage() {
+    canvas.getObjects().forEach((obj) => {
+        if (obj.product_image) {
+            canvas.remove(obj);
         }
     });
 }
@@ -671,6 +642,7 @@ function applyCurvedTextEffect(obj) {
     });
 
     canvas.renderAll();
+    save_side();
     save_state(state.current_image_url);
 }
 
@@ -679,6 +651,7 @@ function handleFontSizeInput(input) {
         if (active_text_obj) {
             active_text_obj.set("fontSize", parseInt(input.value));
             canvas.renderAll();
+            save_side();
             save_state(state.current_image_url);
         }
     });
@@ -694,6 +667,7 @@ function handleTextColorInput(input) {
             active_text_obj.set("fill", input.value);
             canvas.renderAll();
 
+            save_side();
             save_state(state.current_image_url);
         }
     });
@@ -705,13 +679,13 @@ function handleFontFamilyInput(input) {
             active_text_obj.set("fontFamily", input.value);
             canvas.renderAll();
 
+            save_side();
             save_state(state.current_image_url);
         }
     });
 }
 
 function handleTextInputs(inputs) {
-    console.log("inputs: ", inputs);
     let canvas_defaults = getCanvasDefaults(canvas);
 
     if (inputs.length < 2) {
@@ -797,6 +771,7 @@ function handleInlineTextInputs(objects) {
             form[key].value = obj.text;
         }
 
+        // save_side();
         save_state(state.current_image_url);
     });
 }
@@ -806,17 +781,16 @@ function initProductImage() {
     let first_color = color_btns[0];
     let first_front_image = first_color.getAttribute("data-front-image");
 
-    if (localStorage.getItem(first_front_image)) {
-        loadImage(
-            first_front_image,
-            "color",
-            first_color.getAttribute("data-back-image")
-        );
+    let key = front_state_key;
+
+    let canvas_state = localStorage.getItem(key);
+
+    if (canvas_state) {
+        loadImage(first_front_image, "color", "", true);
 
         selectedFrontImage = first_front_image;
         selectedBackImage = first_color.getAttribute("data-back-image");
     } else {
-        // state.current_image_url = first_front_image;
         selectedFrontImage = first_front_image;
         selectedBackImage = first_color.getAttribute("data-back-image");
         state.front_image_url = first_front_image;
@@ -826,28 +800,9 @@ function initProductImage() {
     enableFormElements();
 }
 
+function loadImageFirstTime(imageURL) {}
+
 function sidebarHandler() {
-    /**
-     * open/close
-     */
-
-    sidebar.classList.add("close");
-    document.addEventListener("click", function (event) {
-        if (
-            !sidebar.contains(event.target) &&
-            event.target !== toggle_btn &&
-            event.target !== close_btn
-        ) {
-            sidebar.classList.remove("open");
-        }
-    });
-
-    toggle_btn.addEventListener("click", (e) => toggleSideBar(e, sidebar));
-    close_btn.addEventListener("click", (e) => toggleSideBar(e, sidebar, 0));
-
-    /**
-     * other
-     */
     clipArtHandler();
     uploadHandler();
 }
@@ -910,11 +865,12 @@ function uploadHandler() {
 
                     canvas.add(img);
                     canvas.setActiveObject(img);
+
+                    save_side();
+                    save_state(state.current_image_url);
                 });
             });
     }
-
-    save_state(state.current_image_url);
 }
 
 function addClipArtToCanvas() {
@@ -939,6 +895,7 @@ function addClipArtToCanvas() {
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();
+        // save_side();
         save_state(state.current_image_url);
     });
 }
@@ -963,8 +920,17 @@ function resizeCanvas(defaulting) {
     }
 }
 
-function save() {
-    // save canvas as image
+function save_side() {
+    let key =
+        state.current_image_side == "front" ? front_state_key : back_state_key;
+
+    let canvasData = canvas.toJSON();
+
+    canvasData.objects = canvasData.objects.filter(
+        (obj) => !obj.src || !obj.src.includes("color")
+    );
+
+    localStorage.setItem(key, JSON.stringify(canvasData));
 }
 
 function save_state(image_url) {
