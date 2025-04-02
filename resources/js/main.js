@@ -54,6 +54,23 @@ function initCanvas() {
 }
 
 function initGlobalEvents() {
+    window.addEventListener("beforeunload", clearLocalStorageOnExit);
+    function clearLocalStorageOnExit() {
+        Object.keys(localStorage).forEach((key) => {
+            if (
+                key.includes("/colors/") ||
+                key === front_state_key ||
+                key === back_state_key ||
+                key === state.current_image_side ||
+                key === rand_key + ".front_design" ||
+                key === rand_key + ".back_design" ||
+                key === rand_key + ".front_image" ||
+                key === rand_key + ".back_image"
+            ) {
+                localStorage.removeItem(key);
+            }
+        });
+    }
     handleDeleteOnKeyDown();
     handleDesignSave();
     handleAddToCart();
@@ -973,8 +990,6 @@ function save_state(image_url) {
     localStorage.setItem(image_url, JSON.stringify(canvas));
 }
 
-
-
 let final_design = {
     front_image: "",
     back_image: "",
@@ -1079,8 +1094,7 @@ function handleAddToCart() {
                 return;
             }
 
-            const backImage =
-                final_design.back_image || final_design.front_image;
+            const backImage = final_design.back_image || null; // Set to null if not available
 
             let form = {
                 front_image: final_design.front_image,
@@ -1094,11 +1108,15 @@ function handleAddToCart() {
 
             let formData = new FormData();
             formData.append("front_image", form.front_image);
-            formData.append("back_image", form.back_image);
             formData.append("product_id", form.product_id);
             formData.append("v_hash", form.v_hash);
             formData.append("quantity", form.quantity);
             formData.append("default_img", form.default_img);
+
+            // Only append back_image if it's not null
+            if (backImage) {
+                formData.append("back_image", backImage);
+            }
 
             axios
                 .post("/cart", formData)
@@ -1111,4 +1129,3 @@ function handleAddToCart() {
                 });
         });
 }
-
