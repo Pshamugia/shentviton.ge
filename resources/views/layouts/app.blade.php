@@ -142,8 +142,8 @@
     </div>
 
     <footer class="bg-dark text-white text-center py-4 mt-5">
-        <div class="container" style="padding: 20px 0 0 0">
-            <div class="row text-center">
+        <div class="container" style="padding: 20px">
+            <div class="row text-center" >
                 <!-- First Column -->
                 <div class="col-md-4 text-start">
 
@@ -153,16 +153,17 @@
 
                 <!-- Second Column -->
                 <div class="col-md-4 text-start">
+                    <div style="margin-bottom:10px">   </div>
                     <ul class="list-inline">
                         <li class="list-inline-item"><a href="{{ route('home') }}" class="nav-link"> <i
-                                    class="bi bi-house-door"></i> საწყისი</a>
+                                    class="bi bi-house-door"></i> &nbsp; საწყისი</a>
                         </li>
                         <br>
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="nav-link"> <i
-                                    class="bi bi-cart2"></i> კალათა</a>
+                                    class="bi bi-cart2"></i> &nbsp; კალათა</a>
                         </li><br>
                         <li class="list-inline-item"><a href="{{ route('terms') }}" class="nav-link"> <i
-                                    class="bi bi-newspaper"></i> წესები და
+                                    class="bi bi-newspaper"></i> &nbsp; წესები და
                                 პირობები</a></li><br>
 
                     </ul>

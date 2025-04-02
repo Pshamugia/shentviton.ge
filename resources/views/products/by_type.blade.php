@@ -7,6 +7,7 @@
             <i class="bi bi-app-indicator"></i>  {{ $subtype }} / {{ $type === 'all' ? 'ყველა' : $type }}
         </div>
     
+        @if($type !== 'all')
         <div class="d-flex justify-content-end">
             <form method="GET" action="{{ route('products.byType', $type) }}">
                 {{-- keep current subtype and sort in the query --}}
@@ -21,9 +22,10 @@
                         </option>
                     @endforeach
                 </select>
-            </form>
-            
+            </form>      
         </div>
+@endif
+
     </div>
     
     
