@@ -99,7 +99,7 @@ function initGlobalEvents() {
         });
     }
     handleDeleteOnKeyDown();
-    handleDesignSave();
+    handleAddToCart();
     handleImageSwapping();
     mouseDown();
     resizeObserve();
@@ -231,7 +231,7 @@ function setupDynamicTextInputs() {
         const newInputHTML = `
             <div class="text-input-group d-flex align-items-center gap-2" data-input-id="${inputId}">
                 <div class="input-wrapper flex-grow-1">
-                    <input type="text" id="${inputId}" class="form-control input-styled my-4" placeholder="შეიყვანე ტექსტი">
+                    <input type="text" id="${inputId}" class="form-control input-styled my-4 dynamic-text-input" placeholder="შეიყვანე ტექსტი">
                 </div>
                 <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
             </div>
@@ -482,27 +482,24 @@ function loadImage(
 
                 canvas.getObjects().forEach((obj) => {
                     if (obj.type == "rect") {
-
                     }
                     if (
                         obj._originalElement &&
                         obj._originalElement.src.includes("color")
                     ) {
-
                     }
                     if (
                         obj.type == "image" &&
                         obj._originalElement &&
                         obj._originalElement.src.includes("clipart")
                     ) {
-
                     }
                     if (obj.type === "textbox") {
-                        let inputId = obj.input_id || ("text_" + Date.now());
+                        let inputId = obj.input_id || "text_" + Date.now();
                         obj.input_id = inputId;
                         text_objects[inputId] = obj;
-
                         let existingInput = document.getElementById(inputId);
+                        console.log("existingInput: ", existingInput);
                         if (existingInput) {
                             existingInput.value = obj.text;
                         } else {
@@ -511,7 +508,11 @@ function loadImage(
                     }
                 });
 
-                const dynamicInputs = document.querySelectorAll(".dynamic-text-input");
+                const dynamicInputs = document.querySelectorAll(
+                    ".dynamic-text-input"
+                );
+
+                console.log("dynamicInputs: ", dynamicInputs);
                 if (dynamicInputs.length > 0) {
                     handleTextInputs(Array.from(dynamicInputs));
                 }
@@ -620,6 +621,7 @@ function swapColor(imageURL, backImageURL) {
     });
 }
 
+// TODO
 function handleDeleteOnKeyDown() {
     document.addEventListener("keydown", function (e) {
         if (e.key === "Delete") {
@@ -769,6 +771,7 @@ function handleFontFamilyInput(input) {
 }
 
 function handleTextInputs(inputs) {
+    console.log("inputs in handleTextInputs: ", inputs);
     let canvas_defaults = getCanvasDefaults(canvas);
 
     for (let input of inputs) {
@@ -780,10 +783,7 @@ function handleTextInputs(inputs) {
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
                 canvas.renderAll();
-                localStorage.setItem(
-                    state.current_image_url,
-                    JSON.stringify(canvas)
-                );
+                save_side();
             } else {
                 const numExistingTexts = Object.keys(text_objects).length;
                 const clipHeight = canvas.height * 0.2;
@@ -816,27 +816,27 @@ function handleTextInputs(inputs) {
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
                 canvas.renderAll();
-                localStorage.setItem(
-                    state.current_image_url,
-                    JSON.stringify(canvas)
-                );
+                save_side();
             }
         });
     }
 }
 
 function handleInlineTextInputs(objects) {
+    console.log("objects in handleInlineTextInputs: ", objects);
     canvas.on("text:changed", (e) => {
         let obj = e.target;
 
         if (obj.input_id) {
             const input = document.getElementById(obj.input_id);
+            console.log("input: ", input);
             if (input) {
                 input.value = obj.text;
             }
         }
 
         save_state(state.current_image_url);
+        save_side();
     });
 }
 
@@ -846,7 +846,7 @@ function createDynamicTextInput(inputId, text) {
     const newInputHTML = `
         <div class="text-input-group d-flex align-items-center gap-2" data-input-id="${inputId}">
             <div class="input-wrapper flex-grow-1">
-                <input type="text" id="${inputId}" class="form-control input-styled my-4" placeholder="შეიყვანე ტექსტი" value="${
+                <input type="text" id="${inputId}" class="form-control input-styled my-4 dynamic-text-input" placeholder="შეიყვანე ტექსტი" value="${
         text || ""
     }">
             </div>
@@ -911,7 +911,6 @@ function initProductImage() {
     }
     enableFormElements();
 }
-
 
 function sidebarHandler() {
     clipArtHandler();
@@ -1052,81 +1051,114 @@ let final_design = {
     back_image: "",
 };
 
-function handleDesignSave() {
+function handleAddToCart() {
     document
         .querySelector("#addToCart")
-        .addEventListener("click", async function (e) {
+        .addEventListener("click", function (e) {
             e.preventDefault();
 
             const currentSide = state.current_image_side;
-            const frontImage = await saveDesignAndGetImage("front");
 
-            let backImage = null;
-            if (selectedBackImage && currentSide === "front") {
-                loadImage(selectedBackImage, "pos");
-                await delay(500);
-                backImage = await saveDesignAndGetImage("back");
-            } else if (selectedFrontImage && currentSide === "back") {
-                loadImage(selectedFrontImage, "pos");
-                await delay(500);
-                backImage = await saveDesignAndGetImage("front");
+            saveDesignAndImage(currentSide);
+
+            if (selectedBackImage) {
+                if (currentSide === "front" && selectedBackImage) {
+                    loadImage(selectedBackImage, "pos");
+
+                    setTimeout(() => {
+                        saveDesignAndImage("back");
+                        proceedWithAddToCart();
+                    }, 500);
+                } else if (currentSide === "back" && selectedFrontImage) {
+                    loadImage(selectedFrontImage, "pos");
+
+                    setTimeout(() => {
+                        saveDesignAndImage("front");
+                        proceedWithAddToCart();
+                    }, 500);
+                }
+            } else {
+                proceedWithAddToCart();
             }
-
-            addToCart(frontImage, backImage);
         });
 }
 
-async function saveDesignAndGetImage(side) {
-    return new Promise((resolve) => {
-        try {
-            canvas.setZoom(1);
-            canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-            canvas.renderAll();
+function saveDesignAndImage(side) {
+    try {
+        canvas.setZoom(1);
+        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+        canvas.renderAll();
 
-            const removed_objects = [];
-            canvas.getObjects().forEach((obj) => {
-                if (obj.type === "rect" || obj.type === "group") {
-                    removed_objects.push(obj);
-                    canvas.remove(obj);
-                }
+        localStorage.setItem(
+            `${rand_key}.${side}_design`,
+            JSON.stringify(canvas)
+        );
+
+        const stateKey = side === "front" ? front_state_key : back_state_key;
+        localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
+
+        const removed_objects = [];
+        canvas.getObjects().forEach((obj) => {
+            if (obj.type === "rect" || obj.type === "group") {
+                removed_objects.push(obj);
+                canvas.remove(obj);
+            }
+        });
+
+        const imageData = canvas.toDataURL({
+            format: "png",
+            quality: 1,
+        });
+
+        removed_objects.forEach((obj) => {
+            obj.set({
+                selectable: false,
+                hasControls: false,
+                evented: false,
+                stay: true,
+                stay_when_pos: true,
             });
 
-            const imageData = canvas.toDataURL({ format: "png", quality: 1 });
-
-            removed_objects.forEach((obj) => {
-                obj.set({
-                    selectable: false,
-                    hasControls: false,
-                    evented: false,
-                    stay: true,
-                });
-                originalAdd(obj);
-            });
-
+            originalAdd(obj);
             canvas.renderAll();
+        });
 
-            resolve(imageData);
-        } catch (err) {
-            alert(
-                "Unable to save design. Try clearing browser data or removing old designs."
-            );
-            resolve(null);
+        if (side === "front") {
+            final_design.front_image = imageData;
+        } else {
+            final_design.back_image = imageData;
         }
-    });
+    } catch (err) {
+        alert(
+            "Unable to save design. Storage limit reached. Try clearing browser data or removing old designs."
+        );
+    }
 }
 
-function addToCart(frontImage, backImage) {
-    if (!frontImage) {
-        alert("Failed to save design. Please try again.");
+function proceedWithAddToCart() {
+    if (!final_design.front_image) {
+        alert("Please save your design first");
         return;
     }
 
+    const backImage = final_design.back_image || null;
+
+    let form = {
+        front_image: final_design.front_image,
+        back_image: backImage,
+        product_id: product_image.getAttribute("data-id"),
+        v_hash: localStorage.getItem("v_hash"),
+        quantity: localStorage.getItem("quantity") || 1,
+        price: null,
+        default_img: 0,
+    };
+
     let formData = new FormData();
-    formData.append("front_image", frontImage);
-    formData.append("product_id", product_image.getAttribute("data-id"));
-    formData.append("v_hash", localStorage.getItem("v_hash"));
-    formData.append("quantity", localStorage.getItem("quantity") || 1);
-    formData.append("default_img", 0);
+    formData.append("front_image", form.front_image);
+    formData.append("product_id", form.product_id);
+    formData.append("v_hash", form.v_hash);
+    formData.append("quantity", form.quantity);
+    formData.append("default_img", form.default_img);
 
     if (backImage) {
         formData.append("back_image", backImage);
@@ -1134,13 +1166,11 @@ function addToCart(frontImage, backImage) {
 
     axios
         .post("/cart", formData)
-        .then(() => alert("Item successfully added to cart"))
+        .then((response) => {
+            alert("Item successfully added to cart");
+        })
         .catch((error) => {
             console.error("Error adding to cart:", error);
-            alert("There was an error adding the item to the cart");
+            alert("There was an error adding the item to cart");
         });
-}
-
-function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }
