@@ -8,29 +8,39 @@
         </div>
     
         @if($type !== 'all')
-        <div class="d-flex justify-content-end">
-            <form method="GET" action="{{ route('products.byType', $type) }}">
-                {{-- keep current subtype and sort in the query --}}
-                <input type="hidden" name="subtype" value="{{ $subtype }}">
-                <input type="hidden" name="sort" value="{{ $sort }}">
-            
-                <select name="size" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
-                    <option value=""> 
-                        @if($type === 'ქეისი') აირჩიეთ მოდელი  
-                        @elseif($type === 'მაისური') აირჩიეთ ზომა 
-                        @else {{ "" }}
-                        @endif
-                    </option> 
-                       
-                    @foreach ($allSizes as $size)
-                        <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>
-                            {{ $size }}
-                        </option>
-                    @endforeach
-                </select>
-            </form>      
-        </div>
+    <div class="d-flex justify-content-end">
+        <form method="GET" action="{{ route('products.byType', $type) }}">
+            {{-- Keep current subtype and sort --}}
+            <input type="hidden" name="subtype" value="{{ $subtype }}">
+            <input type="hidden" name="sort" value="{{ $sort }}">
+
+            <select name="size" id="size-select" onchange="this.form.submit()" class="chosen-select">
+                <option value="">
+                    @if($type === 'ქეისი') აირჩიეთ მოდელი  
+                    @elseif($type === 'მაისური') აირჩიეთ ზომა 
+                    @else {{ "" }}
+                    @endif
+                </option>
+
+                @foreach ($allSizes as $size)
+                    <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>
+                        {{ $size }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+    </div>
 @endif
+
+
+<script>
+    $(document).ready(function () {
+        $('.chosen-select').chosen({
+            width: '300px',
+            placeholder_text_single: 'აირჩიეთ'
+        });
+    });
+</script>
 
     </div>
     
