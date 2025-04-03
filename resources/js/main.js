@@ -200,25 +200,28 @@ function setupDynamicTextInputs() {
         return;
     }
 
-    form.add_text_btn.addEventListener("click", function() {
+    form.add_text_btn.addEventListener("click", function () {
         const inputId = "text_" + Date.now();
         const newInputHTML = `
-            <div class="text-input-group" data-input-id="${inputId}">
-                <div class="input-wrapper">
-                    <input type="text" id="${inputId}" class="form-control input-styled my-2" placeholder="შეიყვანე ტექსტი">
+            <div class="text-input-group d-flex align-items-center gap-2" data-input-id="${inputId}">
+                <div class="input-wrapper flex-grow-1">
+                    <input type="text" id="${inputId}" class="form-control input-styled my-4" placeholder="შეიყვანე ტექსტი">
                 </div>
                 <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
             </div>
+
         `;
 
-        form.text_container.insertAdjacentHTML('beforeend', newInputHTML);
+        form.text_container.insertAdjacentHTML("beforeend", newInputHTML);
 
         const newInput = document.getElementById(inputId);
         if (newInput) {
             handleTextInputs([newInput]);
 
-            const removeBtn = newInput.closest('.text-input-group').querySelector('.remove-text-btn');
-            removeBtn.addEventListener('click', function() {
+            const removeBtn = newInput
+                .closest(".text-input-group")
+                .querySelector(".remove-text-btn");
+            removeBtn.addEventListener("click", function () {
                 if (text_objects[inputId]) {
                     canvas.remove(text_objects[inputId]);
                     delete text_objects[inputId];
@@ -226,7 +229,7 @@ function setupDynamicTextInputs() {
                     save_side();
                     save_state(state.current_image_url);
                 }
-                newInput.closest('.text-input-group').remove();
+                newInput.closest(".text-input-group").remove();
             });
         }
     });
@@ -436,7 +439,11 @@ function loadImage(
             canvas.clear();
 
             if (form.text_container) {
-                form.text_container.innerHTML = '';
+                Array.from(form.text_container.children).forEach((child) => {
+                    if (child.id !== "addTextInput") {
+                        child.remove();
+                    }
+                });
             }
 
             canvas.loadFromJSON(obj_state, function () {
@@ -499,7 +506,9 @@ function loadImage(
                     }
                 });
 
-                const dynamicInputs = document.querySelectorAll('.dynamic-text-input');
+                const dynamicInputs = document.querySelectorAll(
+                    ".dynamic-text-input"
+                );
                 if (dynamicInputs.length > 0) {
                     handleTextInputs(Array.from(dynamicInputs));
                 }
@@ -780,14 +789,14 @@ function handleTextInputs(inputs) {
 
                 // Position text evenly within the design area
                 const index = numExistingTexts % 5; // Cycle through 5 possible positions
-                const yPosition = clipTop + (clipHeight * (index + 1) / 6);
+                const yPosition = clipTop + (clipHeight * (index + 1)) / 6;
 
                 // Default text properties
                 const textDefaults = canvas_defaults[input.id] || {
                     fontSize: 20,
-                    fontFamily: 'Arial',
-                    fill: '#000000',
-                    textAlign: 'center'
+                    fontFamily: "Arial",
+                    fill: "#000000",
+                    textAlign: "center",
                 };
 
                 text_objects[input.id] = new fabric.Textbox("", {
@@ -835,21 +844,25 @@ function createDynamicTextInput(inputId, text) {
     if (!form.text_container) return;
 
     const newInputHTML = `
-        <div class="text-input-group" data-input-id="${inputId}">
-            <div class="input-wrapper">
-                <input type="text" id="${inputId}" class="form-control input-styled my-2 dynamic-text-input" placeholder="შეიყვანე ტექსტი" value="${text || ''}">
+        <div class="text-input-group d-flex align-items-center gap-2" data-input-id="${inputId}">
+            <div class="input-wrapper flex-grow-1">
+                <input type="text" id="${inputId}" class="form-control input-styled my-4" placeholder="შეიყვანე ტექსტი" value="${
+        text || ""
+    }">
             </div>
             <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
         </div>
     `;
 
-    form.text_container.insertAdjacentHTML('beforeend', newInputHTML);
+    form.text_container.insertAdjacentHTML("beforeend", newInputHTML);
 
     const newInput = document.getElementById(inputId);
     if (newInput) {
         // Setup remove button for this input
-        const removeBtn = newInput.closest('.text-input-group').querySelector('.remove-text-btn');
-        removeBtn.addEventListener('click', function() {
+        const removeBtn = newInput
+            .closest(".text-input-group")
+            .querySelector(".remove-text-btn");
+        removeBtn.addEventListener("click", function () {
             if (text_objects[inputId]) {
                 canvas.remove(text_objects[inputId]);
                 delete text_objects[inputId];
@@ -857,7 +870,7 @@ function createDynamicTextInput(inputId, text) {
                 save_side();
                 save_state(state.current_image_url);
             }
-            newInput.closest('.text-input-group').remove();
+            newInput.closest(".text-input-group").remove();
         });
     }
 }

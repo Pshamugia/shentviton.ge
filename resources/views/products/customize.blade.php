@@ -214,7 +214,7 @@
                                     <input type="text" id="bottom_text" class="form-control input-styled"
                                         placeholder="Enter bottom text">
                                 </div> --}}
-                                <button type="button" id="addTextInput" class="btn btn-primary">+ Add Text</button>
+                                <button type="button" id="addTextInput" class="btn btn-primary my-2">+ Add Text</button>
                             </div>
                             <div class="mb-3">
                                 <label for="text_color" class="form-label">ტექსტის ფერი</label>
