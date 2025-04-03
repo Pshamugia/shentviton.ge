@@ -244,10 +244,10 @@ function setupDynamicTextInputs() {
         if (newInput) {
             handleTextInputs([newInput]);
 
-            const removeBtn = newInput
+            const remove_btn = newInput
                 .closest(".text-input-group")
                 .querySelector(".remove-text-btn");
-            removeBtn.addEventListener("click", function () {
+            remove_btn.addEventListener("click", function () {
                 if (text_objects[inputId]) {
                     canvas.remove(text_objects[inputId]);
                     delete text_objects[inputId];
@@ -472,6 +472,8 @@ function loadImage(
                 });
             }
 
+            let dynamicTextCounter = 0;
+
             canvas.loadFromJSON(obj_state, function () {
                 canvas.renderAll();
                 text_objects = {};
@@ -495,15 +497,19 @@ function loadImage(
                     ) {
                     }
                     if (obj.type === "textbox") {
-                        let inputId = obj.input_id || "text_" + Date.now();
-                        obj.input_id = inputId;
-                        text_objects[inputId] = obj;
-                        let existingInput = document.getElementById(inputId);
+                        if (!obj.input_id) {
+                            dynamicTextCounter++;
+                            obj.input_id = "text_" + dynamicTextCounter;
+                        }
+                        text_objects[obj.input_id] = obj;
+                        let existingInput = document.getElementById(
+                            obj.input_id
+                        );
                         console.log("existingInput: ", existingInput);
                         if (existingInput) {
                             existingInput.value = obj.text;
                         } else {
-                            createDynamicTextInput(inputId, obj.text);
+                            createDynamicTextInput(obj.input_id, obj.text);
                         }
                     }
                 });
@@ -621,18 +627,19 @@ function swapColor(imageURL, backImageURL) {
     });
 }
 
-// TODO
 function handleDeleteOnKeyDown() {
     document.addEventListener("keydown", function (e) {
         if (e.key === "Delete") {
             let active = canvas.getActiveObject();
             if (active) {
-                if (active_text_obj === active) {
-                    active_text_obj = null;
-                    delete text_objects[active.input_id];
-                    if (form[active.input_id]) {
-                        form[active.input_id].value = "";
-                    }
+                const input = document.getElementById(active.input_id);
+                const remove_btn = input
+                    .closest(".text-input-group")
+                    .querySelector(".remove-text-btn");
+
+                if (remove_btn && input && input.id == active.input_id) {
+                    input.remove();
+                    remove_btn.remove();
                 }
                 canvas.remove(active);
                 canvas.renderAll();
@@ -858,10 +865,10 @@ function createDynamicTextInput(inputId, text) {
 
     const newInput = document.getElementById(inputId);
     if (newInput) {
-        const removeBtn = newInput
+        const remove_btn = newInput
             .closest(".text-input-group")
             .querySelector(".remove-text-btn");
-        removeBtn.addEventListener("click", function () {
+        remove_btn.addEventListener("click", function () {
             if (text_objects[inputId]) {
                 canvas.remove(text_objects[inputId]);
                 delete text_objects[inputId];
