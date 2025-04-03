@@ -298,9 +298,16 @@
                 </div>
                 </p>
 
+                <div class="mb-4">
+                    <label class="form-label d-block">გადიდება:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-out">-</button>
+                        <span id="zoom-level" class="mx-2">100%</span>
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-in">+</button>
+                    </div>
+                </div>
 
-                <button id="saveDesign" class="btn save-btn">შეინახე დიზაინი</button>
-                <button id="addToCart" class="btn save-btn" style="display: none">დაამატე კალათაში</button>
+                <button id="addToCart" class="btn save-btn">დაამატე კალათაში</button>
 
                 <a id="previewDesign" class="btn save-btn" style="display: none">Preview Design</a>
                 </form>

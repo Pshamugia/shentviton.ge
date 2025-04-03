@@ -38,6 +38,9 @@ let active_text_obj = null;
 let designGroup;
 let originalAdd;
 
+let zoomLevel = 1;
+const zoomStep = 0.1;
+
 export default function main() {
     // NOT IN USE
     sidebarHandler();
@@ -54,6 +57,30 @@ function initCanvas() {
 }
 
 function initGlobalEvents() {
+    document.getElementById("zoom-in").addEventListener("click", () => {
+        if (zoomLevel < 2) {
+            zoomLevel += zoomStep;
+            setCanvasZoom(zoomLevel);
+        }
+    });
+
+    document.getElementById("zoom-out").addEventListener("click", () => {
+        if (zoomLevel > 0.5) {
+            zoomLevel -= zoomStep;
+            setCanvasZoom(zoomLevel);
+        }
+    });
+
+    function setCanvasZoom(zoom) {
+        const center = canvas.getCenter();
+        canvas.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+        updateZoomDisplay();
+    }
+
+    function updateZoomDisplay() {
+        document.getElementById("zoom-level").textContent =
+            Math.round(zoomLevel * 100) + "%";
+    }
     window.addEventListener("beforeunload", clearLocalStorageOnExit);
     function clearLocalStorageOnExit() {
         Object.keys(localStorage).forEach((key) => {
@@ -73,7 +100,6 @@ function initGlobalEvents() {
     }
     handleDeleteOnKeyDown();
     handleDesignSave();
-    handleAddToCart();
     handleImageSwapping();
     mouseDown();
     resizeObserve();
@@ -450,65 +476,42 @@ function loadImage(
                 canvas.renderAll();
                 text_objects = {};
 
+                if (form.text_container) {
+                    form.text_container.innerHTML = "";
+                }
+
                 canvas.getObjects().forEach((obj) => {
                     if (obj.type == "rect") {
-                        obj.set({
-                            stay: true,
-                            stay_when_pos: true,
-                            hasControls: false,
-                            selectable: false,
-                            lockMovementX: true,
-                            lockMovementY: true,
-                            lockScalingX: true,
-                            lockScalingY: true,
-                            lockRotation: true,
-                        });
 
-                        hideBorder(obj);
                     }
-
                     if (
                         obj._originalElement &&
                         obj._originalElement.src.includes("color")
                     ) {
-                        obj.set({
-                            selectable: false,
-                            hasControls: false,
-                            excludeFromClipping: true,
-                            product_image: true,
-                        });
 
-                        canvas.sendToBack(obj);
                     }
-
                     if (
                         obj.type == "image" &&
                         obj._originalElement &&
                         obj._originalElement.src.includes("clipart")
                     ) {
-                        obj.set({
-                            selectable: true,
-                            hasControls: true,
-                            excludeFromClipping: false,
-                        });
-                    }
 
+                    }
                     if (obj.type === "textbox") {
-                        if (obj.input_id) {
-                            text_objects[obj.input_id] = obj;
-                            createDynamicTextInput(obj.input_id, obj.text);
+                        let inputId = obj.input_id || ("text_" + Date.now());
+                        obj.input_id = inputId;
+                        text_objects[inputId] = obj;
+
+                        let existingInput = document.getElementById(inputId);
+                        if (existingInput) {
+                            existingInput.value = obj.text;
                         } else {
-                            const inputId = "text_" + Date.now();
-                            obj.input_id = inputId;
-                            text_objects[inputId] = obj;
                             createDynamicTextInput(inputId, obj.text);
                         }
                     }
                 });
 
-                const dynamicInputs = document.querySelectorAll(
-                    ".dynamic-text-input"
-                );
+                const dynamicInputs = document.querySelectorAll(".dynamic-text-input");
                 if (dynamicInputs.length > 0) {
                     handleTextInputs(Array.from(dynamicInputs));
                 }
@@ -782,17 +785,14 @@ function handleTextInputs(inputs) {
                     JSON.stringify(canvas)
                 );
             } else {
-                // Create a new text object - use a better positioning algorithm
                 const numExistingTexts = Object.keys(text_objects).length;
                 const clipHeight = canvas.height * 0.2;
                 const clipTop = canvas.height / 2 - clipHeight / 2;
 
-                // Position text evenly within the design area
-                const index = numExistingTexts % 5; // Cycle through 5 possible positions
+                const index = numExistingTexts % 5;
                 const yPosition = clipTop + (clipHeight * (index + 1)) / 6;
 
-                // Default text properties
-                const textDefaults = canvas_defaults[input.id] || {
+                const textDefaults = canvas_defaults["text"] || {
                     fontSize: 20,
                     fontFamily: "Arial",
                     fill: "#000000",
@@ -858,7 +858,6 @@ function createDynamicTextInput(inputId, text) {
 
     const newInput = document.getElementById(inputId);
     if (newInput) {
-        // Setup remove button for this input
         const removeBtn = newInput
             .closest(".text-input-group")
             .querySelector(".remove-text-btn");
@@ -913,7 +912,6 @@ function initProductImage() {
     enableFormElements();
 }
 
-function loadImageFirstTime(imageURL) {}
 
 function sidebarHandler() {
     clipArtHandler();
@@ -1056,133 +1054,93 @@ let final_design = {
 
 function handleDesignSave() {
     document
-        .querySelector("#saveDesign")
-        .addEventListener("click", function (e) {
+        .querySelector("#addToCart")
+        .addEventListener("click", async function (e) {
             e.preventDefault();
 
             const currentSide = state.current_image_side;
-            saveDesignAndImage(currentSide);
+            const frontImage = await saveDesignAndGetImage("front");
 
-            if (selectedBackImage) {
-                if (currentSide === "front" && selectedBackImage) {
-                    loadImage(selectedBackImage, "pos");
-
-                    setTimeout(() => {
-                        saveDesignAndImage("back");
-                        showButtons();
-                        alert("Item design successfully saved");
-                    }, 500);
-                } else if (currentSide === "back" && selectedFrontImage) {
-                    loadImage(selectedFrontImage, "pos");
-
-                    setTimeout(() => {
-                        saveDesignAndImage("front");
-                        showButtons();
-                        alert("Item design successfully saved");
-                    }, 500);
-                }
-            } else {
-                showButtons();
-                alert("Item design successfully saved");
+            let backImage = null;
+            if (selectedBackImage && currentSide === "front") {
+                loadImage(selectedBackImage, "pos");
+                await delay(500);
+                backImage = await saveDesignAndGetImage("back");
+            } else if (selectedFrontImage && currentSide === "back") {
+                loadImage(selectedFrontImage, "pos");
+                await delay(500);
+                backImage = await saveDesignAndGetImage("front");
             }
+
+            addToCart(frontImage, backImage);
         });
 }
 
-function saveDesignAndImage(side) {
-    try {
-        localStorage.setItem(
-            `${rand_key}.${side}_design`,
-            JSON.stringify(canvas)
-        );
+async function saveDesignAndGetImage(side) {
+    return new Promise((resolve) => {
+        try {
+            canvas.setZoom(1);
+            canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+            canvas.renderAll();
 
-        const stateKey = side === "front" ? front_state_key : back_state_key;
-        localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
-
-        const removed_objects = [];
-        canvas.getObjects().forEach((obj) => {
-            if (obj.type === "rect" || obj.type === "group") {
-                removed_objects.push(obj);
-                canvas.remove(obj);
-            }
-        });
-
-        const imageData = canvas.toDataURL({
-            format: "png",
-            quality: 1,
-        });
-
-        removed_objects.forEach((obj) => {
-            obj.set({
-                selectable: false,
-                hasControls: false,
-                evented: false,
-                stay: true,
-                stay_when_pos: true,
+            const removed_objects = [];
+            canvas.getObjects().forEach((obj) => {
+                if (obj.type === "rect" || obj.type === "group") {
+                    removed_objects.push(obj);
+                    canvas.remove(obj);
+                }
             });
 
-            originalAdd(obj);
-            canvas.renderAll();
-        });
+            const imageData = canvas.toDataURL({ format: "png", quality: 1 });
 
-        if (side === "front") {
-            final_design.front_image = imageData;
-        } else {
-            final_design.back_image = imageData;
-        }
-    } catch (err) {
-        alert(
-            "Unable to save design. Storage limit reached. Try clearing browser data or removing old designs."
-        );
-    }
-}
-
-function showButtons() {
-    const add_to_cart_btn = document.querySelector("#addToCart");
-    add_to_cart_btn.style.display = "block";
-}
-
-function handleAddToCart() {
-    document
-        .querySelector("#addToCart")
-        .addEventListener("click", function (e) {
-            e.preventDefault();
-
-            if (!final_design.front_image) {
-                alert("Please save your design first");
-                return;
-            }
-
-            const backImage = final_design.back_image || null;
-
-            let form = {
-                front_image: final_design.front_image,
-                back_image: backImage,
-                product_id: product_image.getAttribute("data-id"),
-                v_hash: localStorage.getItem("v_hash"),
-                quantity: localStorage.getItem("quantity") || 1,
-                price: null,
-                default_img: 0,
-            };
-
-            let formData = new FormData();
-            formData.append("front_image", form.front_image);
-            formData.append("product_id", form.product_id);
-            formData.append("v_hash", form.v_hash);
-            formData.append("quantity", form.quantity);
-            formData.append("default_img", form.default_img);
-
-            if (backImage) {
-                formData.append("back_image", backImage);
-            }
-
-            axios
-                .post("/cart", formData)
-                .then((response) => {
-                    alert("Item successfully added to cart");
-                })
-                .catch((error) => {
-                    console.error("Error adding to cart:", error);
-                    alert("There was an error adding the item to cart");
+            removed_objects.forEach((obj) => {
+                obj.set({
+                    selectable: false,
+                    hasControls: false,
+                    evented: false,
+                    stay: true,
                 });
+                originalAdd(obj);
+            });
+
+            canvas.renderAll();
+
+            resolve(imageData);
+        } catch (err) {
+            alert(
+                "Unable to save design. Try clearing browser data or removing old designs."
+            );
+            resolve(null);
+        }
+    });
+}
+
+function addToCart(frontImage, backImage) {
+    if (!frontImage) {
+        alert("Failed to save design. Please try again.");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("front_image", frontImage);
+    formData.append("product_id", product_image.getAttribute("data-id"));
+    formData.append("v_hash", localStorage.getItem("v_hash"));
+    formData.append("quantity", localStorage.getItem("quantity") || 1);
+    formData.append("default_img", 0);
+
+    if (backImage) {
+        formData.append("back_image", backImage);
+    }
+
+    axios
+        .post("/cart", formData)
+        .then(() => alert("Item successfully added to cart"))
+        .catch((error) => {
+            console.error("Error adding to cart:", error);
+            alert("There was an error adding the item to the cart");
         });
+}
+
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
