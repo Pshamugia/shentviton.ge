@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const quantityInput = document.getElementById("quantity");
-    const zoomLevel = document.getElementById("zoom-level");
+     const zoomLevel = document.getElementById("zoom-level");
     const productImage = document.getElementById("product-image");
 
     if (!quantityInput || !zoomLevel || !productImage) {

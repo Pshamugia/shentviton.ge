@@ -153,7 +153,8 @@
             
             <script>
                 $(document).ready(function () {
-                    const selectedSizes = @json(explode(',', $product->size));
+                    const rawSizes = @json($product->size ?? '');
+                    const selectedArray = rawSizes.length ? rawSizes.split(',') : [];
                     const productType = @json($product->type);
             
                     const sizeSelect = $('#size');
@@ -168,43 +169,40 @@
                     ];
             
                     function renderSizeOptions(type) {
-                        let options = '';
+                        let options = [];
             
                         if (type === 'მაისური') {
-                            ['XS', 'S', 'M', 'L', 'XL', 'XXL'].forEach(size => {
-                                const selected = selectedSizes.includes(size) ? 'selected' : '';
-                                options += `<option value="${size}" ${selected}>${size}</option>`;
-                            });
+                            options = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
                         } else if (type === 'კეპი') {
-                            ['6', '7', '7.5'].forEach(size => {
-                                const selected = selectedSizes.includes(size) ? 'selected' : '';
-                                options += `<option value="${size}" ${selected}>${size}</option>`;
-                            });
+                            options = ['6', '7', '7.5'];
                         } else if (type === 'ქეისი') {
-                            iphoneModels.forEach(model => {
-                                const selected = selectedSizes.includes(model) ? 'selected' : '';
-                                options += `<option value="${model}" ${selected}>${model}</option>`;
-                            });
+                            options = iphoneModels;
                         }
             
-                        sizeSelect.html(options);
-                        sizeSelect.trigger("chosen:updated");
-                    }
+                        // Destroy and re-init Chosen
+                        sizeSelect.chosen('destroy');
+                        sizeSelect.empty();
             
-                    // Initialize chosen and load initial options
-                    sizeSelect.chosen({
-                        width: '100%',
-                        placeholder_text_multiple: 'აირჩიეთ ზომები'
-                    });
+                        options.forEach(size => {
+                            sizeSelect.append(new Option(size, size));
+                        });
+            
+                        sizeSelect.val(selectedArray);
+                        sizeSelect.chosen({
+                            width: '100%',
+                            placeholder_text_multiple: 'აირჩიეთ ზომები'
+                        });
+                    }
             
                     renderSizeOptions(productType);
             
-                    // Update size options when type changes
                     $('#type').on('change', function () {
                         renderSizeOptions($(this).val());
                     });
                 });
             </script>
+            
+            
             
 
             <div class="form-group">

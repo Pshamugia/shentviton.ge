@@ -25,6 +25,7 @@ Route::get('/cart/{id}', [CartController::class, 'show'])->name('cart.item.show'
 Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity']);
 
 
+
 Route::get('/search', [App\Http\Controllers\SearchController::class, 'search'])->name('search');
 
 
@@ -38,6 +39,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('products', ProductController::class);
     Route::resource('cliparts', ClipartController::class);
+    Route::put('/admin/products/{id}', [ProductController::class, 'update'])->name('admin.products.update');
+
 });
 
 

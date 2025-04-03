@@ -5,7 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
- 
+ <!-- ✅ Facebook Open Graph Meta Tags -->
+<meta property="og:title" content="@yield('og_title', 'Shentviton - შენი დიზაინი, შენი სტილი')" />
+<meta property="og:description" content="@yield('og_description', 'გააფორმე შენ თვითონ და ატარე უნიკალური პროდუქტი')" />
+<meta property="og:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))" />
+<meta property="og:url" content="{{ url()->current() }}" />
+<meta property="og:type" content="website" />
     <link rel="icon" href="{{ asset('storage/designs/favicon.ico') }}" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>

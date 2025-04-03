@@ -2,6 +2,10 @@
 
 @section('title', $product->title)
 
+@section('og_title', $product->title)
+@section('og_description', Str::limit($product->description, 150))
+@section('og_image', asset('storage/' . $product->image1))
+
 @section('content')
 
 
@@ -42,15 +46,18 @@
             
            
     
-            <!-- Quantity Adjustment -->
-            <div class="mb-3">
-                <label class="form-label d-block">რაოდენობა:</label>
-                <div class="input-group">
-                    <button type="button" class="btn btn-outline-secondary" id="decrement">-</button>
-                    <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control text-center" style="max-width: 70px;">
-                    <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
-                </div>
+           <!-- Quantity Adjustment -->
+           <div class="mb-3">
+            <label class="form-label d-block">რაოდენობა:</label>
+            <div class="input-group">
+                <button type="button" class="btn btn-outline-secondary" id="decrement">-</button>
+                <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control text-center" style="max-width: 70px;">
+                <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
             </div>
+        </div>
+
+ 
+
     
             <!-- Zoom Controls -->
             <div class="mb-4">
@@ -87,4 +94,54 @@
     
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const incrementBtn = document.getElementById('increment');
+        const decrementBtn = document.getElementById('decrement');
+        const quantityInput = document.getElementById('quantity');
+        const maxQuantity = {{ $product->quantity }};
+
+        function updateButtons() {
+            const current = parseInt(quantityInput.value) || 1;
+            incrementBtn.disabled = current >= maxQuantity;
+            decrementBtn.disabled = current <= 1;
+        }
+
+        incrementBtn.addEventListener('click', function () {
+            let current = parseInt(quantityInput.value) || 1;
+
+            if (current >= maxQuantity) {
+                alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
+                return; // Stop here, don't increase
+            }
+
+            quantityInput.value = current + 1;
+            updateButtons();
+        });
+
+        decrementBtn.addEventListener('click', function () {
+            let current = parseInt(quantityInput.value) || 1;
+            if (current > 1) {
+                quantityInput.value = current - 1;
+            }
+            updateButtons();
+        });
+
+        quantityInput.addEventListener('input', function () {
+            let val = parseInt(quantityInput.value);
+            if (isNaN(val) || val < 1) {
+                quantityInput.value = 1;
+            } else if (val > maxQuantity) {
+                quantityInput.value = maxQuantity;
+                alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
+            }
+            updateButtons();
+        });
+
+        // Initialize
+        updateButtons();
+    });
+</script>
+
 @endsection
