@@ -1,21 +1,20 @@
 import "./bootstrap";
 import "/node_modules/@fortawesome/fontawesome-free/css/all.min.css";
-import main from "./main";
 
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("domcontendloaded");
+document.addEventListener("DOMContentLoaded", async function () {
     checkVisitor();
     let current_url = window.location.href;
     console.log("current_url: ", current_url);
     if (current_url.includes("customize")) {
-        // main();
+         const { default: main } = await import("./main");
+        main();
     }
 
     if (current_url.includes("home")) {
         //
     }
 
-    
+
 });
 
 function checkVisitor() {

@@ -215,8 +215,8 @@ class CartController extends Controller
         }
 
         // Back image from the related product
-        if (!empty($cart_item->product) && !empty($cart_item->product->back_image)) {
-            $images->second_image = Storage::url($cart_item->product->back_image);
+        if (!empty($cart_item->design_back_image)) {
+            $images->second_image = Storage::url($cart_item->design_back_image);
         } else {
             $images->second_image = null;
         }

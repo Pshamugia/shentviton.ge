@@ -4,25 +4,35 @@ const getCanvasDefaults = (canvas) => {
     }
 
     return {
-        top_text: {
+        text: {
             fontSize: 30,
             fill: "#000000",
             fontFamily: "Arial",
-            originX: "center",
+            // originX: "center",
             hasControls: true,
             editable: true,
             stay: true,
         },
 
-        bottom_text: {
-            fontSize: 30,
-            fill: "#000000",
-            fontFamily: "Arial",
-            originX: "center",
-            hasControls: true,
-            editable: true,
-            stay: true,
-        },
+        // top_text: {
+        //     fontSize: 30,
+        //     fill: "#000000",
+        //     fontFamily: "Arial",
+        //     originX: "center",
+        //     hasControls: true,
+        //     editable: true,
+        //     stay: true,
+        // },
+
+        // bottom_text: {
+        //     fontSize: 30,
+        //     fill: "#000000",
+        //     fontFamily: "Arial",
+        //     originX: "center",
+        //     hasControls: true,
+        //     editable: true,
+        //     stay: true,
+        // },
 
         მაისური: {
             box: {
@@ -42,7 +52,6 @@ const getCanvasDefaults = (canvas) => {
                 originY: "center",
             },
         },
-
 
         ქეისი: {
             box: {
