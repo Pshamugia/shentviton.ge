@@ -631,7 +631,7 @@ function handleDeleteOnKeyDown() {
     document.addEventListener("keydown", function (e) {
         if (e.key === "Delete") {
             let active = canvas.getActiveObject();
-            if (active) {
+            if (active && active.type === "textbox") {
                 const input = document.getElementById(active.input_id);
                 const remove_btn = input
                     .closest(".text-input-group")
@@ -646,6 +646,10 @@ function handleDeleteOnKeyDown() {
 
                 save_side();
                 save_state(state.current_image_url);
+            } else if (active) {
+                canvas.remove(active);
+                canvas.renderAll();
+                save_side();
             }
         }
     });
