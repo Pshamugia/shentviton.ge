@@ -1,14 +1,14 @@
 import toggleSideBar from "./utils";
 import getCanvasDefaults from "./defaults.js";
-const sidebar = document.querySelector("#clipartSidebar");
-const toggle_btn = document.querySelector("#toggleClipartSidebar");
-const close_btn = document.querySelector("#closeClipartSidebar");
 const canvas = new fabric.Canvas("tshirtCanvas");
 const product_image = document.querySelector("#product-image");
 const designArea = document.querySelector("#design-area");
-const product_type = product_image?.getAttribute("data-type") || 'default';
+const product_type = product_image?.getAttribute("data-type") || "default";
 const default_stroke_width = 2;
 const default_stoke_fill = "#ccc";
+const product_id = product_image?.getAttribute("data-id");
+const front_state_key = `${product_id}.front_design`;
+const back_state_key = `${product_id}.back_design`;
 
 const rand_key = Math.random().toString(36).substring(7);
 
@@ -17,17 +17,18 @@ let cbtns = [...document.querySelectorAll(".text-style-btn")];
 
 let state = {
     current_image_url: "",
+    current_image_side: "front",
 };
 
 let color_chosen = false;
 
 const form = {
-    top_text: document.querySelector("#top_text"),
-    bottom_text: document.querySelector("#bottom_text"),
     font_family: document.querySelector("#font_family"),
     font_size: document.querySelector("#font_size"),
     text_color: document.querySelector("#text_color"),
     btns: cbtns,
+    text_container: document.querySelector("#textInputsContainer"),
+    add_text_btn: document.querySelector("#addTextInput"),
 };
 
 let selectedFrontImage = "";
@@ -37,7 +38,11 @@ let active_text_obj = null;
 let designGroup;
 let originalAdd;
 
+let zoomLevel = 1;
+const zoomStep = 0.1;
+
 export default function main() {
+    // NOT IN USE
     sidebarHandler();
     initCanvas();
     initForm();
@@ -52,14 +57,55 @@ function initCanvas() {
 }
 
 function initGlobalEvents() {
+    document.getElementById("zoom-in").addEventListener("click", () => {
+        if (zoomLevel < 2) {
+            zoomLevel += zoomStep;
+            setCanvasZoom(zoomLevel);
+        }
+    });
+
+    document.getElementById("zoom-out").addEventListener("click", () => {
+        if (zoomLevel > 0.5) {
+            zoomLevel -= zoomStep;
+            setCanvasZoom(zoomLevel);
+        }
+    });
+
+    function setCanvasZoom(zoom) {
+        const center = canvas.getCenter();
+        canvas.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+        updateZoomDisplay();
+    }
+
+    function updateZoomDisplay() {
+        document.getElementById("zoom-level").textContent =
+            Math.round(zoomLevel * 100) + "%";
+    }
+    window.addEventListener("beforeunload", clearLocalStorageOnExit);
+    function clearLocalStorageOnExit() {
+        Object.keys(localStorage).forEach((key) => {
+            if (
+                key.includes("/colors/") ||
+                key === front_state_key ||
+                key === back_state_key ||
+                key === state.current_image_side ||
+                key === rand_key + ".front_design" ||
+                key === rand_key + ".back_design" ||
+                key === rand_key + ".front_image" ||
+                key === rand_key + ".back_image"
+            ) {
+                localStorage.removeItem(key);
+            }
+        });
+    }
     handleDeleteOnKeyDown();
-    handleDesignSave();
     handleAddToCart();
     handleImageSwapping();
     mouseDown();
     resizeObserve();
 
     canvas.on("object:modified", function (e) {
+        save_side();
         save_state(state.current_image_url);
     });
 
@@ -69,8 +115,6 @@ function initGlobalEvents() {
             ...canvas_defaults[product_type].box,
         };
         canvas.getObjects().forEach((obj) => {
-            console.log("obj:", obj);
-
             if (obj && obj.type == "rect") {
                 obj.set({
                     ...params,
@@ -161,26 +205,67 @@ function addInnerBorder() {
             }
         });
         canvas.renderAll();
+        save_side();
         save_state(state.current_image_url);
         return canvas;
     };
 }
 
 function initForm() {
-    handleTextInputs([form.top_text, form.bottom_text]);
     handleInlineTextInputs(text_objects);
     handleFontFamilyInput(form.font_family);
     handleTextColorInput(form.text_color);
     handleFontSizeInput(form.font_size);
     handleTextStyleButtons(form.btns);
+    setupDynamicTextInputs();
 }
 
-//****_________________________________________________________________________________________****//
+function setupDynamicTextInputs() {
+    if (!form.add_text_btn || !form.text_container) {
+        console.error("Add text button or text container not found");
+        return;
+    }
+
+    form.add_text_btn.addEventListener("click", function () {
+        const inputId = "text_" + Date.now();
+        const newInputHTML = `
+            <div class="text-input-group d-flex align-items-center gap-2" data-input-id="${inputId}">
+                <div class="input-wrapper flex-grow-1">
+                    <input type="text" id="${inputId}" class="form-control input-styled my-4 dynamic-text-input" placeholder="შეიყვანე ტექსტი">
+                </div>
+                <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
+            </div>
+
+        `;
+
+        form.text_container.insertAdjacentHTML("beforeend", newInputHTML);
+
+        const newInput = document.getElementById(inputId);
+        if (newInput) {
+            handleTextInputs([newInput]);
+
+            const remove_btn = newInput
+                .closest(".text-input-group")
+                .querySelector(".remove-text-btn");
+            remove_btn.addEventListener("click", function () {
+                if (text_objects[inputId]) {
+                    canvas.remove(text_objects[inputId]);
+                    delete text_objects[inputId];
+                    canvas.renderAll();
+                    save_side();
+                    save_state(state.current_image_url);
+                }
+                newInput.closest(".text-input-group").remove();
+            });
+        }
+    });
+}
 
 function mapTextObjectsToFormInputs() {
     Object.keys(text_objects).forEach((key) => {
-        if (form[key]) {
-            form[key].value = text_objects[key].text;
+        const input = document.getElementById(key);
+        if (input) {
+            input.value = text_objects[key].text;
         }
     });
 }
@@ -195,6 +280,7 @@ function mouseDown() {
                     active_text_obj = options.target;
                 }
             }
+            save_side();
             save_state(state.current_image_url);
         }
     });
@@ -220,6 +306,7 @@ function resizeObserve() {
 
         canvas.renderAll();
 
+        save_side();
         save_state(state.current_image_url);
     });
 }
@@ -228,32 +315,50 @@ function handleImageSwapping() {
     let colorSwitcherBtns = document.querySelectorAll(".color-option");
 
     colorSwitcherBtns.forEach((btn) => {
-        console.log("btn: ", btn);
         btn.addEventListener("click", function (e) {
             color_chosen = true;
             selectedFrontImage = this.getAttribute("data-front-image");
             selectedBackImage = this.getAttribute("data-back-image");
-            console.log(
-                "selectedFrontImage: ",
-                this.getAttribute("data-front-image")
-            );
-            console.log(
-                "selectedBackImage: ",
-                this.getAttribute("data-back-image")
-            );
+            if (!selectedFrontImage.includes("color")) {
+                selectedFrontImage = null;
+            }
+
+            if (!selectedBackImage.includes("color")) {
+                selectedBackImage = null;
+            }
+
             enableFormElements();
-            loadImage(selectedFrontImage, "color", selectedBackImage);
+            if (selectedFrontImage) {
+                loadImage(selectedFrontImage, "color", selectedBackImage);
+            }
         });
     });
 
-    document.querySelector("#showFront").addEventListener("click", function () {
-        loadImage(selectedFrontImage, "pos");
-    });
+    let show_front_btn = document.querySelector("#showFront");
 
-    document.querySelector("#showBack").addEventListener("click", function () {
-        console.log("fired showBack: ", selectedBackImage);
-        loadImage(selectedBackImage, "pos");
-    });
+    if (show_front_btn) {
+        show_front_btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("clicked front");
+            if (!selectedFrontImage) {
+                return;
+            }
+            loadImage(selectedFrontImage, "pos");
+        });
+    }
+
+    let show_back_btn = document.querySelector("#showBack");
+    if (show_back_btn) {
+        show_back_btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("selectedBackImage: ", selectedBackImage);
+            console.log("clicked back");
+            if (!selectedBackImage) {
+                return;
+            }
+            loadImage(selectedBackImage, "pos");
+        });
+    }
 }
 
 function enableFormElements() {
@@ -284,23 +389,37 @@ function hideBorder(obj) {
     });
 }
 
-function loadImage(imageURL, type = "color", backImageURL = "") {
-    console.log("loadImage fired");
+function loadImage(
+    imageURL,
+    type = "color",
+    backImageURL = "",
+    first_time = false
+) {
     if (!imageURL) return;
 
     if (state.current_image_url == imageURL) {
         return;
     }
 
-    // STATE
     state.current_image_url = imageURL;
-    // console.log("state.current_image_url: ", state.current_image_url);
+
+    console.log("imageURL: ", imageURL);
+    console.log("backImageURL: ", backImageURL);
+
     if (type === "pos") {
-        console.log("pos");
-        let obj_state = localStorage.getItem(imageURL);
+        state.current_image_side == "front"
+            ? (state.current_image_side = "back")
+            : (state.current_image_side = "front");
 
+        console.log("changing side to:  ", state.current_image_side);
+
+        let key =
+            state.current_image_side == "front"
+                ? front_state_key
+                : back_state_key;
+
+        let obj_state = localStorage.getItem(key);
         if (!obj_state) {
-            console.log("no state");
             canvas.getObjects().forEach((obj) => {
                 if (
                     !(
@@ -343,121 +462,116 @@ function loadImage(imageURL, type = "color", backImageURL = "") {
                 localStorage.setItem(imageURL, JSON.stringify(canvas));
             });
         } else {
-            console.log("state is: ");
             canvas.clear();
+
+            if (form.text_container) {
+                Array.from(form.text_container.children).forEach((child) => {
+                    if (child.id !== "addTextInput") {
+                        child.remove();
+                    }
+                });
+            }
+
+            let dynamicTextCounter = 0;
+
             canvas.loadFromJSON(obj_state, function () {
                 canvas.renderAll();
                 text_objects = {};
+
+                if (form.text_container) {
+                    form.text_container.innerHTML = "";
+                }
+
                 canvas.getObjects().forEach((obj) => {
-                    console.info("Obj: ", obj);
                     if (obj.type == "rect") {
-                        obj.set({
-                            stay: true,
-                            stay_when_pos: true,
-                            hasControls: false,
-                            selectable: false,
-                            lockMovementX: true,
-                            lockMovementY: true,
-                            lockScalingX: true,
-                            lockScalingY: true,
-                            lockRotation: true,
-                        });
-
-                        hideBorder(obj);
                     }
-
                     if (
                         obj._originalElement &&
                         obj._originalElement.src.includes("color")
                     ) {
-                        obj.set({
-                            selectable: false,
-                            hasControls: false,
-                            excludeFromClipping: true,
-                            product_image: true,
-                        });
-
-                        canvas.sendToBack(obj);
                     }
-
                     if (
                         obj.type == "image" &&
                         obj._originalElement &&
                         obj._originalElement.src.includes("clipart")
                     ) {
-                        obj.set({
-                            selectable: true,
-                            hasControls: true,
-                            excludeFromClipping: false,
-                        });
                     }
-
                     if (obj.type === "textbox") {
-                        if (obj.top < canvas.height / 2) {
-                            obj.input_id = "top_text";
-                            text_objects["top_text"] = obj;
-                            if (
-                                form.top_text instanceof HTMLElement &&
-                                "value" in form.top_text
-                            ) {
-                                form.top_text.value = obj.text;
-                            } else {
-                            }
+                        if (!obj.input_id) {
+                            dynamicTextCounter++;
+                            obj.input_id = "text_" + dynamicTextCounter;
+                        }
+                        text_objects[obj.input_id] = obj;
+                        let existingInput = document.getElementById(
+                            obj.input_id
+                        );
+                        console.log("existingInput: ", existingInput);
+                        if (existingInput) {
+                            existingInput.value = obj.text;
                         } else {
-                            obj.input_id = "bottom_text";
-                            text_objects["bottom_text"] = obj;
-
-                            if (
-                                form.bottom_text instanceof HTMLElement &&
-                                "value" in form.bottom_text
-                            ) {
-                                form.bottom_text.value = obj.text;
-                            } else {
-                            }
+                            createDynamicTextInput(obj.input_id, obj.text);
                         }
                     }
                 });
 
-                handleTextInputs([form.top_text, form.bottom_text]);
+                const dynamicInputs = document.querySelectorAll(
+                    ".dynamic-text-input"
+                );
+
+                console.log("dynamicInputs: ", dynamicInputs);
+                if (dynamicInputs.length > 0) {
+                    handleTextInputs(Array.from(dynamicInputs));
+                }
                 handleInlineTextInputs(text_objects);
-                // reapplyClippingPathsAndGroups();
                 mapTextObjectsToFormInputs();
+            });
+
+            fabric.Image.fromURL(imageURL, function (img) {
+                let scale = Math.min(
+                    canvas.width / img.width,
+                    canvas.height / img.height
+                );
+
+                img.set({
+                    product_image: true,
+                    left: canvas.width / 2,
+                    top: canvas.height / 2,
+                    originX: "center",
+                    originY: "center",
+                    scaleX: scale,
+                    scaleY: scale,
+                    selectable: false,
+                    hasControls: false,
+                    excludeFromClipping: true,
+                });
+
+                canvas.add(img);
+                canvas.sendToBack(img);
+                canvas.renderAll();
             });
         }
 
         return;
     }
 
-    // HANDLING COLOR SWITCH
     if (type == "color") {
-        console.log("color");
-        let obj_state = localStorage.getItem(imageURL);
+        if (first_time) {
+            let key =
+                state.current_image_side == "front"
+                    ? front_state_key
+                    : back_state_key;
+            let obj_state = localStorage.getItem(key);
 
-        if (!obj_state) {
-            console.log("no state");
-            canvas.getObjects().forEach((obj) => {
-                if (
-                    !(
-                        obj.stay ||
-                        obj.stay_when_pos ||
-                        obj.type === "rect" ||
-                        obj.type === "group"
-                    )
-                ) {
-                    canvas.remove(obj);
-                }
+            if (obj_state) {
+                canvas.loadFromJSON(obj_state);
+            }
 
-                if (obj.type == "rect") {
-                    hideBorder(obj);
-                }
-            });
-
-            console.log("came here");
             fabric.Image.fromURL(imageURL, function (img) {
                 let scale = Math.min(
                     canvas.width / img.width,
                     canvas.height / img.height
                 );
+
                 img.set({
                     product_image: true,
                     left: canvas.width / 2,
@@ -474,102 +588,43 @@ function loadImage(imageURL, type = "color", backImageURL = "") {
                 canvas.add(img);
                 canvas.sendToBack(img);
                 canvas.renderAll();
-
-                localStorage.setItem(imageURL, JSON.stringify(canvas));
             });
-
-            form.top_text.value = "";
-            form.bottom_text.value = "";
-        } else {
-            console.log("state");
-            canvas.clear();
-
-            console.log(obj_state);
-            canvas.loadFromJSON(obj_state, function () {
-                canvas.renderAll();
-
-                text_objects = {};
-                canvas.getObjects().forEach((obj) => {
-                    if (obj.type == "rect") {
-                        obj.set({
-                            stay: true,
-                            stay_when_pos: true,
-                            hasControls: false,
-                            selectable: false,
-                            lockMovementX: true,
-                            lockMovementY: true,
-                            lockScalingX: true,
-                            lockScalingY: true,
-                            lockRotation: true,
-                        });
-
-                        hideBorder(obj);
-                    }
-                    if (
-                        obj._originalElement &&
-                        obj._originalElement.src.includes("color")
-                    ) {
-                        obj.set({
-                            selectable: false,
-                            hasControls: false,
-                            excludeFromClipping: true,
-                            product_image: true,
-                        });
-
-                        canvas.sendToBack(obj);
-                    }
-
-                    if (
-                        obj.type == "image" &&
-                        obj._originalElement &&
-                        obj._originalElement.src.includes("clipart")
-                    ) {
-                        obj.set({
-                            selectable: true,
-                            hasControls: true,
-                            excludeFromClipping: false,
-                        });
-                    }
-                    if (obj.type === "textbox") {
-                        if (obj.top < canvas.height / 2) {
-                            obj.input_id = "top_text";
-                            text_objects["top_text"] = obj;
-                            if (
-                                form.top_text instanceof HTMLElement &&
-                                "value" in form.top_text
-                            ) {
-                                form.top_text.value = obj.text;
-                            } else {
-                            }
-                        } else {
-                            obj.input_id = "bottom_text";
-                            text_objects["bottom_text"] = obj;
-
-                            if (
-                                form.bottom_text instanceof HTMLElement &&
-                                "value" in form.bottom_text
-                            ) {
-                                form.bottom_text.value = obj.text;
-                            } else {
-                            }
-                        }
-                    }
-                });
-
-                handleTextInputs([form.top_text, form.bottom_text]);
-                handleInlineTextInputs(text_objects);
-                // reapplyClippingPathsAndGroups();
-                mapTextObjectsToFormInputs();
-            });
+            return;
         }
 
-        if (backImageURL) {
-            state.front_image_url = imageURL;
-            state.back_image_url = backImageURL;
-        }
-
+        swapColor(imageURL, backImageURL);
         return;
     }
+}
+
+function swapColor(imageURL, backImageURL) {
+    removeImage();
+
+    let url = state.current_image_side == "front" ? imageURL : backImageURL;
+    state.current_image_url = url;
+    fabric.Image.fromURL(url, function (img) {
+        let scale = Math.min(
+            canvas.width / img.width,
+            canvas.height / img.height
+        );
+
+        img.set({
+            product_image: true,
+            left: canvas.width / 2,
+            top: canvas.height / 2,
+            originX: "center",
+            originY: "center",
+            scaleX: scale,
+            scaleY: scale,
+            selectable: false,
+            hasControls: false,
+            excludeFromClipping: true,
+        });
+
+        canvas.add(img);
+        canvas.sendToBack(img);
+        canvas.renderAll();
+    });
 }
 
 function handleDeleteOnKeyDown() {
@@ -577,21 +632,29 @@ function handleDeleteOnKeyDown() {
         if (e.key === "Delete") {
             let active = canvas.getActiveObject();
             if (active) {
-                if (active_text_obj === active) {
-                    console.log("was active text object");
-                    active_text_obj = null;
-                    console.log("active: ", active.input_id);
-                    delete text_objects[active.input_id];
-                    console.log("text objects after delete: ", text_objects);
-                    if (form[active.input_id]) {
-                        form[active.input_id].value = "";
-                    }
+                const input = document.getElementById(active.input_id);
+                const remove_btn = input
+                    .closest(".text-input-group")
+                    .querySelector(".remove-text-btn");
+
+                if (remove_btn && input && input.id == active.input_id) {
+                    input.remove();
+                    remove_btn.remove();
                 }
                 canvas.remove(active);
                 canvas.renderAll();
 
+                save_side();
                 save_state(state.current_image_url);
             }
+        }
+    });
+}
+
+function removeImage() {
+    canvas.getObjects().forEach((obj) => {
+        if (obj.product_image) {
+            canvas.remove(obj);
         }
     });
 }
@@ -671,6 +734,7 @@ function applyCurvedTextEffect(obj) {
     });
 
     canvas.renderAll();
+    save_side();
     save_state(state.current_image_url);
 }
 
@@ -679,6 +743,7 @@ function handleFontSizeInput(input) {
         if (active_text_obj) {
             active_text_obj.set("fontSize", parseInt(input.value));
             canvas.renderAll();
+            save_side();
             save_state(state.current_image_url);
         }
     });
@@ -694,6 +759,7 @@ function handleTextColorInput(input) {
             active_text_obj.set("fill", input.value);
             canvas.renderAll();
 
+            save_side();
             save_state(state.current_image_url);
         }
     });
@@ -705,71 +771,51 @@ function handleFontFamilyInput(input) {
             active_text_obj.set("fontFamily", input.value);
             canvas.renderAll();
 
+            save_side();
             save_state(state.current_image_url);
         }
     });
 }
 
 function handleTextInputs(inputs) {
-    console.log("inputs: ", inputs);
+    console.log("inputs in handleTextInputs: ", inputs);
     let canvas_defaults = getCanvasDefaults(canvas);
 
-    if (inputs.length < 2) {
-        let missing = inputs[0].id === "top_text" ? "bottom_text" : "top_text";
-
-        let clipHeight = canvas.height * 0.2;
-        let clipTop = canvas.height / 2 - clipHeight / 2;
-        text_objects[missing] = new fabric.Textbox("", {
-            left: canvas.width / 2,
-            input_id: missing,
-            top:
-                clipTop +
-                (missing === "top_text"
-                    ? clipHeight * 0.25
-                    : clipHeight * 0.75),
-            originX: "center",
-            originY: "center",
-            textAlign: "center",
-            selectable: true,
-            evented: true,
-            ...canvas_defaults[missing],
-        });
-
-        text_objects[missing].set({ text: "" });
-        canvas.add(text_objects[missing]);
-        canvas.setActiveObject(text_objects[missing]);
-        canvas.renderAll();
-        localStorage.setItem(state.current_image_url, JSON.stringify(canvas));
-    }
-
     for (let input of inputs) {
+        if (!input) continue;
+
         input.addEventListener("input", (e) => {
             if (text_objects[input.id]) {
                 text_objects[input.id].set({ text: input.value });
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
                 canvas.renderAll();
-                localStorage.setItem(
-                    state.current_image_url,
-                    JSON.stringify(canvas)
-                );
+                save_side();
             } else {
+                const numExistingTexts = Object.keys(text_objects).length;
                 const clipHeight = canvas.height * 0.2;
                 const clipTop = canvas.height / 2 - clipHeight / 2;
+
+                const index = numExistingTexts % 5;
+                const yPosition = clipTop + (clipHeight * (index + 1)) / 6;
+
+                const textDefaults = canvas_defaults["text"] || {
+                    fontSize: 20,
+                    fontFamily: "Arial",
+                    fill: "#000000",
+                    textAlign: "center",
+                };
+
                 text_objects[input.id] = new fabric.Textbox("", {
                     left: canvas.width / 2,
                     input_id: input.id,
-                    top:
-                        clipTop +
-                        (input.id === "top_text"
-                            ? clipHeight * 0.25
-                            : clipHeight * 0.75),
+                    top: yPosition,
                     originX: "center",
                     originY: "center",
                     textAlign: "center",
                     selectable: true,
                     evented: true,
-                    ...canvas_defaults[input.id],
+                    ...textDefaults,
                 });
 
                 canvas.add(text_objects[input.id]);
@@ -777,28 +823,62 @@ function handleTextInputs(inputs) {
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
                 canvas.renderAll();
-                localStorage.setItem(
-                    state.current_image_url,
-                    JSON.stringify(canvas)
-                );
+                save_side();
             }
         });
     }
 }
 
 function handleInlineTextInputs(objects) {
+    console.log("objects in handleInlineTextInputs: ", objects);
     canvas.on("text:changed", (e) => {
         let obj = e.target;
 
-        let key = Object.keys(text_objects).find(
-            (k) => text_objects[k] === obj
-        );
-        if (key && form[key]) {
-            form[key].value = obj.text;
+        if (obj.input_id) {
+            const input = document.getElementById(obj.input_id);
+            console.log("input: ", input);
+            if (input) {
+                input.value = obj.text;
+            }
         }
 
         save_state(state.current_image_url);
+        save_side();
     });
+}
+
+function createDynamicTextInput(inputId, text) {
+    if (!form.text_container) return;
+
+    const newInputHTML = `
+        <div class="text-input-group d-flex align-items-center gap-2" data-input-id="${inputId}">
+            <div class="input-wrapper flex-grow-1">
+                <input type="text" id="${inputId}" class="form-control input-styled my-4 dynamic-text-input" placeholder="შეიყვანე ტექსტი" value="${
+        text || ""
+    }">
+            </div>
+            <button type="button" class="btn btn-sm btn-danger remove-text-btn">✕</button>
+        </div>
+    `;
+
+    form.text_container.insertAdjacentHTML("beforeend", newInputHTML);
+
+    const newInput = document.getElementById(inputId);
+    if (newInput) {
+        const remove_btn = newInput
+            .closest(".text-input-group")
+            .querySelector(".remove-text-btn");
+        remove_btn.addEventListener("click", function () {
+            if (text_objects[inputId]) {
+                canvas.remove(text_objects[inputId]);
+                delete text_objects[inputId];
+                canvas.renderAll();
+                save_side();
+                save_state(state.current_image_url);
+            }
+            newInput.closest(".text-input-group").remove();
+        });
+    }
 }
 
 function initProductImage() {
@@ -806,19 +886,32 @@ function initProductImage() {
     let first_color = color_btns[0];
     let first_front_image = first_color.getAttribute("data-front-image");
 
-    if (localStorage.getItem(first_front_image)) {
-        loadImage(
-            first_front_image,
-            "color",
-            first_color.getAttribute("data-back-image")
-        );
+    let key = front_state_key;
+
+    let canvas_state = localStorage.getItem(key);
+
+    if (canvas_state) {
+        loadImage(first_front_image, "color", "", true);
 
         selectedFrontImage = first_front_image;
+        if (!selectedFrontImage.includes("color")) {
+            selectedFrontImage = null;
+        }
+
         selectedBackImage = first_color.getAttribute("data-back-image");
+
+        if (!selectedBackImage.includes("color")) {
+            selectedBackImage = null;
+        }
     } else {
-        // state.current_image_url = first_front_image;
         selectedFrontImage = first_front_image;
+        if (!selectedFrontImage.includes("color")) {
+            selectedFrontImage = null;
+        }
         selectedBackImage = first_color.getAttribute("data-back-image");
+        if (!selectedBackImage.includes("color")) {
+            selectedBackImage = null;
+        }
         state.front_image_url = first_front_image;
         state.back_image_url = selectedBackImage;
         loadImage(first_front_image, "color", selectedBackImage);
@@ -827,27 +920,6 @@ function initProductImage() {
 }
 
 function sidebarHandler() {
-    /**
-     * open/close
-     */
-
-    sidebar.classList.add("close");
-    document.addEventListener("click", function (event) {
-        if (
-            !sidebar.contains(event.target) &&
-            event.target !== toggle_btn &&
-            event.target !== close_btn
-        ) {
-            sidebar.classList.remove("open");
-        }
-    });
-
-    toggle_btn.addEventListener("click", (e) => toggleSideBar(e, sidebar));
-    close_btn.addEventListener("click", (e) => toggleSideBar(e, sidebar, 0));
-
-    /**
-     * other
-     */
     clipArtHandler();
     uploadHandler();
 }
@@ -910,11 +982,12 @@ function uploadHandler() {
 
                     canvas.add(img);
                     canvas.setActiveObject(img);
+
+                    save_side();
+                    save_state(state.current_image_url);
                 });
             });
     }
-
-    save_state(state.current_image_url);
 }
 
 function addClipArtToCanvas() {
@@ -963,49 +1036,73 @@ function resizeCanvas(defaulting) {
     }
 }
 
-function save() {
-    // save canvas as image
+function save_side() {
+    let key =
+        state.current_image_side == "front" ? front_state_key : back_state_key;
+
+    let canvasData = canvas.toJSON();
+
+    canvasData.objects = canvasData.objects.filter(
+        (obj) => !obj.src || !obj.src.includes("color")
+    );
+
+    localStorage.setItem(key, JSON.stringify(canvasData));
 }
 
 function save_state(image_url) {
     localStorage.setItem(image_url, JSON.stringify(canvas));
 }
 
-function handleDesignSave() {
+let final_design = {
+    front_image: "",
+    back_image: "",
+};
+
+function handleAddToCart() {
     document
-        .querySelector("#saveDesign")
+        .querySelector("#addToCart")
         .addEventListener("click", function (e) {
             e.preventDefault();
 
-            if (!state.front_image_url || !state.back_image_url) {
-                return;
+            const currentSide = state.current_image_side;
+
+            saveDesignAndImage(currentSide);
+
+            if (selectedBackImage) {
+                if (currentSide === "front" && selectedBackImage) {
+                    loadImage(selectedBackImage, "pos");
+
+                    setTimeout(() => {
+                        saveDesignAndImage("back");
+                        proceedWithAddToCart();
+                    }, 500);
+                } else if (currentSide === "back" && selectedFrontImage) {
+                    loadImage(selectedFrontImage, "pos");
+
+                    setTimeout(() => {
+                        saveDesignAndImage("front");
+                        proceedWithAddToCart();
+                    }, 500);
+                }
+            } else {
+                proceedWithAddToCart();
             }
-
-            const is_front = state.front_image_url === state.current_image_url;
-            const first_side = is_front ? "front" : "back";
-            const second_side = is_front ? "back" : "front";
-            const second_side_url = is_front
-                ? state.back_image_url
-                : state.front_image_url;
-
-            saveDesignAndImage(first_side, rand_key);
-
-            loadImage(second_side_url, "pos");
-
-            setTimeout(() => {
-                saveDesignAndImage(second_side, rand_key);
-                showButtons(rand_key);
-                alert("Item design successfully saved");
-            }, 500);
         });
 }
 
-function saveDesignAndImage(side, rand_key) {
+function saveDesignAndImage(side) {
     try {
+        canvas.setZoom(1);
+        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+        canvas.renderAll();
+
         localStorage.setItem(
             `${rand_key}.${side}_design`,
             JSON.stringify(canvas)
         );
+
+        const stateKey = side === "front" ? front_state_key : back_state_key;
+        localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
 
         const removed_objects = [];
         canvas.getObjects().forEach((obj) => {
@@ -1033,15 +1130,10 @@ function saveDesignAndImage(side, rand_key) {
             canvas.renderAll();
         });
 
-        try {
-            localStorage.setItem(`${rand_key}.${side}_image`, imageData);
-        } catch (err) {
-            if (err.name === "QuotaExceededError") {
-                clearOldDesigns(rand_key);
-                localStorage.setItem(`${rand_key}.${side}_image`, imageData);
-            } else {
-                throw err;
-            }
+        if (side === "front") {
+            final_design.front_image = imageData;
+        } else {
+            final_design.back_image = imageData;
         }
     } catch (err) {
         alert(
@@ -1050,62 +1142,42 @@ function saveDesignAndImage(side, rand_key) {
     }
 }
 
-function clearOldDesigns(currentKey) {
-    const keyPrefix = currentKey.split(".")[0];
-    const keysToRemove = [];
-
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith(keyPrefix) && !key.startsWith(currentKey)) {
-            keysToRemove.push(key);
-        }
+function proceedWithAddToCart() {
+    if (!final_design.front_image) {
+        alert("Please save your design first");
+        return;
     }
 
-    keysToRemove.forEach((key) => {
-        localStorage.removeItem(key);
-    });
-}
+    const backImage = final_design.back_image || null;
 
-function showButtons(rand_key) {
-    const add_to_cart_btn = document.querySelector("#addToCart");
-    add_to_cart_btn.style.display = "block";
-}
-function handleAddToCart() {
-    document
-        .querySelector("#addToCart")
-        .addEventListener("click", function (e) {
-            e.preventDefault();
+    let form = {
+        front_image: final_design.front_image,
+        back_image: backImage,
+        product_id: product_image.getAttribute("data-id"),
+        v_hash: localStorage.getItem("v_hash"),
+        quantity: localStorage.getItem("quantity") || 1,
+        price: null,
+        default_img: 0,
+    };
 
-            if (!state.front_image_url || !state.back_image_url) {
-                return;
-            }
+    let formData = new FormData();
+    formData.append("front_image", form.front_image);
+    formData.append("product_id", form.product_id);
+    formData.append("v_hash", form.v_hash);
+    formData.append("quantity", form.quantity);
+    formData.append("default_img", form.default_img);
 
-            let form = {
-                front_image: localStorage.getItem(rand_key + ".front_image"),
-                back_image: localStorage.getItem(rand_key + ".back_image"),
-                product_id: document
-                    .querySelector("#product-image")
-                    .getAttribute("data-id"),
-                v_hash: localStorage.getItem("v_hash"),
-                quantity: localStorage.getItem("quantity") || 1,
+    if (backImage) {
+        formData.append("back_image", backImage);
+    }
 
-                price: null,
-                default_img: 0,
-            };
-
-            let formData = new FormData();
-            formData.append("front_image", form.front_image);
-            formData.append("back_image", form.back_image);
-            formData.append("product_id", form.product_id);
-            formData.append("v_hash", form.v_hash);
-            formData.append("quantity", form.quantity);
-            formData.append("default_img", form.default_img);
-
-            axios
-                .post("/cart", formData)
-                .then((response) => {
-                    alert("Item successfully added to cart");
-                })
-                .catch((error) => {});
+    axios
+        .post("/cart", formData)
+        .then((response) => {
+            alert("Item successfully added to cart");
+        })
+        .catch((error) => {
+            console.error("Error adding to cart:", error);
+            alert("There was an error adding the item to cart");
         });
 }

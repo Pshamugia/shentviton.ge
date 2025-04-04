@@ -5,18 +5,18 @@
         * {
             box-sizing: border-box;
         }
-        
+
 
         /* Style the tab */
         .tab {
-            float: left; 
+            float: left;
             background-color: #272c33;
             width: 30%;
             height: 400px;
             scrollbar-color: red yellow;
-          
+
         }
-        
+
 
         /* Style the buttons inside the tab */
         .tab button {
@@ -33,7 +33,7 @@
             font-size: 12px;
 
         }
-        
+
 
         /* Change background color of buttons on hover */
         .tab button:hover {
@@ -42,8 +42,8 @@
 
         /* Create an active/current "tab button" class */
         .tab button.active {
-            background-color: #ccc; 
-            margin-left:-20px;
+            background-color: #ccc;
+            margin-left: -20px;
         }
 
         /* Style the tab content */
@@ -61,14 +61,12 @@
             overflow-x: hidden;
             /* ← Optional: disables horizontal scroll */
         }
-
-       
     </style>
     <div class="container">
 
         <div class="row">
             <div class="col-md-5">
- 
+
                 <div class="tab">
                     <button class="tablinks icon-color" onclick="openCity(event, 'product')" id="defaultOpen">
                         <i class="bi bi-clipboard-check-fill icon-color" style="font-size: 20px"></i> <br>
@@ -90,10 +88,12 @@
                 </div>
 
 
-                <div id="product" class="tabcontent" >
+                <div id="product" class="tabcontent">
 
                     <p>
-                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label> </div>
+                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span
+                                class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
+                    </div>
 
                     @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
@@ -102,16 +102,21 @@
                             <div>
                                 <label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
 
-                                @foreach ($productArray['colors'] as $color)
-                                    <button class="color-option" data-color="{{ $color['color_code'] }}"
-                                        data-front-image="{{ asset('storage/' . $color['front_image']) }}"
-                                        data-back-image="{{ asset('storage/' . $color['back_image']) }}"
-                                        data-back-index={{ 'back-' . $color['id'] }}
-                                        data-front-index={{ 'front-' . $color['id'] }} data-index={{ $color['id'] }}
-                                        style="background-color: {{ $color['color_code'] }}; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #000; margin-bottom:22px;">
-                                    </button>
-                                    
-                                @endforeach
+                                <div class="row row-cols-2 g-2 mb-3">
+                                    @foreach ($productArray['colors'] as $color)
+                                        <div class="col text-center">
+                                            <button class="color-option" data-color="{{ $color['color_code'] }}"
+                                                data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+                                                data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+                                                data-back-index={{ 'back-' . $color['id'] }}
+                                                data-front-index={{ 'front-' . $color['id'] }}
+                                                data-index={{ $color['id'] }}
+                                                style="background-color: {{ $color['color_code'] }};
+                                                 ">
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
 
                                 <div>
 
@@ -119,8 +124,8 @@
                                     <form id="customizationForm">
                                         @if (!empty($product->size))
                                         <div class="d-flex align-items-center mb-3">
-                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">@if($product->type === 'ქეისი') აირჩიეთ მოდელი  
-                                                @elseif($product->type === 'მაისური') აირჩიეთ ზომა 
+                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">@if($product->type === 'ქეისი') აირჩიეთ მოდელი
+                                                @elseif($product->type === 'მაისური') აირჩიეთ ზომა
                                                 @else {{ "" }}
                                                 @endif</label>
                                                  <select id="sizeSelect" name="size" class="form-select">
@@ -131,7 +136,7 @@
                                             </div>
                                         @endif
                                     </form>
-                                     
+
                                 </div>
 
 
@@ -139,13 +144,14 @@
                                     <label class="form-label me-2 mb-0" style="white-space: nowrap;">რაოდენობა:</label>
                                     <div class="input-group" style="width: 140px;">
                                         <button type="button" class="btn btn-outline-secondary" id="decrement">-</button>
-                                        <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control text-center">
+                                        <input type="number" name="quantity" id="quantity" value="1" min="1"
+                                            class="form-control text-center">
                                         <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
                                     </div>
                                 </div>
-                              
 
-                                
+
+
                             </div>
                         </div>
                     @endif
@@ -165,62 +171,55 @@
                                 <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
                                 <h4>ატვირთე </h4>
                             </div>
-                            <input type="file" id="uploaded_image" class="form-control">
+                            <input type="file" accept="image/*" id="uploaded_image" class="form-control">
                             <div id="imagePreviewContainer"></div>
                         </div>
                         </p>
                 </div>
 
                 <div id="cliparts" class="tabcontent">
-
-                    <p><button id="toggleClipartSidebar" class="clipart-btn">
-                            <i class="fas fa-palette"></i> კლიპარტი
-                        </button>
-
-                    <div id="clipartSidebar">
-                        <div class="clipart-header">
-                            <button id="closeClipartSidebar" class="close-btn">&times;</button>
-                            <input type="text" id="searchCliparts" class="form-control"
-                                placeholder="🔍 კლიპარტების ძიება">
-                            <select id="clipartCategory">
-                                <option value="all">ყველა კატეგორია</option>
-                                <option value="sport">სპორტი</option>
-                                <option value="funny">სასაცილო</option>
-                                <option value="nature">ბუნება</option>
-                                <option value="animals">ცხოველები</option>
-                            </select>
-                        </div>
-                        <div id="clipartContainer">
-                            @foreach ($cliparts as $clipart)
-                                <div class="clipart-item">
-                                    <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                        data-image="{{ asset('storage/' . $clipart->image) }}"
-                                        src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart">
-                                </div>
-                            @endforeach
-                        </div>
+                    <div class="clipart-header">
+                        <button id="closeClipartSidebar" class="close-btn">&times;</button>
+                        <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
+                        <select id="clipartCategory">
+                            <option value="all">ყველა კატეგორია</option>
+                            <option value="sport">სპორტი</option>
+                            <option value="funny">სასაცილო</option>
+                            <option value="nature">ბუნება</option>
+                            <option value="animals">ცხოველები</option>
+                        </select>
                     </div>
-                    </p>
+                    <div id="clipartContainer">
+                        @foreach ($cliparts as $clipart)
+                            <div class="clipart-item">
+                                <img class="clipart-img" data-category="{{ $clipart->category }}"
+                                    data-image="{{ asset('storage/' . $clipart->image) }}"
+                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart">
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
 
                 <div id="text" class="tabcontent">
-
                     <p>
-
                         <!-- Text Customization Sidebar -->
                     <div class="side-modals" style="padding:5px !important; background-color:#ccc">
 
                         <div class="customization-boxs">
-                            <div class="mb-3">
-                                <label for="top_text" class="form-label">ზედა ტექსტი</label>
-                                <input type="text" id="top_text" class="form-control input-styled"
-                                    placeholder="Enter top text">
+                            <div id="textInputsContainer">
+                                {{-- <div class="mb-3">
+                                    <label for="top_text" class="form-label">ზედა ტექსტი</label>
+                                    <input type="text" id="top_text" class="form-control input-styled"
+                                        placeholder="Enter top text">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bottom_text" class="form-label">ქვედა ტექსტი</label>
+                                    <input type="text" id="bottom_text" class="form-control input-styled"
+                                        placeholder="Enter bottom text">
+                                </div> --}}
+
                             </div>
-                            <div class="mb-3">
-                                <label for="bottom_text" class="form-label">ქვედა ტექსტი</label>
-                                <input type="text" id="bottom_text" class="form-control input-styled"
-                                    placeholder="Enter bottom text">
-                            </div>
+                            <button type="button" id="addTextInput" class="btn btn-primary my-2">+ Add Text</button>
                             <div class="mb-3">
                                 <label for="text_color" class="form-label">ტექსტის ფერი</label>
                                 <input type="color" id="text_color" class="color-picker">
@@ -303,9 +302,16 @@
                 </div>
                 </p>
 
+                <div class="mb-4">
+                    <label class="form-label d-block">გადიდება:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-out">-</button>
+                        <span id="zoom-level" class="mx-2">100%</span>
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-in">+</button>
+                    </div>
+                </div>
 
-                <button id="saveDesign" class="btn save-btn">შეინახე დიზაინი</button>
-                <button id="addToCart" class="btn save-btn" style="display: none">დაამატე კალათაში</button>
+                <button id="addToCart" class="btn save-btn">დაამატე კალათაში</button>
 
                 <a id="previewDesign" class="btn save-btn" style="display: none">Preview Design</a>
                 </form>
@@ -392,13 +398,27 @@
                             <!-- Side Selection (Right Side) -->
 
 
-                            <div class="side-box">
-                                <p class="label">აირჩიეთ მხარე:</p>
-                                <div class="switch-buttons">
-                                    <button id="showFront" class="btn btn-primary" data-image="">წინა</button>
-                                    <button id="showBack" class="btn btn-secondary" data-image="">უკანა</button>
+                            @php
+                                $all_colors_have_front_and_back_images = true;
+
+                                foreach ($productArray['colors'] as $color) {
+                                    if (empty($color['front_image']) || empty($color['back_image'])) {
+                                        $all_colors_have_front_and_back_images = false;
+                                        break;
+                                    }
+                                }
+                            @endphp
+
+                            @if ($all_colors_have_front_and_back_images)
+                                <div class="side-box">
+                                    <p class="label">აირჩიეთ მხარე:</p>
+                                    <div class="switch-buttons">
+
+                                        <button id="showFront" class="btn btn-primary" data-image="">წინა</button>
+                                        <button id="showBack" class="btn btn-secondary" data-image="">უკანა</button>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                     </div>
 
@@ -410,44 +430,44 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const incrementBtn = document.getElementById("increment");
             const decrementBtn = document.getElementById("decrement");
             const quantityInput = document.getElementById("quantity");
             const totalPrice = document.getElementById("total-price");
             const basePrice = {{ intval($product->price) }};
-    
+
             function updateQuantityAndPrice() {
                 const qty = parseInt(quantityInput.value) || 1;
                 quantityInput.value = qty;
-    
+
                 const total = qty * basePrice;
                 totalPrice.textContent = new Intl.NumberFormat().format(total) + " ლარი";
-    
+
                 localStorage.setItem("quantity", qty); // Save to localStorage for main.js
             }
-    
-            incrementBtn.addEventListener("click", function () {
+
+            incrementBtn.addEventListener("click", function() {
                 quantityInput.value = parseInt(quantityInput.value || 1) + 1;
                 updateQuantityAndPrice();
             });
-    
-            decrementBtn.addEventListener("click", function () {
+
+            decrementBtn.addEventListener("click", function() {
                 let current = parseInt(quantityInput.value || 1);
                 if (current > 1) {
                     quantityInput.value = current - 1;
                     updateQuantityAndPrice();
                 }
             });
-    
+
             quantityInput.addEventListener("change", updateQuantityAndPrice);
-    
+
             // Initial update
             updateQuantityAndPrice();
         });
     </script>
-    
-    
-    
-    
+
+
+
+
 @endsection

@@ -60,22 +60,22 @@
                                 transition: background 0.3s ease;">
                                 გააფორმე შენ თვითონ
                             </a>
-                        </div>
-                        <ul class="dropdown-menu" aria-labelledby="readyDesignsDropdown">
+                            <ul class="dropdown-menu" aria-labelledby="readyDesignsDropdown">
 
-                            <li><a class="dropdown-item"
-                                    href="{{ route('products.byType', ['type' => 'all', 'subtype' => 'custom']) }}">ყველას
-                                    ჩვენება</a></li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}">მაისური</a>
-                            </li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('products.byType', ['type' => 'cap', 'subtype' => 'custom']) }}">კეპი</a>
-                            </li>
-                            <li><a class="dropdown-item"
-                                    href="{{ route('products.byType', ['type' => 'phone-case', 'subtype' => 'custom']) }}">ტელეფონის
-                                    ქეისი</a></li>
-                        </ul>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('products.byType', ['type' => 'all', 'subtype' => 'custom']) }}">ყველას
+                                        ჩვენება</a></li>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}">მაისური</a>
+                                </li>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('products.byType', ['type' => 'cap', 'subtype' => 'custom']) }}">კეპი</a>
+                                </li>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('products.byType', ['type' => 'phone-case', 'subtype' => 'custom']) }}">ტელეფონის
+                                        ქეისი</a></li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li class="nav-item dropdown">
@@ -199,16 +199,6 @@
             let navbarCollapse = document.querySelector(".navbar-collapse");
             let navbarToggler = document.querySelector(".navbar-toggler");
 
-            navLinks.forEach(link => {
-                link.addEventListener("click", function() {
-                    if (window.innerWidth <= 992) {
-                        navbarCollapse.classList.remove("collapsing", "show");
-                        let bsCollapse = new bootstrap.Collapse(navbarCollapse);
-                        bsCollapse.hide();
-                        navbarToggler.click();
-                    }
-                });
-            });
 
             // Scroll effect for navbar
             window.addEventListener('scroll', function() {
