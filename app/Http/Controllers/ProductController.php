@@ -241,8 +241,10 @@ class ProductController extends Controller
         $product = Product::with('colors')->find($id);
         $cliparts = Clipart::all(); // Ensure you fetch cliparts
         $product->load('colors'); // ✅ Force load colors manually
+        $productArray = $product->toArray();
 
-        return view('products.show', compact('product', 'cliparts'));
+        
+        return view('products.show', compact('product', 'cliparts', 'productArray'));
     }
 
 

@@ -10,6 +10,9 @@
 
 
 <div class="row">
+
+
+
     <!-- Left Sidebar -->
     <div class="col-md-4 bg-light p-4 rounded shadow-sm">
         <h4 class="mb-3">{{ $product->title }}</h4>
@@ -44,7 +47,18 @@
     </select>
 </div>
             
-           
+<div class="mb-3"><label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
+
+    @foreach ($productArray['colors'] as $color)
+        <button class="color-option" data-color="{{ $color['color_code'] }}"
+            data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+            data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+            data-back-index={{ 'back-' . $color['id'] }}
+            data-front-index={{ 'front-' . $color['id'] }} data-index={{ $color['id'] }}
+            style="background-color: {{ $color['color_code'] }}; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #000; margin-bottom:22px;">
+        </button>
+        
+    @endforeach </div>
     
            <!-- Quantity Adjustment -->
            <div class="mb-3">
