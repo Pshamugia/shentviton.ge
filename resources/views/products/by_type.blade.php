@@ -7,16 +7,41 @@
             <i class="bi bi-app-indicator"></i>  {{ $subtype }} / {{ $type === 'all' ? 'ყველა' : $type }}
         </div>
     
-        <div class="d-flex justify-content-end">
-            <form method="GET" action="{{ route('products.byType', $type) }}">
-                <input type="hidden" name="subtype" value="{{ $subtype }}">
-                <select name="sort" onchange="this.form.submit()" class="form-select w-auto">
-                    <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>უახლესი</option>
-                    <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>ფასი: ზრდადობით</option>
-                    <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>ფასი: კლებადობით</option>
-                </select>
-            </form>
-        </div>
+        @if($type !== 'all')
+    <div class="d-flex justify-content-end">
+        <form method="GET" action="{{ route('products.byType', $type) }}">
+            {{-- Keep current subtype and sort --}}
+            <input type="hidden" name="subtype" value="{{ $subtype }}">
+            <input type="hidden" name="sort" value="{{ $sort }}">
+
+            <select name="size" id="size-select" onchange="this.form.submit()" class="chosen-select">
+                <option value="">
+                    @if($type === 'ქეისი') აირჩიეთ მოდელი  
+                    @elseif($type === 'მაისური') აირჩიეთ ზომა 
+                    @else {{ "" }}
+                    @endif
+                </option>
+
+                @foreach ($allSizes as $size)
+                    <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>
+                        {{ $size }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+    </div>
+@endif
+
+
+<script>
+    $(document).ready(function () {
+        $('.chosen-select').chosen({
+            width: '300px',
+            placeholder_text_single: 'აირჩიეთ'
+        });
+    });
+</script>
+
     </div>
     
     
@@ -30,8 +55,7 @@
                 </a>
                 <div class="card-body">
                     <h5 class="card-title">{{ $product->title }}</h5>
-                    <p class="card-text">{{ $product->description }}</p>
-                    <p><strong>ფასი:</strong> {{ $product->price }}</p>
+                     <p><strong>ფასი:</strong> {{ intval($product->price) }} ლარი</p>
                     <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form" data-product-id="{{ $product->id }}">
                         @csrf
                         <input type="hidden" name="v_hash" value="{{ session('v_hash') }}">

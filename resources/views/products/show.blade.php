@@ -2,6 +2,10 @@
 
 @section('title', $product->title)
 
+@section('og_title', $product->title)
+@section('og_description', Str::limit($product->description, 150))
+@section('og_image', asset('storage/' . $product->image1))
+
 @section('content')
 
 
@@ -16,25 +20,44 @@
             <input type="hidden" name="product_id" value="{{ $product->id }}">
     
             <!-- Size Selection -->
-            <div class="mb-3">
-                <label for="size" class="form-label">ზომა:</label>
-                <select name="size" id="size" class="form-select">
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                </select>
-            </div>
+           
+            
+            @php
+    // These are the sizes selected in admin, stored in the DB as comma-separated string
+    $availableSizes = explode(',', $product->size);
+    $selectedSize = old('size', $selectedSize ?? null); // for preselecting in form if needed
+@endphp
+
+<div class="mb-3">
+    <label for="size" class="form-label">აირჩიეთ</label>
+    <select name="size" id="size" class="form-select" required>
+        <option value=""> @if($product->type === 'ქეისი') აირჩიეთ მოდელი  
+            @elseif($product->type === 'მაისური') აირჩიეთ ზომა 
+            @else {{ "" }}
+            @endif</option>
+
+        @foreach ($availableSizes as $size)
+            <option value="{{ $size }}" {{ $selectedSize == $size ? 'selected' : '' }}>
+                {{ $size }}
+            </option>
+        @endforeach
+    </select>
+</div>
+            
+           
     
-            <!-- Quantity Adjustment -->
-            <div class="mb-3">
-                <label class="form-label d-block">რაოდენობა:</label>
-                <div class="input-group">
-                    <button type="button" class="btn btn-outline-secondary" id="decrement">-</button>
-                    <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control text-center" style="max-width: 70px;">
-                    <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
-                </div>
+           <!-- Quantity Adjustment -->
+           <div class="mb-3">
+            <label class="form-label d-block">რაოდენობა:</label>
+            <div class="input-group">
+                <button type="button" class="btn btn-outline-secondary" id="decrement">-</button>
+                <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control text-center" style="max-width: 70px;">
+                <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
             </div>
+        </div>
+
+ 
+
     
             <!-- Zoom Controls -->
             <div class="mb-4">
@@ -71,4 +94,54 @@
     
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const incrementBtn = document.getElementById('increment');
+        const decrementBtn = document.getElementById('decrement');
+        const quantityInput = document.getElementById('quantity');
+        const maxQuantity = {{ $product->quantity }};
+
+        function updateButtons() {
+            const current = parseInt(quantityInput.value) || 1;
+            incrementBtn.disabled = current >= maxQuantity;
+            decrementBtn.disabled = current <= 1;
+        }
+
+        incrementBtn.addEventListener('click', function () {
+            let current = parseInt(quantityInput.value) || 1;
+
+            if (current >= maxQuantity) {
+                alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
+                return; // Stop here, don't increase
+            }
+
+            quantityInput.value = current + 1;
+            updateButtons();
+        });
+
+        decrementBtn.addEventListener('click', function () {
+            let current = parseInt(quantityInput.value) || 1;
+            if (current > 1) {
+                quantityInput.value = current - 1;
+            }
+            updateButtons();
+        });
+
+        quantityInput.addEventListener('input', function () {
+            let val = parseInt(quantityInput.value);
+            if (isNaN(val) || val < 1) {
+                quantityInput.value = 1;
+            } else if (val > maxQuantity) {
+                quantityInput.value = maxQuantity;
+                alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
+            }
+            updateButtons();
+        });
+
+        // Initialize
+        updateButtons();
+    });
+</script>
+
 @endsection

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DesignController;
@@ -24,6 +25,7 @@ Route::get('/cart/{id}', [CartController::class, 'show'])->name('cart.item.show'
 Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity']);
 
 
+
 Route::get('/search', [App\Http\Controllers\SearchController::class, 'search'])->name('search');
 
 
@@ -37,6 +39,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('products', ProductController::class);
     Route::resource('cliparts', ClipartController::class);
+    Route::put('/admin/products/{id}', [ProductController::class, 'update'])->name('admin.products.update');
+
 });
 
 
@@ -47,7 +51,7 @@ Route::post('/products/{id}/customize', [ProductController::class, 'saveCustomiz
 Route::get('/products/{type}', [ProductController::class, 'showByType'])->name('products.byType');
 
 Auth::routes();
-
+ 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);

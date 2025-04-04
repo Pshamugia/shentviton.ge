@@ -15,8 +15,7 @@
                 </a>
                 <div class="card-body">
                     <h5 class="card-title">{{ $product->title }}</h5>
-                    <p class="card-text">{{ $product->description }}</p>
-                    <p><strong>ფასი:</strong> {{ $product->price }}</p>
+                     <p><strong>ფასი:</strong> {{ intval($product->price) }} ლარი</p>
                     <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form" data-product-id="{{ $product->id }}">
                         @csrf
                         <input type="hidden" name="v_hash" value="{{ session('v_hash') }}">

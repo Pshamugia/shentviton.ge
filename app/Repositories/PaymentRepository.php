@@ -60,7 +60,7 @@ class PaymentRepository
         return $payment ? $payment->delete() : false;
     }
 
-    public function requestPayment(object $payment_dto, ?string $parent_order_id = null): object|bool
+    public function requestPayment(object $payment_dto, ?string $parent_order_id = null)
     {
         $res = $this->gateway->requestPayment($payment_dto, $parent_order_id);
 

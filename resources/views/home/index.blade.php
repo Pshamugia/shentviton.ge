@@ -46,7 +46,7 @@
 
 
     <div class="row">
-        @foreach ($products as $product)
+        @foreach ($readyDesigns as $product)
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <a href="{{ route('products.show', $product->id) }}">
@@ -55,13 +55,12 @@
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">{{ $product->title }}</h5>
-                        <p class="card-text">{{ $product->description }}</p>
-                        <p><strong>ფასი:</strong> {{ $product->price }}</p>
+                         <p><strong>ფასი:</strong> {{ intval($product->price) }} ლარი</p>
                         <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form" data-product-id="{{ $product->id }}">
                             @csrf
                             <input type="hidden" name="v_hash" value="{{ session('v_hash') }}">
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
+                            <input type="number" name="quantity" value="1" min="1" class="form-control mb-2 quantity-input" data-max="{{ $product->quantity }}">
                         
                             @php $inCart = in_array($product->id, $productIdsInCart ?? []); @endphp
                             <button type="submit"
@@ -106,7 +105,7 @@
     </div>
 
     <div class="row">
-        @foreach ($products as $product)
+        @foreach ($customDesigns as $product)
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <a href="{{ route('products.show', $product->id) }}">
@@ -115,8 +114,7 @@
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">{{ $product->title }}</h5>
-                        <p class="card-text">{{ $product->description }}</p>
-                        <p><strong>Price:</strong> ${{ $product->price }}</p>
+                         <p><strong>ფასი:</strong> {{ intval($product->price) }} ლარი</p>
                         <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form" data-product-id="{{ $product->id }}">
                             @csrf
                             <input type="hidden" name="v_hash" value="{{ session('v_hash') }}">
@@ -142,6 +140,26 @@
             </div>
         @endforeach
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.add-to-cart-form').forEach(function (form) {
+                const input = form.querySelector('input[name="quantity"]');
+                const maxQuantity = parseInt(input.dataset.max) || 1;
+    
+                input.addEventListener('input', function () {
+                    let val = parseInt(input.value);
+                    if (isNaN(val) || val < 1) {
+                        input.value = 1;
+                    } else if (val > maxQuantity) {
+                        input.value = maxQuantity;
+                        alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
+                    }
+                });
+            });
+        });
+    </script>
+    
 @endsection 
     
 

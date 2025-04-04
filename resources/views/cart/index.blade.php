@@ -68,9 +68,10 @@
                                     </td>
                                     <td class="text-center align-middle">
                                         <input type="number" min="1" class="form-control cart-qty-input"
-                                            value="{{ $item->quantity }}" data-id="{{ $item->id }}"
-                                            data-price="{{ $item->product->price }}"
-                                            style="width: 70px; display: inline-block;">
+                                        value="{{ $item->quantity }}" data-id="{{ $item->id }}"
+                                        data-price="{{ $item->product->price }}"
+                                        data-max="{{ $item->product->quantity }}"
+                                        style="width: 70px; display: inline-block;">
 
                                     </td>
                                     <td class="text-center align-middle">{{ number_format($item->product->price) }} ლარი
@@ -158,6 +159,7 @@
                     </form>
                 </div>
             </div>
+            
             <!-- JavaScript -->
             <script>
                 document.getElementById("paymentButton").addEventListener("click", function() {
@@ -252,6 +254,47 @@
                     }
                 });
             });
+
+
+
+            document.querySelectorAll(".cart-qty-input").forEach(input => {
+    input.addEventListener("change", function() {
+        const id = this.dataset.id;
+        const unitPrice = parseFloat(this.dataset.price);
+        const maxQuantity = parseInt(this.dataset.max);
+        let qty = parseInt(this.value);
+
+        if (isNaN(qty) || qty < 1) {
+            qty = 1;
+            this.value = 1;
+        } else if (qty > maxQuantity) {
+            qty = maxQuantity;
+            this.value = maxQuantity;
+            alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
+        }
+
+        // Update item's total price
+        const itemTotal = unitPrice * qty;
+        const formattedTotal = new Intl.NumberFormat().format(itemTotal) + " ლარი";
+        const totalElem = document.getElementById(`item-total-${id}`);
+        if (totalElem) {
+            totalElem.textContent = formattedTotal;
+        }
+
+        // Update overall grand total
+        let grandTotal = 0;
+        document.querySelectorAll(".cart-qty-input").forEach(input => {
+            const price = parseFloat(input.dataset.price);
+            const quantity = parseInt(input.value);
+            if (!isNaN(price) && !isNaN(quantity)) {
+                grandTotal += price * quantity;
+            }
+        });
+
+        document.getElementById("grand-total").textContent =
+            new Intl.NumberFormat().format(grandTotal) + " ლარი";
+    });
+});
 
             // Clear entire cart
             document.querySelector(".clear-cart")?.addEventListener("click", function() {

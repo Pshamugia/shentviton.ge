@@ -5,16 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
-    <link rel="stylesheet" href="{{ asset('resources/css/custom.css') }}">
+ <!-- ✅ Facebook Open Graph Meta Tags -->
+<meta property="og:title" content="@yield('og_title', 'Shentviton - შენი დიზაინი, შენი სტილი')" />
+<meta property="og:description" content="@yield('og_description', 'გააფორმე შენ თვითონ და ატარე უნიკალური პროდუქტი')" />
+<meta property="og:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))" />
+<meta property="og:url" content="{{ url()->current() }}" />
+<meta property="og:type" content="website" />
     <link rel="icon" href="{{ asset('storage/designs/favicon.ico') }}" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 
-    @vite(['resources/js/app.js', 'resources/js/product.js', 'resources/css/sass/app.scss', 'resources/css/app.css'])
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite([
+        'resources/css/sass/app.scss',
+        'resources/css/app.css',
+        'resources/css/tabmenu.css',
+        'resources/js/app.js',
+        'resources/js/product.js',
+    ])    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
 </head>
@@ -137,8 +149,8 @@
     </div>
 
     <footer class="bg-dark text-white text-center py-4 mt-5">
-        <div class="container" style="padding: 20px 0 0 0">
-            <div class="row text-center">
+        <div class="container" style="padding: 20px">
+            <div class="row text-center" >
                 <!-- First Column -->
                 <div class="col-md-4 text-start">
 
@@ -148,16 +160,17 @@
 
                 <!-- Second Column -->
                 <div class="col-md-4 text-start">
+                    <div style="margin-bottom:10px">   </div>
                     <ul class="list-inline">
                         <li class="list-inline-item"><a href="{{ route('home') }}" class="nav-link"> <i
-                                    class="bi bi-house-door"></i> საწყისი</a>
+                                    class="bi bi-house-door"></i> &nbsp; საწყისი</a>
                         </li>
                         <br>
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="nav-link"> <i
-                                    class="bi bi-cart2"></i> კალათა</a>
+                                    class="bi bi-cart2"></i> &nbsp; კალათა</a>
                         </li><br>
                         <li class="list-inline-item"><a href="{{ route('terms') }}" class="nav-link"> <i
-                                    class="bi bi-newspaper"></i> წესები და
+                                    class="bi bi-newspaper"></i> &nbsp; წესები და
                                 პირობები</a></li><br>
 
                     </ul>

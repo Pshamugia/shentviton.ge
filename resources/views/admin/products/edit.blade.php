@@ -87,29 +87,7 @@
                 <textarea name="full_text" id="full_text" class="form-control">{{ $product->full_text }}</textarea>
             </div>
 
-            <div class="mb-3">
-                <label for="size" class="form-label">აირჩიეთ ზომები</label>
-                <select name="size[]" id="size" class="form-control chosen-select" multiple>
-                    @php
-                        $selectedSizes = explode(',', $product->size);
-                        $allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-                    @endphp
-
-                    @foreach ($allSizes as $size)
-                        <option value="{{ $size }}" {{ in_array($size, $selectedSizes) ? 'selected' : '' }}>
-                            {{ $size }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <script>
-                $(document).ready(function () {
-                    $('.chosen-select').chosen({
-                        width: '100%',
-                        placeholder_text_multiple: 'აირჩიეთ ზომები'
-                    });
-                });
-            </script>
+            
 
             <div class="mb-3">
                 <label for="quantity" class="form-label">Quantity</label>
@@ -155,17 +133,77 @@
             </div>
 
 
+         
             <div class="mb-3">
                 <label for="type" class="form-label">Product Type</label>
                 <select class="form-control" id="type" name="type" required>
                     <option value="">-- Select Type --</option>
                     <option value="მაისური" {{ $product->type == 'მაისური' ? 'selected' : '' }}>მაისური</option>
                     <option value="კეპი" {{ $product->type == 'კეპი' ? 'selected' : '' }}>კეპი</option>
-                    <option value="ქეისი" {{ $product->type == 'ქეისი' ? 'selected' : '' }}>ქეისი</option>
+                    <option value="ქეისი" {{ $product->type == 'ქეისი' ? 'selected' : '' }}>ტელეფონის ქეისი</option>
                 </select>
-
             </div>
-
+            
+            <div class="mb-3">
+                <label for="size" class="form-label">აირჩიეთ ზომები</label>
+                <select name="size[]" id="size" class="form-control chosen-select" multiple>
+                    {{-- Options will be dynamically inserted via JS --}}
+                </select>
+            </div>
+            
+            <script>
+                $(document).ready(function () {
+                    const rawSizes = @json($product->size ?? '');
+                    const selectedArray = rawSizes.length ? rawSizes.split(',') : [];
+                    const productType = @json($product->type);
+            
+                    const sizeSelect = $('#size');
+                    const iphoneModels = [
+                        'iPhone 7', 'iPhone 7 Plus', 'iPhone 8', 'iPhone 8 Plus',
+                        'iPhone X', 'iPhone XR', 'iPhone XS', 'iPhone XS Max',
+                        'iPhone 11', 'iPhone 11 Pro', 'iPhone 11 Pro Max',
+                        'iPhone 12', 'iPhone 12 Mini', 'iPhone 12 Pro', 'iPhone 12 Pro Max',
+                        'iPhone 13', 'iPhone 13 Mini', 'iPhone 13 Pro', 'iPhone 13 Pro Max',
+                        'iPhone 14', 'iPhone 14 Plus', 'iPhone 14 Pro', 'iPhone 14 Pro Max',
+                        'iPhone 15', 'iPhone 15 Plus', 'iPhone 15 Pro', 'iPhone 15 Pro Max'
+                    ];
+            
+                    function renderSizeOptions(type) {
+                        let options = [];
+            
+                        if (type === 'მაისური') {
+                            options = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                        } else if (type === 'კეპი') {
+                            options = ['6', '7', '7.5'];
+                        } else if (type === 'ქეისი') {
+                            options = iphoneModels;
+                        }
+            
+                        // Destroy and re-init Chosen
+                        sizeSelect.chosen('destroy');
+                        sizeSelect.empty();
+            
+                        options.forEach(size => {
+                            sizeSelect.append(new Option(size, size));
+                        });
+            
+                        sizeSelect.val(selectedArray);
+                        sizeSelect.chosen({
+                            width: '100%',
+                            placeholder_text_multiple: 'აირჩიეთ ზომები'
+                        });
+                    }
+            
+                    renderSizeOptions(productType);
+            
+                    $('#type').on('change', function () {
+                        renderSizeOptions($(this).val());
+                    });
+                });
+            </script>
+            
+            
+            
 
             <div class="form-group">
                 <label>Subtype</label><br>
@@ -209,7 +247,7 @@
         </div>
         <div class="mb-2">
             <label>Upload Back Image</label>
-            <input type="file" name="colors[${colorIndex}][back_image]" class="form-control" accept="image/*" required>
+            <input type="file" name="colors[${colorIndex}][back_image]" class="form-control" accept="image/*">
         </div>
         <button type="button" class="btn btn-danger remove-color">Remove</button>
     `;

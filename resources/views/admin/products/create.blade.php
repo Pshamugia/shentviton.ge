@@ -39,25 +39,7 @@
             <textarea name="full_text" id="full_text" class="form-control"></textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="size" class="form-label">Sizes</label>
-            <select name="size[]" id="size" class="form-control" multiple>
-                <option value="XS">XS</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="XXL">XXL</option>
-            </select>
-        </div>
-        <script>
-            $(document).ready(function () {
-                $('#size').chosen({
-                    width: '100%',
-                    placeholder_text_multiple: 'აირჩიეთ ზომები'
-                });
-            });
-        </script>        
+              
 
         <div class="mb-3">
             <label for="quantity" class="form-label">Quantity</label>
@@ -98,6 +80,68 @@
                 <option value="ქეისი">ტელეფონის ქეისი</option>
             </select>
         </div>
+        
+        <div class="mb-3">
+            <label for="size" class="form-label">Sizes</label>
+            <select name="size[]" id="size" class="form-control" multiple>
+                <!-- Default options for მაისური -->
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+            </select>
+        </div>
+        
+        <script>
+            $(document).ready(function () {
+                const sizeSelect = $('#size');
+                sizeSelect.chosen({
+                    width: '100%',
+                    placeholder_text_multiple: 'აირჩიეთ ზომები'
+                });
+        
+                const iphoneModels = [
+                    'iPhone 7', 'iPhone 7 Plus', 'iPhone 8', 'iPhone 8 Plus',
+                    'iPhone X', 'iPhone XR', 'iPhone XS', 'iPhone XS Max',
+                    'iPhone 11', 'iPhone 11 Pro', 'iPhone 11 Pro Max',
+                    'iPhone 12', 'iPhone 12 Mini', 'iPhone 12 Pro', 'iPhone 12 Pro Max',
+                    'iPhone 13', 'iPhone 13 Mini', 'iPhone 13 Pro', 'iPhone 13 Pro Max',
+                    'iPhone 14', 'iPhone 14 Plus', 'iPhone 14 Pro', 'iPhone 14 Pro Max',
+                    'iPhone 15', 'iPhone 15 Plus', 'iPhone 15 Pro', 'iPhone 15 Pro Max'
+                ];
+        
+                $('#type').on('change', function () {
+                    const selectedType = $(this).val();
+                    let options = '';
+        
+                    if (selectedType === 'მაისური') {
+                        options = `
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        `;
+                    } else if (selectedType === 'კეპი') {
+                        options = `
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="7.5">7.5</option>
+                        `;
+                    } else if (selectedType === 'ქეისი') {
+                        iphoneModels.forEach(model => {
+                            options += `<option value="${model}">${model}</option>`;
+                        });
+                    }
+        
+                    sizeSelect.empty().append(options);
+                    sizeSelect.trigger("chosen:updated");
+                });
+            });
+        </script> 
 
         <div class="form-group">
             <label>Subtype</label><br>
