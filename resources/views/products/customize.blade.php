@@ -104,16 +104,19 @@
 
                                 <div class="row row-cols-2 g-2 mb-3">
                                     @foreach ($productArray['colors'] as $color)
-                                        <div class="col text-center">
-                                            <button class="color-option" data-color="{{ $color['color_code'] }}"
-                                                data-front-image="{{ asset('storage/' . $color['front_image']) }}"
-                                                data-back-image="{{ asset('storage/' . $color['back_image']) }}"
-                                                data-back-index={{ 'back-' . $color['id'] }}
-                                                data-front-index={{ 'front-' . $color['id'] }}
-                                                data-index={{ $color['id'] }}
-                                                style="background-color: {{ $color['color_code'] }};
+                                        <div class="col d-flex justify-content-center">
+                                            <div style="">
+                                                <button class="color-option rounded-full"
+                                                    data-color="{{ $color['color_code'] }}"
+                                                    data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+                                                    data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+                                                    data-back-index={{ 'back-' . $color['id'] }}
+                                                    data-front-index={{ 'front-' . $color['id'] }}
+                                                    data-index={{ $color['id'] }}
+                                                    style="background-color: {{ $color['color_code'] }};
                                                  ">
-                                            </button>
+                                                </button>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -123,12 +126,17 @@
 
                                     <form id="customizationForm">
                                         @if (!empty($product->size))
-                                        <div class="d-flex align-items-center mb-3">
-                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">@if($product->type === 'ქეისი') აირჩიეთ მოდელი
-                                                @elseif($product->type === 'მაისური') აირჩიეთ ზომა
-                                                @else {{ "" }}
-                                                @endif</label>
-                                                 <select id="sizeSelect" name="size" class="form-select">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <label class="form-label me-2 mb-0" style="white-space: nowrap;">
+                                                    @if ($product->type === 'ქეისი')
+                                                        აირჩიეთ მოდელი
+                                                    @elseif($product->type === 'მაისური')
+                                                        აირჩიეთ ზომა
+                                                    @else
+                                                        {{ '' }}
+                                                    @endif
+                                                </label>
+                                                <select id="sizeSelect" name="size" class="form-select">
                                                     @foreach (explode(',', $product->size) as $sizes)
                                                         <option value="{{ trim($sizes) }}">{{ trim($sizes) }}</option>
                                                     @endforeach

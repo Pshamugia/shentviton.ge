@@ -41,6 +41,66 @@ let originalAdd;
 let zoomLevel = 1;
 const zoomStep = 0.1;
 
+fabric.Object.prototype.controls.deleteControl = new fabric.Control({
+    x: 0.5,
+    y: -0.5,
+    offsetY: 0,
+    offsetX: 0,
+    cursorStyle: "pointer",
+    mouseUpHandler: function (eventData, transform) {
+        const target = transform.target;
+        const canvas = target.canvas;
+        const input = target ? document.getElementById(target.input_id) : null;
+        const remove_btn = input
+            ? input
+                  .closest(".text-input-group")
+                  .querySelector(".remove-text-btn")
+            : null;
+
+        if (
+            remove_btn &&
+            input &&
+            input.id == target.input_id &&
+            target.type === "textbox"
+        ) {
+            input.remove();
+            remove_btn.remove();
+            canvas.remove(target);
+            canvas.renderAll();
+            save_side();
+            save_state(state.current_image_url);
+            return;
+        }
+
+        canvas.remove(target);
+        canvas.renderAll();
+        save_side();
+        save_state(state.current_image_url);
+    },
+    render: function (ctx, left, top, styleOverride, fabricObject) {
+        const size = this.sizeX || 24;
+        ctx.save();
+
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(left, top, size / 2, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(left - 5, top - 5);
+        ctx.lineTo(left + 5, top + 5);
+        ctx.moveTo(left + 5, top - 5);
+        ctx.lineTo(left - 5, top + 5);
+        ctx.stroke();
+
+        ctx.restore();
+    },
+    sizeX: 20,
+    sizeY: 20,
+});
+
 export default function main() {
     // NOT IN USE
     sidebarHandler();
@@ -317,6 +377,10 @@ function handleImageSwapping() {
     colorSwitcherBtns.forEach((btn) => {
         btn.addEventListener("click", function (e) {
             color_chosen = true;
+            document
+                .querySelectorAll(".color-option")
+                .forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
             selectedFrontImage = this.getAttribute("data-front-image");
             selectedBackImage = this.getAttribute("data-back-image");
             if (!selectedFrontImage.includes("color")) {
@@ -502,9 +566,17 @@ function loadImage(
                             obj.input_id = "text_" + dynamicTextCounter;
                         }
                         text_objects[obj.input_id] = obj;
+
+                        text_objects[obj.input_id].controls = {
+                            ...fabric.Object.prototype.controls,
+                            deleteControl:
+                                fabric.Object.prototype.controls.deleteControl,
+                        };
+
                         let existingInput = document.getElementById(
                             obj.input_id
                         );
+
                         console.log("existingInput: ", existingInput);
                         if (existingInput) {
                             existingInput.value = obj.text;
@@ -822,6 +894,12 @@ function handleTextInputs(inputs) {
                     ...textDefaults,
                 });
 
+                text_objects[input.id].controls = {
+                    ...fabric.Object.prototype.controls,
+                    deleteControl:
+                        fabric.Object.prototype.controls.deleteControl,
+                };
+
                 canvas.add(text_objects[input.id]);
                 text_objects[input.id].set({ text: input.value });
                 canvas.setActiveObject(text_objects[input.id]);
@@ -984,6 +1062,12 @@ function uploadHandler() {
                         selectable: true,
                     });
 
+                    img.controls = {
+                        ...fabric.Object.prototype.controls,
+                        deleteControl:
+                            fabric.Object.prototype.controls.deleteControl,
+                    };
+
                     canvas.add(img);
                     canvas.setActiveObject(img);
 
@@ -1012,6 +1096,11 @@ function addClipArtToCanvas() {
             hasControls: true,
             stay: true,
         });
+
+        img.controls = {
+            ...fabric.Object.prototype.controls,
+            deleteControl: fabric.Object.prototype.controls.deleteControl,
+        };
 
         canvas.add(img);
         canvas.setActiveObject(img);
@@ -1179,6 +1268,10 @@ function proceedWithAddToCart() {
         .post("/cart", formData)
         .then((response) => {
             alert("Item successfully added to cart");
+            let count = document.getElementById("cart-count").textContent;
+            console.log("count is: ", count);
+            count++;
+            document.getElementById("cart-count").textContent = count;
         })
         .catch((error) => {
             console.error("Error adding to cart:", error);
