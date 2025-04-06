@@ -64,9 +64,9 @@ const getCanvasDefaults = (canvas) => {
                 stay: true,
                 stay_when_pos: true,
                 left: canvas.width / 2,
-                top: canvas.height / 2,
-                width: canvas.width * 0.4,
-                height: canvas.height * 0.2,
+                top: (canvas.height / 2) + 50, // pushes it 50px below center
+                width: canvas.width * 0.3,
+                height: canvas.height * 0.3,
                 originX: "center",
                 originY: "center",
             },

@@ -61,6 +61,15 @@
             overflow-x: hidden;
             /* ← Optional: disables horizontal scroll */
         }
+
+        @media (max-width: 768px) {
+    .icon-adjust {
+        align-items: center;
+        float: left;
+        position: relative;
+    }
+}
+
     </style>
     <div class="container">
 
@@ -69,22 +78,22 @@
 
                 <div class="tab">
                     <button class="tablinks icon-color" onclick="openCity(event, 'product')" id="defaultOpen">
-                        <i class="bi bi-clipboard-check-fill icon-color" style="font-size: 20px"></i> <br>
-                        პროდუქტი
+                        <span class="icon-adjust"> <i class="bi bi-clipboard-check-fill icon-color" style="font-size: 20px"></i> <br>
+                        პროდუქტი </span>
                     </button>
 
 
                     <button class="tablinks icon-color" onclick="openCity(event, 'uploader')" id="defaultOpen">
-                        <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
-                        ატვირთე
+                      <span class="icon-adjust">  <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
+                        ატვირთე </span>
                     </button>
 
                     <button class="tablinks icon-color" onclick="openCity(event, 'cliparts')">
-                        <i class="fas fa-palette icon-color" style="font-size: 20px"></i> <br>
-                        კლიპარტი</button>
+                        <span class="icon-adjust"> <i class="fas fa-palette icon-color" style="font-size: 20px"></i> <br>
+                        კლიპარტი </span></button>
                     <button class="tablinks icon-color" onclick="openCity(event, 'text')">
-                        <i class="bi bi-chat-square-quote-fill icon-color" style="font-size:20px"></i> <br>
-                        ტექსტი</button>
+                        <span class="icon-adjust"><i class="bi bi-chat-square-quote-fill icon-color" style="font-size:20px"></i> <br>
+                        ტექსტი </span></button>
                 </div>
 
 
@@ -98,7 +107,7 @@
                     @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
                         <!-- Color Selection (Left Side) -->
-                        <div class="color-box" style="margin-top:50px;">
+                        <div class="color-box" style="margin-top:50px; margin-left:30px">
                             <div>
                                 <label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
 
@@ -179,15 +188,20 @@
 
                 <div id="cliparts" class="tabcontent">
                     <div class="clipart-header">
-                        <button id="closeClipartSidebar" class="close-btn">&times;</button>
-                        <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
-                        <select id="clipartCategory">
-                            <option value="all">ყველა კატეგორია</option>
+                        <br>
+                         <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
+                         <select id="clipartCategory" class="chosen-select" data-placeholder="აირჩიე კატეგორია">
+                            <option value="all">ყველა</option>
                             <option value="sport">სპორტი</option>
-                            <option value="funny">სასაცილო</option>
-                            <option value="nature">ბუნება</option>
-                            <option value="animals">ცხოველები</option>
-                        </select>
+                            <option value="funny">სახალისო</option>
+                            <option value="love">სასიყვარულო</option>
+                            <option value="animation">ანიმაციური გმირები</option>
+                            <option value="animals">ცხოველთა სამყარო</option>
+                            <option value="emoji">ემოჯები</option>
+                            <option value="tigerskin">ვეფხისტყაოსანი</option>
+                            <option value="mamapapuri">მამაპაპური</option> 
+                            <option value="qatuli">ქართული თემა</option> 
+                                                </select>
                     </div>
                     <div id="clipartContainer">
                         @foreach ($cliparts as $clipart)
@@ -199,6 +213,25 @@
                         @endforeach
                     </div>
                 </div>
+                <script>
+                    $(document).ready(function() {
+                        $('.chosen-select').chosen({width: "100%"});
+                        $('#clipartCategory').on('change', function () {
+    const selectedCategory = $(this).val();
+
+    $('.clipart-item').each(function () {
+        const category = $(this).find('.clipart-img').data('category');
+
+        if (selectedCategory === 'all' || selectedCategory === category) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+});
+
+                    });
+                </script>
 
                 <div id="text" class="tabcontent">
                     <p>
@@ -370,6 +403,7 @@
                             align-items: center;
                             /* Center content */
                             text-align: center;
+                            padding-right: 10px;
                         }
 
                         .label {

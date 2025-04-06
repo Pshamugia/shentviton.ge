@@ -32,7 +32,7 @@
 @endphp
 
 <div class="mb-3">
-    <label for="size" class="form-label">აირჩიეთ</label>
+   
     <select name="size" id="size" class="form-select" required>
         <option value=""> @if($product->type === 'ქეისი') აირჩიეთ მოდელი  
             @elseif($product->type === 'მაისური') აირჩიეთ ზომა 
@@ -46,19 +46,30 @@
         @endforeach
     </select>
 </div>
-            
-<div class="mb-3"><label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
+ 
+@if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
-    @foreach ($productArray['colors'] as $color)
-        <button class="color-option" data-color="{{ $color['color_code'] }}"
-            data-front-image="{{ asset('storage/' . $color['front_image']) }}"
-            data-back-image="{{ asset('storage/' . $color['back_image']) }}"
-            data-back-index={{ 'back-' . $color['id'] }}
-            data-front-index={{ 'front-' . $color['id'] }} data-index={{ $color['id'] }}
-            style="background-color: {{ $color['color_code'] }}; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #000; margin-bottom:22px;">
-        </button>
-        
-    @endforeach </div>
+<div class="mb-3 pt-4 pb-4" style="background-color: #e2dfdf; padding-left:10px; border-radius: 5px"> 
+    
+    <label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
+
+    <div class="row row-cols-3 g-2 mb-3">
+
+        @foreach ($productArray['colors'] as $color)
+            <div class="col text-center">
+                <button class="color-option" data-color="{{ $color['color_code'] }}"
+                    data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+                    data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+                    data-back-index={{ 'back-' . $color['id'] }}
+                    data-front-index={{ 'front-' . $color['id'] }}
+                    data-index={{ $color['id'] }}
+                    style="background-color: {{ $color['color_code'] }};
+                     ">
+                </button>
+            </div>
+        @endforeach
+
+    </div></div> @endif
     
            <!-- Quantity Adjustment -->
            <div class="mb-3">
@@ -111,51 +122,48 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const incrementBtn = document.getElementById('increment');
-        const decrementBtn = document.getElementById('decrement');
-        const quantityInput = document.getElementById('quantity');
-        const maxQuantity = {{ $product->quantity }};
+        // Existing quantity logic is already above...
 
-        function updateButtons() {
-            const current = parseInt(quantityInput.value) || 1;
-            incrementBtn.disabled = current >= maxQuantity;
-            decrementBtn.disabled = current <= 1;
-        }
+        const colorButtons = document.querySelectorAll('.color-option');
+        const productImage = document.getElementById('product-image');
 
-        incrementBtn.addEventListener('click', function () {
-            let current = parseInt(quantityInput.value) || 1;
+        colorButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const frontImage = this.getAttribute('data-front-image');
+                if (frontImage) {
+                    productImage.src = frontImage;
+                }
 
-            if (current >= maxQuantity) {
-                alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
-                return; // Stop here, don't increase
-            }
-
-            quantityInput.value = current + 1;
-            updateButtons();
+                // Optional: add an active border to selected color
+                colorButtons.forEach(btn => btn.classList.remove('selected-color'));
+                this.classList.add('selected-color');
+            });
         });
-
-        decrementBtn.addEventListener('click', function () {
-            let current = parseInt(quantityInput.value) || 1;
-            if (current > 1) {
-                quantityInput.value = current - 1;
-            }
-            updateButtons();
-        });
-
-        quantityInput.addEventListener('input', function () {
-            let val = parseInt(quantityInput.value);
-            if (isNaN(val) || val < 1) {
-                quantityInput.value = 1;
-            } else if (val > maxQuantity) {
-                quantityInput.value = maxQuantity;
-                alert("მარაგში მხოლოდ " + maxQuantity + " ცალია.");
-            }
-            updateButtons();
-        });
-
-        // Initialize
-        updateButtons();
     });
+    const colorButtons = document.querySelectorAll('.color-option');
+        const productImage = document.getElementById('product-image');
+
+        colorButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault(); // ✅ Prevent triggering validation
+
+                const frontImage = this.getAttribute('data-front-image');
+                if (frontImage) {
+                    productImage.src = frontImage;
+                }
+
+                colorButtons.forEach(btn => btn.classList.remove('selected-color'));
+                this.classList.add('selected-color');
+            });
+        });
+    
 </script>
+
+<style>
+    .color-option.selected-color {
+        border: 3px solid red !important;
+    }
+</style>
+
 
 @endsection

@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('content')
+@section('title', 'clipart')
+ @section('content')
 <div class="container">
     <h3>Upload Clipart</h3>
 
@@ -14,9 +15,16 @@
         <div class="mb-3">
             <label for="category" class="form-label">Category</label>
             <select id="category" name="category" class="form-control" required>
-                <option value="all">All</option>
-                <option value="sport">Sport</option>
-                <option value="funny">Funny</option>
+                <option value="all">ყველა</option>
+                            <option value="sport">სპორტი</option>
+                            <option value="funny">სახალისო</option>
+                            <option value="love">სასიყვარულო</option>
+                            <option value="animation">ანიმაციური გმირები</option>
+                            <option value="animals">ცხოველთა სამყარო</option>
+                            <option value="emoji">ემოჯები</option>
+                            <option value="tigerskin">ვეფხისტყაოსანი</option>
+                            <option value="mamapapuri">მამაპაპური</option> 
+                            <option value="qatuli">ქართული თემა</option>
             </select>
         </div>
 
