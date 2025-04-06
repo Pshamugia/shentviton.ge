@@ -1197,6 +1197,20 @@ function saveDesignAndImage(side) {
         const stateKey = side === "front" ? front_state_key : back_state_key;
         localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
 
+        let assets = [];
+
+        canvas.getObjects().forEach((obj) => {
+             if (
+                 obj.type !== "rect" &&
+                 obj.type !== "group" &&
+                 !obj?.product_image
+             ) {
+                 assets.push(obj);
+             }
+        });
+
+        console.log("assets: ", assets);
+
         const removed_objects = [];
         canvas.getObjects().forEach((obj) => {
             if (obj.type === "rect" || obj.type === "group") {
@@ -1242,15 +1256,23 @@ function proceedWithAddToCart() {
     }
 
     const backImage = final_design.back_image || null;
+    const front_assets = null;
+    const back_assets = null;
+
+    let size_input = document.querySelector("#sizeSelect");
+    const size = size_input.value;
 
     let form = {
         front_image: final_design.front_image,
         back_image: backImage,
+        front_assets: front_assets,
+        back_assets: back_assets,
         product_id: product_image.getAttribute("data-id"),
         v_hash: localStorage.getItem("v_hash"),
         quantity: localStorage.getItem("quantity") || 1,
         price: null,
         default_img: 0,
+        size: size,
     };
 
     let formData = new FormData();

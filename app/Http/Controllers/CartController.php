@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CartStatus;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -15,10 +16,12 @@ class CartController extends Controller
     {
         $auth_id = auth()->id();
         $visitor_hash = session('v_hash');
-        $cartItems = Cart::pluck('product_id')->toArray();
 
-        $cartItems = Cart::where('user_id', $auth_id)
-            ->orWhere('visitor_hash', $visitor_hash)
+        $cartItems = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
+            $query->where('user_id', $auth_id)
+                ->orWhere('visitor_hash', $visitor_hash);
+        })
+            ->where('status', CartStatus::PENDING)
             ->get();
 
         // Store product IDs in a session or pass to view for button logic
@@ -44,6 +47,9 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
             'front_image' => 'nullable|string',
             'back_image' => 'nullable|string',
+            'front_assets' => 'nullable|string',
+            'back_assets' => 'nullable|string',
+            'size' => 'nullable|string',
         ]);
 
         $visitor_id = $request['v_hash'] ?? session('v_hash');
@@ -73,8 +79,11 @@ class CartController extends Controller
                 'updated_at' => now(),
             ]);
 
-            $cartCount = Cart::where('user_id', $auth_user_id)
-                ->orWhere('visitor_hash', $visitor_id)
+            $cartCount = Cart::where(function ($query) use ($auth_user_id, $visitor_id) {
+                $query->where('user_id', $auth_user_id)
+                    ->orWhere('visitor_hash', $visitor_id);
+            })
+                ->where('status', CartStatus::PENDING)
                 ->count();
 
             session(['cart_count' => $cartCount]);
@@ -94,16 +103,17 @@ class CartController extends Controller
 
 
             if ($request->expectsJson() || $request->ajax()) {
-                $cartCount = Cart::where('user_id', $auth_user_id)
-                    ->orWhere('visitor_hash', $visitor_id)
+                $cartCount = Cart::where(function ($query) use ($auth_user_id, $visitor_id) {
+                    $query->where('user_id', $auth_user_id)
+                        ->orWhere('visitor_hash', $visitor_id);
+                })
                     ->count();
 
                 return response()->json([
                     'success' => true,
                     'cartCount' => $cartCount,
                     'productId' => $request->product_id,
-                    'cartItemId' => $cartId  // <-- this line is necessary
-
+                    'cartItemId' => $cartId,
                 ]);
             }
 
@@ -164,8 +174,11 @@ class CartController extends Controller
             $auth_id = auth()->id();
             $visitor_hash = session('v_hash');
 
-            $cartCount = Cart::where('user_id', $auth_id)
-                ->orWhere('visitor_hash', $visitor_hash)
+            $cartCount = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
+                $query->where('user_id', $auth_id)
+                    ->orWhere('visitor_hash', $visitor_hash);
+            })
+                ->where('status', CartStatus::PENDING)
                 ->count();
 
             session(['cart_count' => $cartCount]);
@@ -179,9 +192,9 @@ class CartController extends Controller
         }
     }
 
+
     public function clear()
     {
-
         $auth_id = auth()->id();
         $visitor_hash = session('v_hash');
 
@@ -189,8 +202,11 @@ class CartController extends Controller
             return response()->json(['error' => 'Please login to remove items from cart!'], 400);
         }
 
-        $cartItems = Cart::where('user_id', $auth_id)
-            ->orWhere('visitor_hash', $visitor_hash)
+        $cartItems = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
+            $query->where('user_id', $auth_id)
+                ->orWhere('visitor_hash', $visitor_hash);
+        })
+            ->where('status', CartStatus::PENDING)
             ->get();
 
         foreach ($cartItems as $item) {
@@ -199,6 +215,7 @@ class CartController extends Controller
 
         return response()->json(['success' => 'All items removed from cart successfully!'], 200);
     }
+
 
     public function show($id)
     {

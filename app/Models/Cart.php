@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTO\DBPaymentData;
+use App\Enums\CartStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,9 +22,15 @@ class Cart extends Model
         "default_img",
         "design_front_image",
         "design_back_image",
+        "front_assets",
+        "back_assets",
+        "status",
         "payment_id",
     ];
 
+    protected $casts = [
+        "status"=> CartStatus::class,
+    ];
 
     public function product()
     {

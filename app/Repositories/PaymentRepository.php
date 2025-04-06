@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Cart;
 use App\Models\Payment;
+use App\Enums\CartStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\Eloquent\Collection;
 use App\Services\Payments\PaymentGatewayInterface;
@@ -67,7 +68,6 @@ class PaymentRepository
         if ($res) {
             return $res;
         } else {
-            // todo handle error
             return false;
         }
     }
@@ -133,9 +133,14 @@ class PaymentRepository
         return $payment->wasChanged();
     }
 
-    public function updateCartPaymentID($payment_id)
+    public function updateCart($payment_id, $status)
     {
         $payment = Payment::find($payment_id);
+        $payment_success = $status == 'success';
+
+        if (!$payment) {
+            return false;
+        }
 
         $cart_ids = $payment->cart_ids;
 
@@ -143,6 +148,11 @@ class PaymentRepository
             $cart = Cart::find($cart_id);
             if ($cart) {
                 $cart->payment_id = $payment_id;
+                if ($payment_success) {
+                    $cart->status = CartStatus::PAID;
+                } else {
+                    $cart->status = CartStatus::PENDING;
+                }
                 $cart->save();
             }
         }

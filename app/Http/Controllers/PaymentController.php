@@ -75,7 +75,7 @@ class PaymentController extends Controller
 
 
         $payment_status_updated = $this->repository->updatePaymentStatus($payment_id, $status);
-        $updated_cart = $this->repository->updateCartPaymentID($payment_id);
+        $updated_cart = $this->repository->updateCart($payment_id, $status);
 
         if ($payment_status_updated) {
             return redirect()->to(route('payment.status.public', ['id' => $payment_id]));

@@ -283,6 +283,9 @@
                                     button.classList.add('btn-success');
                                     button.dataset.cartItemId = data.cartItemId;
 
+                                    console.log("data.cartCOunt: ",data
+                                        .cartCount )
+
                                     document.getElementById('cart-count').textContent = data
                                         .cartCount;
                                 }
