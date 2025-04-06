@@ -1156,121 +1156,126 @@ let final_design = {
 function handleAddToCart() {
     document
         .querySelector("#addToCart")
-        .addEventListener("click", function (e) {
+        .addEventListener("click", async function (e) {
             e.preventDefault();
 
             const currentSide = state.current_image_side;
 
-            saveDesignAndImage(currentSide);
+            try {
+                await saveDesignAndImage(currentSide);
 
-            if (selectedBackImage) {
-                if (currentSide === "front" && selectedBackImage) {
-                    loadImage(selectedBackImage, "pos");
-
-                    setTimeout(() => {
-                        saveDesignAndImage("back");
-                        proceedWithAddToCart();
-                    }, 500);
-                } else if (currentSide === "back" && selectedFrontImage) {
-                    loadImage(selectedFrontImage, "pos");
-
-                    setTimeout(() => {
-                        saveDesignAndImage("front");
-                        proceedWithAddToCart();
-                    }, 500);
+                if (selectedBackImage) {
+                    if (currentSide === "front") {
+                        loadImage(selectedBackImage, "pos");
+                        setTimeout(async () => {
+                            await saveDesignAndImage("back");
+                            proceedWithAddToCart();
+                        }, 500);
+                    } else if (currentSide === "back") {
+                        loadImage(selectedFrontImage, "pos");
+                        setTimeout(async () => {
+                            await saveDesignAndImage("front");
+                            proceedWithAddToCart();
+                        }, 500);
+                    }
+                } else {
+                    proceedWithAddToCart();
                 }
-            } else {
-                proceedWithAddToCart();
+            } catch (err) {
+                alert("Failed to save design before adding to cart.");
+                console.error(err);
             }
         });
 }
+
 
 function saveDesignAndImage(side) {
-    try {
-        canvas.setZoom(1);
-        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-        canvas.renderAll();
-
-        const stateKey = side === "front" ? front_state_key : back_state_key;
-        localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
-
-        let tempCanvas = new fabric.Canvas(null, {
-            width: canvas.width,
-            height: canvas.height,
-        });
-
-        canvas.getObjects().forEach((obj) => {
-            if (
-                obj.type !== "rect" &&
-                obj.type !== "group" &&
-                !obj?.product_image
-            ) {
-                let objData = obj.toObject();
-                fabric.util.enlivenObjects(
-                    [objData],
-                    function (enlivenedObjects) {
-                        let newObj = enlivenedObjects[0];
-                        tempCanvas.add(newObj);
-                        tempCanvas.renderAll();
-                    }
-                );
-            }
-        });
-
-        setTimeout(() => {
-            let assetsImageData = tempCanvas.toDataURL({
-                format: "png",
-                quality: 1,
-                backgroundColor: "transparent",
-            });
-
-            if (side === "front") {
-                final_design.front_assets = assetsImageData;
-            } else {
-                final_design.back_assets = assetsImageData;
-            }
-
-            tempCanvas.dispose();
-        }, 100);
-
-        const removed_objects = [];
-        canvas.getObjects().forEach((obj) => {
-            if (obj.type === "rect" || obj.type === "group") {
-                removed_objects.push(obj);
-                canvas.remove(obj);
-            }
-        });
-
-        const imageData = canvas.toDataURL({
-            format: "png",
-            quality: 1,
-        });
-
-        removed_objects.forEach((obj) => {
-            obj.set({
-                selectable: false,
-                hasControls: false,
-                evented: false,
-                stay: true,
-                stay_when_pos: true,
-            });
-
-            originalAdd(obj);
+    return new Promise((resolve, reject) => {
+        try {
+            canvas.setZoom(1);
+            canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
             canvas.renderAll();
-        });
 
-        if (side === "front") {
-            final_design.front_image = imageData;
-        } else {
-            final_design.back_image = imageData;
+            const stateKey =
+                side === "front" ? front_state_key : back_state_key;
+            localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
+
+            const tempCanvas = new fabric.Canvas(null, {
+                width: canvas.width,
+                height: canvas.height,
+            });
+
+            const objectsToAdd = canvas
+                .getObjects()
+                .filter(
+                    (obj) =>
+                        obj.type !== "rect" &&
+                        obj.type !== "group" &&
+                        !obj?.product_image
+                );
+
+            const objectData = objectsToAdd.map((obj) => obj.toObject());
+
+            fabric.util.enlivenObjects(objectData, function (enlivenedObjects) {
+                enlivenedObjects.forEach((obj) => tempCanvas.add(obj));
+                tempCanvas.renderAll();
+
+                const assetsImageData = tempCanvas.toDataURL({
+                    format: "png",
+                    quality: 1,
+                    backgroundColor: "transparent",
+                });
+
+                if (side === "front") {
+                    final_design.front_assets = assetsImageData;
+                } else {
+                    final_design.back_assets = assetsImageData;
+                }
+
+                tempCanvas.dispose();
+
+                // Save design image
+                const removed_objects = [];
+                canvas.getObjects().forEach((obj) => {
+                    if (obj.type === "rect" || obj.type === "group") {
+                        removed_objects.push(obj);
+                        canvas.remove(obj);
+                    }
+                });
+
+                const imageData = canvas.toDataURL({
+                    format: "png",
+                    quality: 1,
+                });
+
+                removed_objects.forEach((obj) => {
+                    obj.set({
+                        selectable: false,
+                        hasControls: false,
+                        evented: false,
+                        stay: true,
+                        stay_when_pos: true,
+                    });
+                    originalAdd(obj);
+                });
+
+                canvas.renderAll();
+
+                if (side === "front") {
+                    final_design.front_image = imageData;
+                } else {
+                    final_design.back_image = imageData;
+                }
+
+                resolve(); // 🎯 We're done here
+            });
+        } catch (err) {
+            console.error("Error saving design:", err);
+            reject(err);
         }
-    } catch (err) {
-        console.error("Error saving design:", err);
-        alert(
-            "Unable to save design. Storage limit reached. Try clearing browser data or removing old designs."
-        );
-    }
+    });
 }
+
 
 function proceedWithAddToCart() {
     if (!final_design.front_image) {

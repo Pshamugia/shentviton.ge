@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Cart;
-use App\Services\Payments\PaymentProcessor;
+use App\Models\Payment;
+use App\Mail\NewPaymentMail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\PaymentRequest;
 use App\Repositories\PaymentRepository;
+use App\Services\Payments\PaymentProcessor;
 
 class PaymentController extends Controller
 {
@@ -75,9 +78,15 @@ class PaymentController extends Controller
 
 
         $payment_status_updated = $this->repository->updatePaymentStatus($payment_id, $status);
-        $updated_cart = $this->repository->updateCart($payment_id, $status);
+        $cart_updated = $this->repository->updateCarts($payment_id, $status);
 
-        if ($payment_status_updated) {
+        $payment = Payment::find($payment_id);
+
+        Mail::to(config('mail.to.admin.address'))
+            ->send(new NewPaymentMail($payment));
+
+
+        if ($payment_status_updated && $cart_updated) {
             return redirect()->to(route('payment.status.public', ['id' => $payment_id]));
         } else {
             Log::error('Payment status update failed.', [

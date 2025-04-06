@@ -133,7 +133,7 @@ class PaymentRepository
         return $payment->wasChanged();
     }
 
-    public function updateCart($payment_id, $status)
+    public function updateCarts($payment_id, $status)
     {
         $payment = Payment::find($payment_id);
         $payment_success = $status == 'success';
@@ -156,5 +156,8 @@ class PaymentRepository
                 $cart->save();
             }
         }
+
+
+        return true;
     }
 }
