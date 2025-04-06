@@ -42,6 +42,7 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
@@ -75,6 +76,8 @@ class CartController extends Controller
                 'default_img' => $request->default_img ?? 1,
                 'design_front_image' => null,
                 'design_back_image' => null,
+                'front_assets' => null,
+                'back_assets' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -95,6 +98,8 @@ class CartController extends Controller
                     DB::table('carts')->where('id', $cartId)->update([
                         'design_front_image' => $imagePaths['front'] ?? null,
                         'design_back_image' => $imagePaths['back'] ?? null,
+                        'front_assets' => $imagePaths['front_assets'] ?? null,
+                        'back_assets' => $imagePaths['back_assets'] ?? null,
                     ]);
                 }
             }
@@ -146,6 +151,22 @@ class CartController extends Controller
                 $backImageName = $cartId . '_back.png';
                 if (Storage::disk('public')->put('designs/' . $backImageName, base64_decode($backImageData))) {
                     $paths['back'] = 'designs/' . $backImageName;
+                }
+            }
+
+            if ($request->front_assets) {
+                $frontAssetsData = $this->cleanBase64Data($request->front_assets);
+                $frontAssetsName = $cartId . '_assets_front.png';
+                if (Storage::disk('public')->put('designs/' . $frontAssetsName, base64_decode($frontAssetsData))) {
+                    $paths['front_assets'] = 'designs/' . $frontAssetsName;
+                }
+            }
+
+            if ($request->back_assets) {
+                $backAssetsData = $this->cleanBase64Data($request->back_assets);
+                $backAssetsName = $cartId . '_assets_back.png';
+                if (Storage::disk('public')->put('designs/' . $backAssetsName, base64_decode($backAssetsData))) {
+                    $paths['back_assets'] = 'designs/' . $backAssetsName;
                 }
             }
 

@@ -1149,6 +1149,8 @@ function save_state(image_url) {
 let final_design = {
     front_image: "",
     back_image: "",
+    front_assets: "",
+    back_assets: "",
 };
 
 function handleAddToCart() {
@@ -1189,27 +1191,47 @@ function saveDesignAndImage(side) {
         canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
         canvas.renderAll();
 
-        localStorage.setItem(
-            `${rand_key}.${side}_design`,
-            JSON.stringify(canvas)
-        );
-
         const stateKey = side === "front" ? front_state_key : back_state_key;
         localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
 
-        let assets = [];
-
-        canvas.getObjects().forEach((obj) => {
-             if (
-                 obj.type !== "rect" &&
-                 obj.type !== "group" &&
-                 !obj?.product_image
-             ) {
-                 assets.push(obj);
-             }
+        let tempCanvas = new fabric.Canvas(null, {
+            width: canvas.width,
+            height: canvas.height,
         });
 
-        console.log("assets: ", assets);
+        canvas.getObjects().forEach((obj) => {
+            if (
+                obj.type !== "rect" &&
+                obj.type !== "group" &&
+                !obj?.product_image
+            ) {
+                let objData = obj.toObject();
+                fabric.util.enlivenObjects(
+                    [objData],
+                    function (enlivenedObjects) {
+                        let newObj = enlivenedObjects[0];
+                        tempCanvas.add(newObj);
+                        tempCanvas.renderAll();
+                    }
+                );
+            }
+        });
+
+        setTimeout(() => {
+            let assetsImageData = tempCanvas.toDataURL({
+                format: "png",
+                quality: 1,
+                backgroundColor: "transparent",
+            });
+
+            if (side === "front") {
+                final_design.front_assets = assetsImageData;
+            } else {
+                final_design.back_assets = assetsImageData;
+            }
+
+            tempCanvas.dispose();
+        }, 100);
 
         const removed_objects = [];
         canvas.getObjects().forEach((obj) => {
@@ -1243,6 +1265,7 @@ function saveDesignAndImage(side) {
             final_design.back_image = imageData;
         }
     } catch (err) {
+        console.error("Error saving design:", err);
         alert(
             "Unable to save design. Storage limit reached. Try clearing browser data or removing old designs."
         );
@@ -1256,8 +1279,8 @@ function proceedWithAddToCart() {
     }
 
     const backImage = final_design.back_image || null;
-    const front_assets = null;
-    const back_assets = null;
+    const front_assets = final_design.front_assets || null;
+    const back_assets = final_design.back_assets || null;
 
     let size_input = document.querySelector("#sizeSelect");
     const size = size_input.value;
@@ -1277,6 +1300,7 @@ function proceedWithAddToCart() {
 
     let formData = new FormData();
     formData.append("front_image", form.front_image);
+    formData.append("front_assets", form.front_assets);
     formData.append("product_id", form.product_id);
     formData.append("v_hash", form.v_hash);
     formData.append("quantity", form.quantity);
@@ -1285,6 +1309,12 @@ function proceedWithAddToCart() {
     if (backImage) {
         formData.append("back_image", backImage);
     }
+
+    if (back_assets) {
+        formData.append("back_assets", back_assets);
+    }
+
+    console.log("form: ", form);
 
     axios
         .post("/cart", formData)
