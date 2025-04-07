@@ -484,6 +484,11 @@ function loadImage(
 
         let obj_state = localStorage.getItem(key);
         if (!obj_state) {
+            Array.from(form.text_container.children).forEach((child) => {
+                if (child.id !== "addTextInput") {
+                    child.remove();
+                }
+            });
             canvas.getObjects().forEach((obj) => {
                 if (
                     !(
@@ -529,6 +534,7 @@ function loadImage(
             canvas.clear();
 
             if (form.text_container) {
+                console.log("here??");
                 Array.from(form.text_container.children).forEach((child) => {
                     if (child.id !== "addTextInput") {
                         child.remove();
@@ -1188,7 +1194,6 @@ function handleAddToCart() {
         });
 }
 
-
 function saveDesignAndImage(side) {
     return new Promise((resolve, reject) => {
         try {
@@ -1275,7 +1280,6 @@ function saveDesignAndImage(side) {
         }
     });
 }
-
 
 function proceedWithAddToCart() {
     if (!final_design.front_image) {

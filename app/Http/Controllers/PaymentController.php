@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Cart;
 use App\Models\Payment;
 use App\Mail\NewPaymentMail;
+use App\Mail\OrderStatusMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\PaymentRequest;
@@ -85,6 +86,8 @@ class PaymentController extends Controller
         Mail::to(config('mail.to.admin.address'))
             ->send(new NewPaymentMail($payment));
 
+        Mail::to($payment->u_email)
+            ->send(new OrderStatusMail($payment));
 
         if ($payment_status_updated && $cart_updated) {
             return redirect()->to(route('payment.status.public', ['id' => $payment_id]));
