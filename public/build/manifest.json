@@ -92,7 +92,7 @@
     "src": "resources/fonts/bpg_boxo-boxo.ttf"
   },
   "resources/js/app.js": {
-    "file": "assets/app-BrDJe3bR.js",
+    "file": "assets/app-CifCBEoI.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -114,7 +114,7 @@
     ]
   },
   "resources/js/main.js": {
-    "file": "assets/main-BcvgTAzV.js",
+    "file": "assets/main-Bqsb4LWh.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isDynamicEntry": true

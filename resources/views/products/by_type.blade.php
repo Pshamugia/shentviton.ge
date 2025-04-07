@@ -18,6 +18,7 @@
                 <option value="">
                     @if($type === 'ქეისი') აირჩიეთ მოდელი  
                     @elseif($type === 'მაისური') აირჩიეთ ზომა 
+                    @elseif($type === 'პოლო') აირჩიეთ ზომა 
                     @else {{ "" }}
                     @endif
                 </option>

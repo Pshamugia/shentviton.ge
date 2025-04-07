@@ -17,6 +17,7 @@
             <select id="category" name="category" class="form-control" required>
                 <option value="all">ყველა</option>
                             <option value="sport">სპორტი</option>
+                            <option value="cars">მანქანები</option>
                             <option value="funny">სახალისო</option>
                             <option value="love">სასიყვარულო</option>
                             <option value="animation">ანიმაციური გმირები</option>

@@ -69,6 +69,12 @@
                                         href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}">მაისური</a>
                                 </li>
                                 <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'polo', 'subtype' => 'custom']) }}">პოლო მაისური</a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                href="{{ route('products.byType', ['type' => 'hoodie', 'subtype' => 'custom']) }}">ჰუდი</a>
+                        </li>
+                                <li><a class="dropdown-item"
                                         href="{{ route('products.byType', ['type' => 'cap', 'subtype' => 'custom']) }}">კეპი</a>
                                 </li>
                                 <li><a class="dropdown-item"

@@ -34,6 +34,7 @@ class ProductController extends Controller
             'hoodie' => 'ჰუდი',
             'phone-case' => 'ქეისი',
             'cap' => 'კეპი',
+            'polo' => 'პოლო',
         ];
     
         $typeSlug = $type;
