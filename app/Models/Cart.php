@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use App\DTO\DBPaymentData;
+use App\Enums\CartStatus;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Auth;
 
 class Cart extends Model
 {
@@ -21,9 +20,15 @@ class Cart extends Model
         "default_img",
         "design_front_image",
         "design_back_image",
+        "front_assets",
+        "back_assets",
+        "status",
         "payment_id",
     ];
 
+    protected $casts = [
+        "status"=> CartStatus::class,
+    ];
 
     public function product()
     {
@@ -40,14 +45,18 @@ class Cart extends Model
         $user_id = auth()->id();
         $visitor_hash = session('v_hash');
 
-        $cart_items = Cart::where('user_id', $user_id)
-            ->orWhere('visitor_hash', $visitor_hash)
+        $cart_items = Cart::where(function ($query) use ($user_id, $visitor_hash) {
+            $query->where('user_id', $user_id)
+                ->orWhere('visitor_hash', $visitor_hash);
+        })
+            ->where('status', CartStatus::PENDING)
             ->get();
 
         $dto = DBPaymentData::fromCartCollectionAndFormData($cart_items, $form_data);
 
-        return $dto ? $dto : null;
+        return $dto ?: null;
     }
+
 
     public function isPaid()
     {

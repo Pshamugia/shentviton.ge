@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CartStatus;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -15,10 +16,12 @@ class CartController extends Controller
     {
         $auth_id = auth()->id();
         $visitor_hash = session('v_hash');
-        $cartItems = Cart::pluck('product_id')->toArray();
 
-        $cartItems = Cart::where('user_id', $auth_id)
-            ->orWhere('visitor_hash', $visitor_hash)
+        $cartItems = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
+            $query->where('user_id', $auth_id)
+                ->orWhere('visitor_hash', $visitor_hash);
+        })
+            ->where('status', CartStatus::PENDING)
             ->get();
 
         // Store product IDs in a session or pass to view for button logic
@@ -39,11 +42,15 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'front_image' => 'nullable|string',
             'back_image' => 'nullable|string',
+            'front_assets' => 'nullable|string',
+            'back_assets' => 'nullable|string',
+            'size' => 'nullable|string',
         ]);
 
         $visitor_id = $request['v_hash'] ?? session('v_hash');
@@ -69,12 +76,17 @@ class CartController extends Controller
                 'default_img' => $request->default_img ?? 1,
                 'design_front_image' => null,
                 'design_back_image' => null,
+                'front_assets' => null,
+                'back_assets' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            $cartCount = Cart::where('user_id', $auth_user_id)
-                ->orWhere('visitor_hash', $visitor_id)
+            $cartCount = Cart::where(function ($query) use ($auth_user_id, $visitor_id) {
+                $query->where('user_id', $auth_user_id)
+                    ->orWhere('visitor_hash', $visitor_id);
+            })
+                ->where('status', CartStatus::PENDING)
                 ->count();
 
             session(['cart_count' => $cartCount]);
@@ -86,6 +98,8 @@ class CartController extends Controller
                     DB::table('carts')->where('id', $cartId)->update([
                         'design_front_image' => $imagePaths['front'] ?? null,
                         'design_back_image' => $imagePaths['back'] ?? null,
+                        'front_assets' => $imagePaths['front_assets'] ?? null,
+                        'back_assets' => $imagePaths['back_assets'] ?? null,
                     ]);
                 }
             }
@@ -94,16 +108,17 @@ class CartController extends Controller
 
 
             if ($request->expectsJson() || $request->ajax()) {
-                $cartCount = Cart::where('user_id', $auth_user_id)
-                    ->orWhere('visitor_hash', $visitor_id)
+                $cartCount = Cart::where(function ($query) use ($auth_user_id, $visitor_id) {
+                    $query->where('user_id', $auth_user_id)
+                        ->orWhere('visitor_hash', $visitor_id);
+                })
                     ->count();
 
                 return response()->json([
                     'success' => true,
                     'cartCount' => $cartCount,
                     'productId' => $request->product_id,
-                    'cartItemId' => $cartId  // <-- this line is necessary
-
+                    'cartItemId' => $cartId,
                 ]);
             }
 
@@ -139,6 +154,22 @@ class CartController extends Controller
                 }
             }
 
+            if ($request->front_assets) {
+                $frontAssetsData = $this->cleanBase64Data($request->front_assets);
+                $frontAssetsName = $cartId . '_assets_front.png';
+                if (Storage::disk('public')->put('designs/' . $frontAssetsName, base64_decode($frontAssetsData))) {
+                    $paths['front_assets'] = 'designs/' . $frontAssetsName;
+                }
+            }
+
+            if ($request->back_assets) {
+                $backAssetsData = $this->cleanBase64Data($request->back_assets);
+                $backAssetsName = $cartId . '_assets_back.png';
+                if (Storage::disk('public')->put('designs/' . $backAssetsName, base64_decode($backAssetsData))) {
+                    $paths['back_assets'] = 'designs/' . $backAssetsName;
+                }
+            }
+
             return !empty($paths) ? $paths : null;
         } catch (\Exception $e) {
             Log::error('Design image save failed: ' . $e->getMessage());
@@ -164,8 +195,11 @@ class CartController extends Controller
             $auth_id = auth()->id();
             $visitor_hash = session('v_hash');
 
-            $cartCount = Cart::where('user_id', $auth_id)
-                ->orWhere('visitor_hash', $visitor_hash)
+            $cartCount = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
+                $query->where('user_id', $auth_id)
+                    ->orWhere('visitor_hash', $visitor_hash);
+            })
+                ->where('status', CartStatus::PENDING)
                 ->count();
 
             session(['cart_count' => $cartCount]);
@@ -179,9 +213,9 @@ class CartController extends Controller
         }
     }
 
+
     public function clear()
     {
-
         $auth_id = auth()->id();
         $visitor_hash = session('v_hash');
 
@@ -189,8 +223,11 @@ class CartController extends Controller
             return response()->json(['error' => 'Please login to remove items from cart!'], 400);
         }
 
-        $cartItems = Cart::where('user_id', $auth_id)
-            ->orWhere('visitor_hash', $visitor_hash)
+        $cartItems = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
+            $query->where('user_id', $auth_id)
+                ->orWhere('visitor_hash', $visitor_hash);
+        })
+            ->where('status', CartStatus::PENDING)
             ->get();
 
         foreach ($cartItems as $item) {
@@ -199,6 +236,7 @@ class CartController extends Controller
 
         return response()->json(['success' => 'All items removed from cart successfully!'], 200);
     }
+
 
     public function show($id)
     {
