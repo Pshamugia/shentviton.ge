@@ -200,9 +200,16 @@
                     <div id="clipartContainer">
                         @foreach ($cliparts as $clipart)
                             <div class="clipart-item">
-                                <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                    data-image="{{ asset('storage/' . $clipart->image) }}"
-                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart">
+                                @if ($loop->first)
+                                    <img class="clipart-img" data-category="{{ $clipart->category }}"
+                                        data-image="{{ asset('storage/' . $clipart->image) }}"
+                                        src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart"
+                                        fetchpriority="high">
+                                @else
+                                    <img class="clipart-img" data-category="{{ $clipart->category }}"
+                                        data-image="{{ asset('storage/' . $clipart->image) }}"
+                                        src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart" loading="lazy">
+                                @endif
                             </div>
                         @endforeach
                     </div>

@@ -66,14 +66,14 @@ fabric.Object.prototype.controls.deleteControl = new fabric.Control({
             input.remove();
             remove_btn.remove();
             canvas.remove(target);
-            canvas.renderAll();
+            canvas.requestRenderAll();
             save_side();
             save_state(state.current_image_url);
             return;
         }
 
         canvas.remove(target);
-        canvas.renderAll();
+        canvas.requestRenderAll();
         save_side();
         save_state(state.current_image_url);
     },
@@ -181,7 +181,7 @@ function initGlobalEvents() {
                     stroke: "#ccc",
                     strokeWidth: 2,
                 });
-                canvas.renderAll();
+                canvas.requestRenderAll();
             }
         });
     });
@@ -264,7 +264,7 @@ function addInnerBorder() {
                 originalAdd(obj);
             }
         });
-        canvas.renderAll();
+        canvas.requestRenderAll();
         save_side();
         save_state(state.current_image_url);
         return canvas;
@@ -311,7 +311,7 @@ function setupDynamicTextInputs() {
                 if (text_objects[inputId]) {
                     canvas.remove(text_objects[inputId]);
                     delete text_objects[inputId];
-                    canvas.renderAll();
+                    canvas.requestRenderAll();
                     save_side();
                     save_state(state.current_image_url);
                 }
@@ -364,7 +364,7 @@ function resizeObserve() {
             }
         });
 
-        canvas.renderAll();
+        canvas.requestRenderAll();
 
         save_side();
         save_state(state.current_image_url);
@@ -526,7 +526,7 @@ function loadImage(
 
                 canvas.add(img);
                 canvas.sendToBack(img);
-                canvas.renderAll();
+                canvas.requestRenderAll();
 
                 localStorage.setItem(imageURL, JSON.stringify(canvas));
             });
@@ -545,7 +545,7 @@ function loadImage(
             let dynamicTextCounter = 0;
 
             canvas.loadFromJSON(obj_state, function () {
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 text_objects = {};
 
                 if (form.text_container) {
@@ -625,7 +625,7 @@ function loadImage(
 
                 canvas.add(img);
                 canvas.sendToBack(img);
-                canvas.renderAll();
+                canvas.requestRenderAll();
             });
         }
 
@@ -665,7 +665,7 @@ function loadImage(
 
                 canvas.add(img);
                 canvas.sendToBack(img);
-                canvas.renderAll();
+                canvas.requestRenderAll();
             });
             return;
         }
@@ -701,7 +701,7 @@ function swapColor(imageURL, backImageURL) {
 
         canvas.add(img);
         canvas.sendToBack(img);
-        canvas.renderAll();
+        canvas.requestRenderAll();
     });
 }
 
@@ -720,13 +720,13 @@ function handleDeleteOnKeyDown() {
                     remove_btn.remove();
                 }
                 canvas.remove(active);
-                canvas.renderAll();
+                canvas.requestRenderAll();
 
                 save_side();
                 save_state(state.current_image_url);
             } else if (active) {
                 canvas.remove(active);
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
             }
         }
@@ -770,7 +770,7 @@ function handleTextStyleButtons(buttons) {
             };
 
             if (actions[style]) actions[style]();
-            canvas.renderAll();
+            canvas.requestRenderAll();
         });
     });
 }
@@ -815,7 +815,7 @@ function applyCurvedTextEffect(obj) {
         left: canvas.width / 2,
     });
 
-    canvas.renderAll();
+    canvas.requestRenderAll();
     save_side();
     save_state(state.current_image_url);
 }
@@ -824,7 +824,7 @@ function handleFontSizeInput(input) {
     input.addEventListener("input", (e) => {
         if (active_text_obj) {
             active_text_obj.set("fontSize", parseInt(input.value));
-            canvas.renderAll();
+            canvas.requestRenderAll();
             save_side();
             save_state(state.current_image_url);
         }
@@ -839,7 +839,7 @@ function handleTextColorInput(input) {
     input.addEventListener("change", (e) => {
         if (active_text_obj) {
             active_text_obj.set("fill", input.value);
-            canvas.renderAll();
+            canvas.requestRenderAll();
 
             save_side();
             save_state(state.current_image_url);
@@ -851,7 +851,7 @@ function handleFontFamilyInput(input) {
     input.addEventListener("change", (e) => {
         if (active_text_obj) {
             active_text_obj.set("fontFamily", input.value);
-            canvas.renderAll();
+            canvas.requestRenderAll();
 
             save_side();
             save_state(state.current_image_url);
@@ -871,7 +871,7 @@ function handleTextInputs(inputs) {
                 text_objects[input.id].set({ text: input.value });
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
             } else {
                 const numExistingTexts = Object.keys(text_objects).length;
@@ -910,7 +910,7 @@ function handleTextInputs(inputs) {
                 text_objects[input.id].set({ text: input.value });
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
             }
         });
@@ -960,7 +960,7 @@ function createDynamicTextInput(inputId, text) {
             if (text_objects[inputId]) {
                 canvas.remove(text_objects[inputId]);
                 delete text_objects[inputId];
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
                 save_state(state.current_image_url);
             }
@@ -970,41 +970,50 @@ function createDynamicTextInput(inputId, text) {
 }
 
 function initProductImage() {
-    let color_btns = document.querySelectorAll(".color-option");
-    let first_color = color_btns[0];
-    let first_front_image = first_color.getAttribute("data-front-image");
+    // showLoadingIndicator();
 
-    let key = front_state_key;
+    const color_btns = document.querySelectorAll(".color-option");
+    const first_color = color_btns[0];
+    const first_front_image = first_color.getAttribute("data-front-image");
+    const first_back_image = first_color.getAttribute("data-back-image");
 
-    let canvas_state = localStorage.getItem(key);
+    selectedFrontImage = first_front_image.includes("color")
+        ? first_front_image
+        : null;
+    selectedBackImage = first_back_image.includes("color")
+        ? first_back_image
+        : null;
 
-    if (canvas_state) {
-        loadImage(first_front_image, "color", "", true);
+    state.front_image_url = first_front_image;
+    state.back_image_url = selectedBackImage;
 
-        selectedFrontImage = first_front_image;
-        if (!selectedFrontImage.includes("color")) {
-            selectedFrontImage = null;
+    preloadImage(first_front_image).then(() => {
+        const key = front_state_key;
+        const canvas_state = localStorage.getItem(key);
+
+        if (canvas_state) {
+            requestAnimationFrame(() => {
+                loadImage(first_front_image, "color", "", true);
+                // hideLoadingIndicator();
+                enableFormElements();
+            });
+        } else {
+            requestAnimationFrame(() => {
+                loadImage(first_front_image, "color", selectedBackImage);
+                // hideLoadingIndicator();
+                enableFormElements();
+            });
         }
+    });
+}
 
-        selectedBackImage = first_color.getAttribute("data-back-image");
-
-        if (!selectedBackImage.includes("color")) {
-            selectedBackImage = null;
-        }
-    } else {
-        selectedFrontImage = first_front_image;
-        if (!selectedFrontImage.includes("color")) {
-            selectedFrontImage = null;
-        }
-        selectedBackImage = first_color.getAttribute("data-back-image");
-        if (!selectedBackImage.includes("color")) {
-            selectedBackImage = null;
-        }
-        state.front_image_url = first_front_image;
-        state.back_image_url = selectedBackImage;
-        loadImage(first_front_image, "color", selectedBackImage);
-    }
-    enableFormElements();
+function preloadImage(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+    });
 }
 
 function sidebarHandler() {
@@ -1110,7 +1119,7 @@ function addClipArtToCanvas() {
 
         canvas.add(img);
         canvas.setActiveObject(img);
-        canvas.renderAll();
+        canvas.requestRenderAll();
         save_state(state.current_image_url);
     });
 }
@@ -1199,7 +1208,7 @@ function saveDesignAndImage(side) {
         try {
             canvas.setZoom(1);
             canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-            canvas.renderAll();
+            canvas.requestRenderAll();
 
             const stateKey =
                 side === "front" ? front_state_key : back_state_key;
@@ -1223,7 +1232,7 @@ function saveDesignAndImage(side) {
 
             fabric.util.enlivenObjects(objectData, function (enlivenedObjects) {
                 enlivenedObjects.forEach((obj) => tempCanvas.add(obj));
-                tempCanvas.renderAll();
+                tempCanvas.requestRenderAll();
 
                 const assetsImageData = tempCanvas.toDataURL({
                     format: "png",
@@ -1264,7 +1273,7 @@ function saveDesignAndImage(side) {
                     originalAdd(obj);
                 });
 
-                canvas.renderAll();
+                canvas.requestRenderAll();
 
                 if (side === "front") {
                     final_design.front_image = imageData;
