@@ -17,20 +17,30 @@ class CartController extends Controller
         $auth_id = auth()->id();
         $visitor_hash = session('v_hash');
 
-        $cartItems = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
-            $query->where('user_id', $auth_id)
-                ->orWhere('visitor_hash', $visitor_hash);
-        })
-            ->where('status', CartStatus::PENDING)
-            ->get();
+        if (!$auth_id && !$visitor_hash) {
+            Log::error('User not authenticated and visitor hash not found.');
+            return redirect()->back();
+        }
 
-        // Store product IDs in a session or pass to view for button logic
+        $query = Cart::where('status', CartStatus::PENDING);
+
+        if ($auth_id) {
+            $query->where(function ($subquery) use ($auth_id, $visitor_hash) {
+                $subquery->where('user_id', $auth_id);
+                if ($visitor_hash) {
+                    $subquery->orWhere('visitor_hash', $visitor_hash);
+                }
+            });
+        } elseif ($visitor_hash) {
+            $query->where('visitor_hash', $visitor_hash);
+        }
+
+        $cartItems = $query->get();
+
         $productIdsInCart = $cartItems->pluck('product_id')->toArray();
 
-        // Store cart count in session (for menu display)
         session(['cart_count' => $cartItems->count()]);
 
-        // Attach product info to each item
         foreach ($cartItems as $item) {
             $item->product = Product::find($item->product_id);
         }
@@ -82,13 +92,7 @@ class CartController extends Controller
                 'updated_at' => now(),
             ]);
 
-            $cartCount = Cart::where(function ($query) use ($auth_user_id, $visitor_id) {
-                $query->where('user_id', $auth_user_id)
-                    ->orWhere('visitor_hash', $visitor_id);
-            })
-                ->where('status', CartStatus::PENDING)
-                ->count();
-
+            $cartCount = $this->getCartCount();
             session(['cart_count' => $cartCount]);
 
             if ($request->front_image || $request->back_image) {
@@ -108,11 +112,9 @@ class CartController extends Controller
 
 
             if ($request->expectsJson() || $request->ajax()) {
-                $cartCount = Cart::where(function ($query) use ($auth_user_id, $visitor_id) {
-                    $query->where('user_id', $auth_user_id)
-                        ->orWhere('visitor_hash', $visitor_id);
-                })
-                    ->count();
+
+
+                $cartCount = $this->getCartCount();
 
                 return response()->json([
                     'success' => true,
@@ -188,30 +190,40 @@ class CartController extends Controller
 
     public function destroy($id)
     {
-        $cart = Cart::find($id);
+        $authId = auth()->id();
+        $visitorHash = session('v_hash');
+
+        $cart = Cart::where('id', $id)
+            ->where(function ($query) use ($authId, $visitorHash) {
+                if ($authId) {
+                    $query->where('user_id', $authId);
+
+                    if ($visitorHash) {
+                        $query->orWhere('visitor_hash', $visitorHash);
+                    }
+                } elseif ($visitorHash) {
+                    $query->where('visitor_hash', $visitorHash);
+                } else {
+                    $query->where('id', 0);
+                }
+            })
+            ->first();
+
         if ($cart) {
             $cart->delete();
 
-            $auth_id = auth()->id();
-            $visitor_hash = session('v_hash');
-
-            $cartCount = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
-                $query->where('user_id', $auth_id)
-                    ->orWhere('visitor_hash', $visitor_hash);
-            })
-                ->where('status', CartStatus::PENDING)
-                ->count();
-
+            $cartCount = $this->getCartCount();
             session(['cart_count' => $cartCount]);
 
             return response()->json([
                 'success' => 'Item removed from cart successfully!',
                 'cartCount' => $cartCount
             ]);
-        } else {
-            return response()->json(['error' => 'Failed to remove item from cart!'], 400);
         }
+
+        return response()->json(['error' => 'Failed to remove item from cart!'], 400);
     }
+
 
 
     public function clear()
@@ -220,13 +232,26 @@ class CartController extends Controller
         $visitor_hash = session('v_hash');
 
         if (!$auth_id && !$visitor_hash) {
-            return response()->json(['error' => 'Please login to remove items from cart!'], 400);
+            return response()->json(['error' => 'Unable to identify user or visitor.'], 400);
         }
 
-        $cartItems = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
-            $query->where('user_id', $auth_id)
-                ->orWhere('visitor_hash', $visitor_hash);
-        })
+        $cartQuery = Cart::query();
+
+        if ($auth_id) {
+            $cartQuery->where(function ($query) use ($auth_id, $visitor_hash) {
+                $query->where('user_id', $auth_id);
+
+                if ($visitor_hash) {
+                    $query->orWhere('visitor_hash', $visitor_hash);
+                }
+            });
+        } elseif ($visitor_hash) {
+            $cartQuery->where('visitor_hash', $visitor_hash);
+        } else {
+            $cartQuery->where('id', 0);
+        }
+
+        $cartItems = $cartQuery
             ->where('status', CartStatus::PENDING)
             ->get();
 
@@ -234,8 +259,12 @@ class CartController extends Controller
             $item->delete();
         }
 
+        $cartCount = $this->getCartCount();
+        session(['cart_count' => $cartCount]);
+
         return response()->json(['success' => 'All items removed from cart successfully!'], 200);
     }
+
 
 
     public function show($id)
@@ -263,5 +292,32 @@ class CartController extends Controller
             'images' => $images,
             'cart_item' => $cart_item,
         ]);
+    }
+
+
+    private function getCartCount(): int
+    {
+        $authUserId = auth()->id();
+        $visitorHash = session('v_hash');
+
+        $cartQuery = Cart::query();
+
+        if ($authUserId) {
+            $cartQuery->where(function ($query) use ($authUserId, $visitorHash) {
+                $query->where('user_id', $authUserId);
+
+                if ($visitorHash) {
+                    $query->orWhere('visitor_hash', $visitorHash);
+                }
+            });
+        } elseif ($visitorHash) {
+            $cartQuery->where('visitor_hash', $visitorHash);
+        } else {
+            $cartQuery->where('id', 0);
+        }
+
+        return $cartQuery
+            ->where('status', CartStatus::PENDING)
+            ->count();
     }
 }

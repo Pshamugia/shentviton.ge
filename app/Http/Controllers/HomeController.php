@@ -4,32 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Product;
+use App\Enums\CartStatus;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
     public function index()
     {
-
-        app(\App\Repositories\Interfaces\PaymentRepositoryInterface::class);
-
         $products = Product::orderBy('id', 'desc')->get();
 
-        $auth_id = auth()->id();
-        $visitor_hash = session('v_hash');
+        $authId = auth()->id();
+        $visitorHash = session('v_hash');
 
-        $cartItems = Cart::where('user_id', $auth_id)
-            ->orWhere('visitor_hash', $visitor_hash)
-            ->get();
+        $query = Cart::query();
+
+        if ($authId) {
+            $query->where(function ($subquery) use ($authId, $visitorHash) {
+                $subquery->where('user_id', $authId);
+
+                if ($visitorHash) {
+                    $subquery->orWhere('visitor_hash', $visitorHash);
+                }
+            });
+        } elseif ($visitorHash) {
+            $query->where('visitor_hash', $visitorHash);
+        } else {
+            $query->where('id', 0);
+        }
+
+        $cartItems =  $query->where('status', CartStatus::PENDING)->get();
 
         $productIdsInCart = $cartItems->pluck('product_id')->toArray();
 
         $readyDesigns = Product::where('subtype', 'მზა')->orderBy('id', 'desc')->get(); // მზა დიზაინებისთვის
         $customDesigns = Product::where('subtype', 'custom')->orderBy('id', 'desc')->get(); // custom დიზაინების გამოსატანად
-    
+
         return view('home.index', compact('readyDesigns', 'customDesigns', 'cartItems', 'productIdsInCart'));
     }
-        
+
 
 
     public function terms()

@@ -119,7 +119,7 @@
         color: white;
         border-bottom: 2px solid transparent;
     }
-    
+
 
     .tab button.active {
         background-color: #444;
@@ -280,7 +280,7 @@
                             <option value="animals">ცხოველთა სამყარო</option>
                             <option value="emoji">ემოჯები</option>
                             <option value="tigerskin">ვეფხისტყაოსანი</option>
-                            <option value="mamapapuri">მამაპაპური</option> 
+                            <option value="mamapapuri">მამაპაპური</option>
                             <option value="qatuli">ქართული თემა</option>
                         </select>
                     </div>
