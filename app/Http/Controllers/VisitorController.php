@@ -38,7 +38,6 @@ class VisitorController extends Controller
     public function checkVisitor()
     {
         $v_hash = Session::get('v_hash');
-
         if ($v_hash) {
             $exists = DB::table('visitors')->where('v_hash', $v_hash)->exists();
 

@@ -17,7 +17,6 @@ class CartController extends Controller
         $auth_id = auth()->id();
         $visitor_hash = session('v_hash');
 
-
         if (!$auth_id && !$visitor_hash) {
             Log::error('User not authenticated and visitor hash not found.');
             return redirect()->back();
@@ -191,7 +190,25 @@ class CartController extends Controller
 
     public function destroy($id)
     {
-        $cart = Cart::find($id);
+        $authId = auth()->id();
+        $visitorHash = session('v_hash');
+
+        $cart = Cart::where('id', $id)
+            ->where(function ($query) use ($authId, $visitorHash) {
+                if ($authId) {
+                    $query->where('user_id', $authId);
+
+                    if ($visitorHash) {
+                        $query->orWhere('visitor_hash', $visitorHash);
+                    }
+                } elseif ($visitorHash) {
+                    $query->where('visitor_hash', $visitorHash);
+                } else {
+                    $query->where('id', 0);
+                }
+            })
+            ->first();
+
         if ($cart) {
             $cart->delete();
 
@@ -202,10 +219,11 @@ class CartController extends Controller
                 'success' => 'Item removed from cart successfully!',
                 'cartCount' => $cartCount
             ]);
-        } else {
-            return response()->json(['error' => 'Failed to remove item from cart!'], 400);
         }
+
+        return response()->json(['error' => 'Failed to remove item from cart!'], 400);
     }
+
 
 
     public function clear()
@@ -214,13 +232,26 @@ class CartController extends Controller
         $visitor_hash = session('v_hash');
 
         if (!$auth_id && !$visitor_hash) {
-            return response()->json(['error' => 'Please login to remove items from cart!'], 400);
+            return response()->json(['error' => 'Unable to identify user or visitor.'], 400);
         }
 
-        $cartItems = Cart::where(function ($query) use ($auth_id, $visitor_hash) {
-            $query->where('user_id', $auth_id)
-                ->orWhere('visitor_hash', $visitor_hash);
-        })
+        $cartQuery = Cart::query();
+
+        if ($auth_id) {
+            $cartQuery->where(function ($query) use ($auth_id, $visitor_hash) {
+                $query->where('user_id', $auth_id);
+
+                if ($visitor_hash) {
+                    $query->orWhere('visitor_hash', $visitor_hash);
+                }
+            });
+        } elseif ($visitor_hash) {
+            $cartQuery->where('visitor_hash', $visitor_hash);
+        } else {
+            $cartQuery->where('id', 0);
+        }
+
+        $cartItems = $cartQuery
             ->where('status', CartStatus::PENDING)
             ->get();
 
@@ -228,8 +259,12 @@ class CartController extends Controller
             $item->delete();
         }
 
+        $cartCount = $this->getCartCount();
+        session(['cart_count' => $cartCount]);
+
         return response()->json(['success' => 'All items removed from cart successfully!'], 200);
     }
+
 
 
     public function show($id)
