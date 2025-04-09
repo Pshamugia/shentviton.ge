@@ -27,7 +27,7 @@ class Cart extends Model
     ];
 
     protected $casts = [
-        "status"=> CartStatus::class,
+        "status" => CartStatus::class,
     ];
 
     public function product()
@@ -45,10 +45,23 @@ class Cart extends Model
         $user_id = auth()->id();
         $visitor_hash = session('v_hash');
 
-        $cart_items = Cart::where(function ($query) use ($user_id, $visitor_hash) {
-            $query->where('user_id', $user_id)
-                ->orWhere('visitor_hash', $visitor_hash);
-        })
+        $cartQuery = Cart::query();
+
+        if ($user_id) {
+            $cartQuery->where(function ($subquery) use ($user_id, $visitor_hash) {
+                $subquery->where('user_id', $user_id);
+
+                if ($visitor_hash) {
+                    $subquery->orWhere('visitor_hash', $visitor_hash);
+                }
+            });
+        } elseif ($visitor_hash) {
+            $cartQuery->where('visitor_hash', $visitor_hash);
+        } else {
+            $cartQuery->where('id', 0);
+        }
+
+        $cart_items = $cartQuery
             ->where('status', CartStatus::PENDING)
             ->get();
 

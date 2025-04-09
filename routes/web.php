@@ -51,7 +51,7 @@ Route::post('/products/{id}/customize', [ProductController::class, 'saveCustomiz
 Route::get('/products/{type}', [ProductController::class, 'showByType'])->name('products.byType');
 
 Auth::routes();
- 
+
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
@@ -82,7 +82,8 @@ Route::get('/cart/count', function () {
 });
 
 
-Route::post('/api/visitor', [App\Http\Controllers\VisitorController::class, 'createVisitor']);
+Route::post('/api/visitor/create', [App\Http\Controllers\VisitorController::class, 'createVisitor']);
+Route::get('/api/visitor/check', [App\Http\Controllers\VisitorController::class, 'checkVisitor']);
 
 
 /**

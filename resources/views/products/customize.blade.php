@@ -358,9 +358,8 @@
 
 
 
-            <div class="col-md-7 d-flex align-items-center justify-content-center"
-                style="background-color: #f0f0f0; height: 100vh; position: relative;">
-                <div id="design-area" style="position: relative; width: 100%; max-width: 500px;">
+            <div class="col-md-7 d-flex align-items-center justify-content-center bg-light py-5 design-container">
+                <div id="design-area" class="w-100" style="max-width: 500px;">
                     <img id="product-image" data-default-image="{{ asset('storage/' . $product->image1) }}"
                         src="{{ asset('storage/' . $product->image1) }}" alt="{{ $product->title }}"
                         data-id="{{ $product->id }}" style="width: 100%; height: auto; display: none;"
