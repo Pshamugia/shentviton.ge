@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'shentviton')
+@section('title', 'შენი დიზაინი, შენი სტილი | Shentviton')
+@section('meta_description', 'შენ თვითონ გააფორმე მაისური, ჰუდი, კეპი ან ქეისი. შენი დიზაინი — შენი სტილი.')
+@section('meta_keywords', 'დიზაინი, მაისური, ჰუდი, კეპი, უნიკალური პროდუქტი, ტანსაცმელი')
+@section('og_title', 'გააფორმე შენ თვითონ | Shentviton')
+@section('og_description', 'შეიმუშავე შენი სტილი და ატარე უნიკალური სამოსი')
+@section('og_image', asset('storage/designs/shentviton_logo.png'))
 
 @section('content')
 

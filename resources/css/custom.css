@@ -329,10 +329,34 @@ body {
     height: auto;
 }
 
-#tshirtCanvas {
+#design-area {
     width: 100%;
-    height: auto;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
 }
+
+#tshirtCanvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+    display: block;
+    border: 1px solid #ddd;
+    background-color: white;
+}
+/* Mobile tweaks */
+@media screen and (max-width: 768px) {
+    #design-area {
+        max-width: 100% !important;
+        padding: 10px !important;
+    }
+
+    #tshirtCanvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+}
+
 
 .cart-link {
     background-color: #f0e3e7;
@@ -496,9 +520,7 @@ body {
     margin: auto;
 }
 
-#design-area {
-    position: relative;
-}
+ 
 
 select,
 input {
@@ -925,8 +947,8 @@ button {
 }
 
 .color-btn {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
@@ -940,4 +962,25 @@ button {
     border-radius: 50%;
     width: 40px;
     height: 40px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 !important;
+}
+.color-option.selected {
+    position: relative;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.8);
+    backdrop-filter: blur(2px);
+    border: 2px solid #fff;
+}
+
+.color-option.selected::after {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: white;
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

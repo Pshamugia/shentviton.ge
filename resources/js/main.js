@@ -41,6 +41,66 @@ let originalAdd;
 let zoomLevel = 1;
 const zoomStep = 0.1;
 
+fabric.Object.prototype.controls.deleteControl = new fabric.Control({
+    x: 0.5,
+    y: -0.5,
+    offsetY: 0,
+    offsetX: 0,
+    cursorStyle: "pointer",
+    mouseUpHandler: function (eventData, transform) {
+        const target = transform.target;
+        const canvas = target.canvas;
+        const input = target ? document.getElementById(target.input_id) : null;
+        const remove_btn = input
+            ? input
+                  .closest(".text-input-group")
+                  .querySelector(".remove-text-btn")
+            : null;
+
+        if (
+            remove_btn &&
+            input &&
+            input.id == target.input_id &&
+            target.type === "textbox"
+        ) {
+            input.remove();
+            remove_btn.remove();
+            canvas.remove(target);
+            canvas.requestRenderAll();
+            save_side();
+            save_state(state.current_image_url);
+            return;
+        }
+
+        canvas.remove(target);
+        canvas.requestRenderAll();
+        save_side();
+        save_state(state.current_image_url);
+    },
+    render: function (ctx, left, top, styleOverride, fabricObject) {
+        const size = this.sizeX || 24;
+        ctx.save();
+
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(left, top, size / 2, 0, Math.PI * 2, false);
+        ctx.fill();
+
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(left - 5, top - 5);
+        ctx.lineTo(left + 5, top + 5);
+        ctx.moveTo(left + 5, top - 5);
+        ctx.lineTo(left - 5, top + 5);
+        ctx.stroke();
+
+        ctx.restore();
+    },
+    sizeX: 20,
+    sizeY: 20,
+});
+
 export default function main() {
     // NOT IN USE
     sidebarHandler();
@@ -121,7 +181,7 @@ function initGlobalEvents() {
                     stroke: "#ccc",
                     strokeWidth: 2,
                 });
-                canvas.renderAll();
+                canvas.requestRenderAll();
             }
         });
     });
@@ -204,7 +264,7 @@ function addInnerBorder() {
                 originalAdd(obj);
             }
         });
-        canvas.renderAll();
+        canvas.requestRenderAll();
         save_side();
         save_state(state.current_image_url);
         return canvas;
@@ -251,7 +311,7 @@ function setupDynamicTextInputs() {
                 if (text_objects[inputId]) {
                     canvas.remove(text_objects[inputId]);
                     delete text_objects[inputId];
-                    canvas.renderAll();
+                    canvas.requestRenderAll();
                     save_side();
                     save_state(state.current_image_url);
                 }
@@ -304,7 +364,7 @@ function resizeObserve() {
             }
         });
 
-        canvas.renderAll();
+        canvas.requestRenderAll();
 
         save_side();
         save_state(state.current_image_url);
@@ -317,6 +377,10 @@ function handleImageSwapping() {
     colorSwitcherBtns.forEach((btn) => {
         btn.addEventListener("click", function (e) {
             color_chosen = true;
+            document
+                .querySelectorAll(".color-option")
+                .forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
             selectedFrontImage = this.getAttribute("data-front-image");
             selectedBackImage = this.getAttribute("data-back-image");
             if (!selectedFrontImage.includes("color")) {
@@ -420,6 +484,11 @@ function loadImage(
 
         let obj_state = localStorage.getItem(key);
         if (!obj_state) {
+            Array.from(form.text_container.children).forEach((child) => {
+                if (child.id !== "addTextInput") {
+                    child.remove();
+                }
+            });
             canvas.getObjects().forEach((obj) => {
                 if (
                     !(
@@ -457,7 +526,7 @@ function loadImage(
 
                 canvas.add(img);
                 canvas.sendToBack(img);
-                canvas.renderAll();
+                canvas.requestRenderAll();
 
                 localStorage.setItem(imageURL, JSON.stringify(canvas));
             });
@@ -465,6 +534,7 @@ function loadImage(
             canvas.clear();
 
             if (form.text_container) {
+                console.log("here??");
                 Array.from(form.text_container.children).forEach((child) => {
                     if (child.id !== "addTextInput") {
                         child.remove();
@@ -475,7 +545,7 @@ function loadImage(
             let dynamicTextCounter = 0;
 
             canvas.loadFromJSON(obj_state, function () {
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 text_objects = {};
 
                 if (form.text_container) {
@@ -502,9 +572,17 @@ function loadImage(
                             obj.input_id = "text_" + dynamicTextCounter;
                         }
                         text_objects[obj.input_id] = obj;
+
+                        text_objects[obj.input_id].controls = {
+                            ...fabric.Object.prototype.controls,
+                            deleteControl:
+                                fabric.Object.prototype.controls.deleteControl,
+                        };
+
                         let existingInput = document.getElementById(
                             obj.input_id
                         );
+
                         console.log("existingInput: ", existingInput);
                         if (existingInput) {
                             existingInput.value = obj.text;
@@ -547,7 +625,7 @@ function loadImage(
 
                 canvas.add(img);
                 canvas.sendToBack(img);
-                canvas.renderAll();
+                canvas.requestRenderAll();
             });
         }
 
@@ -587,7 +665,7 @@ function loadImage(
 
                 canvas.add(img);
                 canvas.sendToBack(img);
-                canvas.renderAll();
+                canvas.requestRenderAll();
             });
             return;
         }
@@ -623,7 +701,7 @@ function swapColor(imageURL, backImageURL) {
 
         canvas.add(img);
         canvas.sendToBack(img);
-        canvas.renderAll();
+        canvas.requestRenderAll();
     });
 }
 
@@ -642,13 +720,13 @@ function handleDeleteOnKeyDown() {
                     remove_btn.remove();
                 }
                 canvas.remove(active);
-                canvas.renderAll();
+                canvas.requestRenderAll();
 
                 save_side();
                 save_state(state.current_image_url);
             } else if (active) {
                 canvas.remove(active);
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
             }
         }
@@ -692,7 +770,7 @@ function handleTextStyleButtons(buttons) {
             };
 
             if (actions[style]) actions[style]();
-            canvas.renderAll();
+            canvas.requestRenderAll();
         });
     });
 }
@@ -737,7 +815,7 @@ function applyCurvedTextEffect(obj) {
         left: canvas.width / 2,
     });
 
-    canvas.renderAll();
+    canvas.requestRenderAll();
     save_side();
     save_state(state.current_image_url);
 }
@@ -746,7 +824,7 @@ function handleFontSizeInput(input) {
     input.addEventListener("input", (e) => {
         if (active_text_obj) {
             active_text_obj.set("fontSize", parseInt(input.value));
-            canvas.renderAll();
+            canvas.requestRenderAll();
             save_side();
             save_state(state.current_image_url);
         }
@@ -761,7 +839,7 @@ function handleTextColorInput(input) {
     input.addEventListener("change", (e) => {
         if (active_text_obj) {
             active_text_obj.set("fill", input.value);
-            canvas.renderAll();
+            canvas.requestRenderAll();
 
             save_side();
             save_state(state.current_image_url);
@@ -773,7 +851,7 @@ function handleFontFamilyInput(input) {
     input.addEventListener("change", (e) => {
         if (active_text_obj) {
             active_text_obj.set("fontFamily", input.value);
-            canvas.renderAll();
+            canvas.requestRenderAll();
 
             save_side();
             save_state(state.current_image_url);
@@ -793,7 +871,7 @@ function handleTextInputs(inputs) {
                 text_objects[input.id].set({ text: input.value });
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
             } else {
                 const numExistingTexts = Object.keys(text_objects).length;
@@ -822,11 +900,17 @@ function handleTextInputs(inputs) {
                     ...textDefaults,
                 });
 
+                text_objects[input.id].controls = {
+                    ...fabric.Object.prototype.controls,
+                    deleteControl:
+                        fabric.Object.prototype.controls.deleteControl,
+                };
+
                 canvas.add(text_objects[input.id]);
                 text_objects[input.id].set({ text: input.value });
                 canvas.setActiveObject(text_objects[input.id]);
                 active_text_obj = text_objects[input.id];
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
             }
         });
@@ -876,7 +960,7 @@ function createDynamicTextInput(inputId, text) {
             if (text_objects[inputId]) {
                 canvas.remove(text_objects[inputId]);
                 delete text_objects[inputId];
-                canvas.renderAll();
+                canvas.requestRenderAll();
                 save_side();
                 save_state(state.current_image_url);
             }
@@ -886,41 +970,50 @@ function createDynamicTextInput(inputId, text) {
 }
 
 function initProductImage() {
-    let color_btns = document.querySelectorAll(".color-option");
-    let first_color = color_btns[0];
-    let first_front_image = first_color.getAttribute("data-front-image");
+    // showLoadingIndicator();
 
-    let key = front_state_key;
+    const color_btns = document.querySelectorAll(".color-option");
+    const first_color = color_btns[0];
+    const first_front_image = first_color.getAttribute("data-front-image");
+    const first_back_image = first_color.getAttribute("data-back-image");
 
-    let canvas_state = localStorage.getItem(key);
+    selectedFrontImage = first_front_image.includes("color")
+        ? first_front_image
+        : null;
+    selectedBackImage = first_back_image.includes("color")
+        ? first_back_image
+        : null;
 
-    if (canvas_state) {
-        loadImage(first_front_image, "color", "", true);
+    state.front_image_url = first_front_image;
+    state.back_image_url = selectedBackImage;
 
-        selectedFrontImage = first_front_image;
-        if (!selectedFrontImage.includes("color")) {
-            selectedFrontImage = null;
+    preloadImage(first_front_image).then(() => {
+        const key = front_state_key;
+        const canvas_state = localStorage.getItem(key);
+
+        if (canvas_state) {
+            requestAnimationFrame(() => {
+                loadImage(first_front_image, "color", "", true);
+                // hideLoadingIndicator();
+                enableFormElements();
+            });
+        } else {
+            requestAnimationFrame(() => {
+                loadImage(first_front_image, "color", selectedBackImage);
+                // hideLoadingIndicator();
+                enableFormElements();
+            });
         }
+    });
+}
 
-        selectedBackImage = first_color.getAttribute("data-back-image");
-
-        if (!selectedBackImage.includes("color")) {
-            selectedBackImage = null;
-        }
-    } else {
-        selectedFrontImage = first_front_image;
-        if (!selectedFrontImage.includes("color")) {
-            selectedFrontImage = null;
-        }
-        selectedBackImage = first_color.getAttribute("data-back-image");
-        if (!selectedBackImage.includes("color")) {
-            selectedBackImage = null;
-        }
-        state.front_image_url = first_front_image;
-        state.back_image_url = selectedBackImage;
-        loadImage(first_front_image, "color", selectedBackImage);
-    }
-    enableFormElements();
+function preloadImage(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+    });
 }
 
 function sidebarHandler() {
@@ -984,6 +1077,12 @@ function uploadHandler() {
                         selectable: true,
                     });
 
+                    img.controls = {
+                        ...fabric.Object.prototype.controls,
+                        deleteControl:
+                            fabric.Object.prototype.controls.deleteControl,
+                    };
+
                     canvas.add(img);
                     canvas.setActiveObject(img);
 
@@ -1013,9 +1112,14 @@ function addClipArtToCanvas() {
             stay: true,
         });
 
+        img.controls = {
+            ...fabric.Object.prototype.controls,
+            deleteControl: fabric.Object.prototype.controls.deleteControl,
+        };
+
         canvas.add(img);
         canvas.setActiveObject(img);
-        canvas.renderAll();
+        canvas.requestRenderAll();
         save_state(state.current_image_url);
     });
 }
@@ -1060,90 +1164,130 @@ function save_state(image_url) {
 let final_design = {
     front_image: "",
     back_image: "",
+    front_assets: "",
+    back_assets: "",
 };
 
 function handleAddToCart() {
     document
         .querySelector("#addToCart")
-        .addEventListener("click", function (e) {
+        .addEventListener("click", async function (e) {
             e.preventDefault();
 
             const currentSide = state.current_image_side;
 
-            saveDesignAndImage(currentSide);
+            try {
+                await saveDesignAndImage(currentSide);
 
-            if (selectedBackImage) {
-                if (currentSide === "front" && selectedBackImage) {
-                    loadImage(selectedBackImage, "pos");
-
-                    setTimeout(() => {
-                        saveDesignAndImage("back");
-                        proceedWithAddToCart();
-                    }, 500);
-                } else if (currentSide === "back" && selectedFrontImage) {
-                    loadImage(selectedFrontImage, "pos");
-
-                    setTimeout(() => {
-                        saveDesignAndImage("front");
-                        proceedWithAddToCart();
-                    }, 500);
+                if (selectedBackImage) {
+                    if (currentSide === "front") {
+                        loadImage(selectedBackImage, "pos");
+                        setTimeout(async () => {
+                            await saveDesignAndImage("back");
+                            proceedWithAddToCart();
+                        }, 500);
+                    } else if (currentSide === "back") {
+                        loadImage(selectedFrontImage, "pos");
+                        setTimeout(async () => {
+                            await saveDesignAndImage("front");
+                            proceedWithAddToCart();
+                        }, 500);
+                    }
+                } else {
+                    proceedWithAddToCart();
                 }
-            } else {
-                proceedWithAddToCart();
+            } catch (err) {
+                alert("Failed to save design before adding to cart.");
+                console.error(err);
             }
         });
 }
 
 function saveDesignAndImage(side) {
-    try {
-        canvas.setZoom(1);
-        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-        canvas.renderAll();
+    return new Promise((resolve, reject) => {
+        try {
+            canvas.setZoom(1);
+            canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+            canvas.requestRenderAll();
 
-        localStorage.setItem(
-            `${rand_key}.${side}_design`,
-            JSON.stringify(canvas)
-        );
+            const stateKey =
+                side === "front" ? front_state_key : back_state_key;
+            localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
 
-        const stateKey = side === "front" ? front_state_key : back_state_key;
-        localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
-
-        const removed_objects = [];
-        canvas.getObjects().forEach((obj) => {
-            if (obj.type === "rect" || obj.type === "group") {
-                removed_objects.push(obj);
-                canvas.remove(obj);
-            }
-        });
-
-        const imageData = canvas.toDataURL({
-            format: "png",
-            quality: 1,
-        });
-
-        removed_objects.forEach((obj) => {
-            obj.set({
-                selectable: false,
-                hasControls: false,
-                evented: false,
-                stay: true,
-                stay_when_pos: true,
+            const tempCanvas = new fabric.Canvas(null, {
+                width: canvas.width,
+                height: canvas.height,
             });
 
-            originalAdd(obj);
-            canvas.renderAll();
-        });
+            const objectsToAdd = canvas
+                .getObjects()
+                .filter(
+                    (obj) =>
+                        obj.type !== "rect" &&
+                        obj.type !== "group" &&
+                        !obj?.product_image
+                );
 
-        if (side === "front") {
-            final_design.front_image = imageData;
-        } else {
-            final_design.back_image = imageData;
+            const objectData = objectsToAdd.map((obj) => obj.toObject());
+
+            fabric.util.enlivenObjects(objectData, function (enlivenedObjects) {
+                enlivenedObjects.forEach((obj) => tempCanvas.add(obj));
+                tempCanvas.requestRenderAll();
+
+                const assetsImageData = tempCanvas.toDataURL({
+                    format: "png",
+                    quality: 1,
+                    backgroundColor: "transparent",
+                });
+
+                if (side === "front") {
+                    final_design.front_assets = assetsImageData;
+                } else {
+                    final_design.back_assets = assetsImageData;
+                }
+
+                tempCanvas.dispose();
+
+                // Save design image
+                const removed_objects = [];
+                canvas.getObjects().forEach((obj) => {
+                    if (obj.type === "rect" || obj.type === "group") {
+                        removed_objects.push(obj);
+                        canvas.remove(obj);
+                    }
+                });
+
+                const imageData = canvas.toDataURL({
+                    format: "png",
+                    quality: 1,
+                });
+
+                removed_objects.forEach((obj) => {
+                    obj.set({
+                        selectable: false,
+                        hasControls: false,
+                        evented: false,
+                        stay: true,
+                        stay_when_pos: true,
+                    });
+                    originalAdd(obj);
+                });
+
+                canvas.requestRenderAll();
+
+                if (side === "front") {
+                    final_design.front_image = imageData;
+                } else {
+                    final_design.back_image = imageData;
+                }
+
+                resolve(); // 🎯 We're done here
+            });
+        } catch (err) {
+            console.error("Error saving design:", err);
+            reject(err);
         }
-    } catch (err) {
-        alert(
-            "Unable to save design. Storage limit reached. Try clearing browser data or removing old designs."
-        );
-    }
+    });
 }
 
 function proceedWithAddToCart() {
@@ -1153,19 +1297,28 @@ function proceedWithAddToCart() {
     }
 
     const backImage = final_design.back_image || null;
+    const front_assets = final_design.front_assets || null;
+    const back_assets = final_design.back_assets || null;
+
+    let size_input = document.querySelector("#sizeSelect");
+    const size = size_input.value;
 
     let form = {
         front_image: final_design.front_image,
         back_image: backImage,
+        front_assets: front_assets,
+        back_assets: back_assets,
         product_id: product_image.getAttribute("data-id"),
         v_hash: localStorage.getItem("v_hash"),
         quantity: localStorage.getItem("quantity") || 1,
         price: null,
         default_img: 0,
+        size: size,
     };
 
     let formData = new FormData();
     formData.append("front_image", form.front_image);
+    formData.append("front_assets", form.front_assets);
     formData.append("product_id", form.product_id);
     formData.append("v_hash", form.v_hash);
     formData.append("quantity", form.quantity);
@@ -1175,10 +1328,20 @@ function proceedWithAddToCart() {
         formData.append("back_image", backImage);
     }
 
+    if (back_assets) {
+        formData.append("back_assets", back_assets);
+    }
+
+    console.log("form: ", form);
+
     axios
         .post("/cart", formData)
         .then((response) => {
             alert("Item successfully added to cart");
+            let count = document.getElementById("cart-count").textContent;
+            console.log("count is: ", count);
+            count++;
+            document.getElementById("cart-count").textContent = count;
         })
         .catch((error) => {
             console.error("Error adding to cart:", error);

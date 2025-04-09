@@ -1,5 +1,40 @@
 @extends('layouts.app')
-@section('title', 'Customize ' . $product->title)
+
+@php use Illuminate\Support\Str; @endphp
+
+@push('seo')
+    @section('title', $product->title . ' | Shentviton')
+    @section('meta_description', Str::limit(strip_tags($product->description), 150))
+    @section('meta_keywords', $product->title . ', დიზაინი, უნიკალური პროდუქტი')
+    @section('og_title', $product->title . ' | Shentviton')
+    @section('og_description', Str::limit(strip_tags($product->description), 150))
+    @section('og_image', asset('storage/' . $product->image1))
+@endpush
+
+
+@push('schema')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ $product->title }}",
+  "image": [
+    "{{ asset('storage/' . $product->image1) }}"
+  ],
+  "description": "{{ strip_tags(Str::limit($product->description, 150)) }}",
+  "sku": "{{ $product->id }}",
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "GEL",
+    "price": "{{ number_format($product->price, 2, '.', '') }}",
+    "availability": "https://schema.org/{{ $product->quantity > 0 ? 'InStock' : 'OutOfStock' }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+}
+</script>
+@endpush
+
 @section('content')
     <style>
         * {
@@ -62,38 +97,76 @@
             /* ← Optional: disables horizontal scroll */
         }
 
-        @media (max-width: 768px) {
-    .icon-adjust {
-        align-items: center;
-        float: left;
-        position: relative;
+        /* Make tab horizontal on mobile */
+@media screen and (max-width: 768px) {
+    .tab {
+        float: none;
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        border-bottom: 2px solid #ccc;
+        background-color: #272c33;
     }
+
+    .tab button  {
+        flex: 1;
+        width: 10px;
+        text-align: center;
+        padding: 5px 8px;
+        font-size: 11px;
+        color: white;
+        border-bottom: 2px solid transparent;
+    }
+    
+
+    .tab button.active {
+        background-color: #444;
+        border-bottom: 2px solid yellow;
+        margin-left: 0;
+    }
+
+    .tabcontent {
+        width: 100%;
+        float: none;
+        border-top: none;
+        height: auto;
+        max-height: 400px;
+    }
+    .tab::-webkit-scrollbar {
+    height: 4px;
 }
 
+.tab::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+}
+}
     </style>
     <div class="container">
 
-        <div class="row">
-            <div class="col-md-5">
+        <div class="row flex-column-reverse flex-md-row">
+                        <div class="col-md-5">
 
                 <div class="tab">
                     <button class="tablinks icon-color" onclick="openCity(event, 'product')" id="defaultOpen">
-                        <span class="icon-adjust"> <i class="bi bi-clipboard-check-fill icon-color" style="font-size: 20px"></i> <br>
-                        პროდუქტი </span>
+                        <i class="bi bi-clipboard-check-fill icon-color" style="font-size: 20px"></i> <br>
+                        პროდუქტი
                     </button>
 
 
                     <button class="tablinks icon-color" onclick="openCity(event, 'uploader')" id="defaultOpen">
-                      <span class="icon-adjust">  <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
-                        ატვირთე </span>
+                        <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
+                        ატვირთე
                     </button>
 
                     <button class="tablinks icon-color" onclick="openCity(event, 'cliparts')">
-                        <span class="icon-adjust"> <i class="fas fa-palette icon-color" style="font-size: 20px"></i> <br>
-                        კლიპარტი </span></button>
+                        <i class="fas fa-palette icon-color" style="font-size: 20px"></i> <br>
+                        კლიპარტი</button>
                     <button class="tablinks icon-color" onclick="openCity(event, 'text')">
-                        <span class="icon-adjust"><i class="bi bi-chat-square-quote-fill icon-color" style="font-size:20px"></i> <br>
-                        ტექსტი </span></button>
+                        <i class="bi bi-chat-square-quote-fill icon-color" style="font-size:20px"></i> <br>
+                        ტექსტი</button>
                 </div>
 
 
@@ -107,22 +180,25 @@
                     @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
                         <!-- Color Selection (Left Side) -->
-                        <div class="color-box" style="margin-top:50px; margin-left:30px">
+                        <div class="color-box" style="margin-top:50px;">
                             <div>
                                 <label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
 
                                 <div class="row row-cols-2 g-2 mb-3">
                                     @foreach ($productArray['colors'] as $color)
-                                        <div class="col text-center">
-                                            <button class="color-option" data-color="{{ $color['color_code'] }}"
-                                                data-front-image="{{ asset('storage/' . $color['front_image']) }}"
-                                                data-back-image="{{ asset('storage/' . $color['back_image']) }}"
-                                                data-back-index={{ 'back-' . $color['id'] }}
-                                                data-front-index={{ 'front-' . $color['id'] }}
-                                                data-index={{ $color['id'] }}
-                                                style="background-color: {{ $color['color_code'] }};
+                                        <div class="col d-flex justify-content-center">
+                                            <div style="">
+                                                <button class="color-option rounded-full"
+                                                    data-color="{{ $color['color_code'] }}"
+                                                    data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+                                                    data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+                                                    data-back-index={{ 'back-' . $color['id'] }}
+                                                    data-front-index={{ 'front-' . $color['id'] }}
+                                                    data-index={{ $color['id'] }}
+                                                    style="background-color: {{ $color['color_code'] }};
                                                  ">
-                                            </button>
+                                                </button>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -132,12 +208,17 @@
 
                                     <form id="customizationForm">
                                         @if (!empty($product->size))
-                                        <div class="d-flex align-items-center mb-3">
-                                            <label class="form-label me-2 mb-0" style="white-space: nowrap;">@if($product->type === 'ქეისი') აირჩიეთ მოდელი
-                                                @elseif($product->type === 'მაისური') აირჩიეთ ზომა
-                                                @else {{ "" }}
-                                                @endif</label>
-                                                 <select id="sizeSelect" name="size" class="form-select">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <label class="form-label me-2 mb-0" style="white-space: nowrap;">
+                                                    @if ($product->type === 'ქეისი')
+                                                        აირჩიეთ მოდელი
+                                                    @elseif($product->type === 'მაისური')
+                                                        აირჩიეთ ზომა
+                                                    @else
+                                                        {{ '' }}
+                                                    @endif
+                                                </label>
+                                                <select id="sizeSelect" name="size" class="form-select">
                                                     @foreach (explode(',', $product->size) as $sizes)
                                                         <option value="{{ trim($sizes) }}">{{ trim($sizes) }}</option>
                                                     @endforeach
@@ -188,10 +269,9 @@
 
                 <div id="cliparts" class="tabcontent">
                     <div class="clipart-header">
-                        <br>
                          <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
-                         <select id="clipartCategory" class="chosen-select" data-placeholder="აირჩიე კატეგორია">
-                            <option value="all">ყველა</option>
+                        <select id="clipartCategory">
+                            <option value="all">ყველა კატეგორია</option>
                             <option value="sport">სპორტი</option>
                             <option value="cars">მანქანები</option>
                             <option value="funny">სახალისო</option>
@@ -201,38 +281,26 @@
                             <option value="emoji">ემოჯები</option>
                             <option value="tigerskin">ვეფხისტყაოსანი</option>
                             <option value="mamapapuri">მამაპაპური</option> 
-                            <option value="qatuli">ქართული თემა</option> 
-                                                </select>
+                            <option value="qatuli">ქართული თემა</option>
+                        </select>
                     </div>
                     <div id="clipartContainer">
                         @foreach ($cliparts as $clipart)
                             <div class="clipart-item">
-                                <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                    data-image="{{ asset('storage/' . $clipart->image) }}"
-                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart">
+                                @if ($loop->first)
+                                    <img class="clipart-img" data-category="{{ $clipart->category }}"
+                                        data-image="{{ asset('storage/' . $clipart->image) }}"
+                                        src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart"
+                                        fetchpriority="high">
+                                @else
+                                    <img class="clipart-img" data-category="{{ $clipart->category }}"
+                                        data-image="{{ asset('storage/' . $clipart->image) }}"
+                                        src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart" loading="lazy">
+                                @endif
                             </div>
                         @endforeach
                     </div>
                 </div>
-                <script>
-                    $(document).ready(function() {
-                        $('.chosen-select').chosen({width: "100%"});
-                        $('#clipartCategory').on('change', function () {
-    const selectedCategory = $(this).val();
-
-    $('.clipart-item').each(function () {
-        const category = $(this).find('.clipart-img').data('category');
-
-        if (selectedCategory === 'all' || selectedCategory === category) {
-            $(this).show();
-        } else {
-            $(this).hide();
-        }
-    });
-});
-
-                    });
-                </script>
 
                 <div id="text" class="tabcontent">
                     <p>
@@ -378,8 +446,8 @@
 
 
             <div class="col-md-7 d-flex align-items-center justify-content-center"
-                style="background-color: #f0f0f0; height: 100vh; position: relative;">
-                <div id="design-area" style="position: relative; width: 100%; max-width: 500px;">
+                style="background-color: #f0f0f0;  position: relative;">
+                <div id="design-area">
                     <img id="product-image" data-default-image="{{ asset('storage/' . $product->image1) }}"
                         src="{{ asset('storage/' . $product->image1) }}" alt="{{ $product->title }}"
                         data-id="{{ $product->id }}" style="width: 100%; height: auto; display: none;"
@@ -404,7 +472,6 @@
                             align-items: center;
                             /* Center content */
                             text-align: center;
-                            padding-right: 10px;
                         }
 
                         .label {

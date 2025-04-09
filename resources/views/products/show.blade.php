@@ -6,15 +6,40 @@
 @section('og_description', Str::limit($product->description, 150))
 @section('og_image', asset('storage/' . $product->image1))
 
+@push('schema')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ $product->title }}",
+  "image": [
+    "{{ asset('storage/' . $product->image1) }}"
+  ],
+  "description": "{{ strip_tags(Str::limit($product->description, 150)) }}",
+  "sku": "{{ $product->id }}",
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "GEL",
+    "price": "{{ number_format($product->price, 2, '.', '') }}",
+    "availability": "https://schema.org/{{ $product->quantity > 0 ? 'InStock' : 'OutOfStock' }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+}
+</script>
+@endpush
+
+    
+    
 @section('content')
 
 
-<div class="row">
+<div class="row flex-column flex-md-row">
 
 
 
     <!-- Left Sidebar -->
-    <div class="col-md-4 bg-light p-4 rounded shadow-sm">
+    <div class="col-md-4 order-2 order-md-1 bg-light p-4 rounded shadow-sm">
         <h4 class="mb-3">{{ $product->title }}</h4>
         <p><strong>ფასი:</strong> {{ intval($product->price) }} ლარი</p>
     
@@ -114,7 +139,7 @@
 
 
     <!-- Right Section -->
-    <div class="col-md-8 text-center">
+    <div class="col-md-8 order-1 order-md-2 text-center">
         <img src="{{ asset('storage/' . $product->image1) }}" id="product-image" class="img-fluid" alt="{{ $product->title }}">
     
     </div>
