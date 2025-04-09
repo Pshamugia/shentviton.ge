@@ -2208,3 +2208,7 @@
 #51 C:\\xampp\\htdocs\\tshirt_new-main\\public\\index.php(52): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
 #52 {main}
 "} 
+[2025-04-09 19:32:47] production.ERROR: User not authenticated and visitor hash not found.  
+[2025-04-09 19:32:52] production.ERROR: User not authenticated and visitor hash not found.  
+[2025-04-09 19:32:52] production.ERROR: User not authenticated and visitor hash not found.  
+[2025-04-09 19:32:53] production.ERROR: User not authenticated and visitor hash not found.  

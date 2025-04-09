@@ -106,25 +106,34 @@
             </div>
         </div>
 
+ 
 
-
-
-
-
-        <!-- Right Section -->
-        <div class="col-md-8 text-center">
-            <img src="{{ asset('storage/' . $product->image1) }}" id="product-image" class="img-fluid"
-                alt="{{ $product->title }}">
-
-        </div>
+    
+            <!-- Zoom Controls -->
+            <div class="mb-4">
+                <label class="form-label d-block">გადიდება:</label>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary" id="zoom-out">-</button>
+                    <span id="zoom-level" class="mx-2">100%</span>
+                    <button type="button" class="btn btn-outline-secondary" id="zoom-in">+</button>
+                </div>
+            </div>
+    
+            <!-- Add to Cart Button -->
+            @if($product->subtype == 'მზა')
+            <button type="submit" class="btn btn-primary w-100 mb-2">კალათაში დამატება</button>
+            @endif
+        </form>
+    
+        <!-- Customize Button -->
+        @if($product->subtype !== 'მზა')
+        <a href="{{ route('products.customize', $product->id) }}" class="btn btn-success w-100">
+            <i class="fas fa-paint-brush"></i> გააფორმე შენ თვითონ
+        </a>
+        @endif
     </div>
+    
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const incrementBtn = document.getElementById('increment');
-            const decrementBtn = document.getElementById('decrement');
-            const quantityInput = document.getElementById('quantity');
-            const maxQuantity = {{ $product->quantity }};
 
 
 

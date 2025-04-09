@@ -263,7 +263,7 @@
                             </div>
                             <input type="file" accept="image/*" id="uploaded_image" class="form-control">
                             <div id="imagePreviewContainer"></div>
-                        </div>
+                        </div> </form>
                         </p>
                 </div>
 
