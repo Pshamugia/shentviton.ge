@@ -1,5 +1,40 @@
 @extends('layouts.app')
-@section('title', 'Customize ' . $product->title)
+
+@php use Illuminate\Support\Str; @endphp
+
+@push('seo')
+    @section('title', $product->title . ' | Shentviton')
+    @section('meta_description', Str::limit(strip_tags($product->description), 150))
+    @section('meta_keywords', $product->title . ', დიზაინი, უნიკალური პროდუქტი')
+    @section('og_title', $product->title . ' | Shentviton')
+    @section('og_description', Str::limit(strip_tags($product->description), 150))
+    @section('og_image', asset('storage/' . $product->image1))
+@endpush
+
+
+@push('schema')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ $product->title }}",
+  "image": [
+    "{{ asset('storage/' . $product->image1) }}"
+  ],
+  "description": "{{ strip_tags(Str::limit($product->description, 150)) }}",
+  "sku": "{{ $product->id }}",
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "GEL",
+    "price": "{{ number_format($product->price, 2, '.', '') }}",
+    "availability": "https://schema.org/{{ $product->quantity > 0 ? 'InStock' : 'OutOfStock' }}",
+    "itemCondition": "https://schema.org/NewCondition"
+  }
+}
+</script>
+@endpush
+
 @section('content')
     <style>
         * {
@@ -61,11 +96,58 @@
             overflow-x: hidden;
             /* ← Optional: disables horizontal scroll */
         }
+
+        /* Make tab horizontal on mobile */
+@media screen and (max-width: 768px) {
+    .tab {
+        float: none;
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        border-bottom: 2px solid #ccc;
+        background-color: #272c33;
+    }
+
+    .tab button  {
+        flex: 1;
+        width: 10px;
+        text-align: center;
+        padding: 5px 8px;
+        font-size: 11px;
+        color: white;
+        border-bottom: 2px solid transparent;
+    }
+
+
+    .tab button.active {
+        background-color: #444;
+        border-bottom: 2px solid yellow;
+        margin-left: 0;
+    }
+
+    .tabcontent {
+        width: 100%;
+        float: none;
+        border-top: none;
+        height: auto;
+        max-height: 400px;
+    }
+    .tab::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tab::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+}
+}
     </style>
     <div class="container">
 
-        <div class="row">
-            <div class="col-md-5">
+        <div class="row flex-column-reverse flex-md-row">
+                        <div class="col-md-5">
 
                 <div class="tab">
                     <button class="tablinks icon-color" onclick="openCity(event, 'product')" id="defaultOpen">
@@ -187,14 +269,19 @@
 
                 <div id="cliparts" class="tabcontent">
                     <div class="clipart-header">
-                        <button id="closeClipartSidebar" class="close-btn">&times;</button>
-                        <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
+                         <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
                         <select id="clipartCategory">
                             <option value="all">ყველა კატეგორია</option>
                             <option value="sport">სპორტი</option>
-                            <option value="funny">სასაცილო</option>
-                            <option value="nature">ბუნება</option>
-                            <option value="animals">ცხოველები</option>
+                            <option value="cars">მანქანები</option>
+                            <option value="funny">სახალისო</option>
+                            <option value="love">სასიყვარულო</option>
+                            <option value="animation">ანიმაციური გმირები</option>
+                            <option value="animals">ცხოველთა სამყარო</option>
+                            <option value="emoji">ემოჯები</option>
+                            <option value="tigerskin">ვეფხისტყაოსანი</option>
+                            <option value="mamapapuri">მამაპაპური</option>
+                            <option value="qatuli">ქართული თემა</option>
                         </select>
                     </div>
                     <div id="clipartContainer">
@@ -358,8 +445,9 @@
 
 
 
-            <div class="col-md-7 d-flex align-items-center justify-content-center bg-light py-5 design-container">
-                <div id="design-area" class="w-100" style="max-width: 500px;">
+            <div class="col-md-7 d-flex align-items-center justify-content-center"
+                style="background-color: #f0f0f0;  position: relative;">
+                <div id="design-area">
                     <img id="product-image" data-default-image="{{ asset('storage/' . $product->image1) }}"
                         src="{{ asset('storage/' . $product->image1) }}" alt="{{ $product->title }}"
                         data-id="{{ $product->id }}" style="width: 100%; height: auto; display: none;"

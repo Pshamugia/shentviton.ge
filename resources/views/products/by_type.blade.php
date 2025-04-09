@@ -18,6 +18,7 @@
                 <option value="">
                     @if($type === 'ქეისი') აირჩიეთ მოდელი  
                     @elseif($type === 'მაისური') აირჩიეთ ზომა 
+                    @elseif($type === 'პოლო') აირჩიეთ ზომა 
                     @else {{ "" }}
                     @endif
                 </option>
@@ -49,7 +50,10 @@
         @forelse ($products as $product)
         <div class="col-md-4 mb-4">
             <div class="card">
+                @if($product->subtype=='მზა')
                 <a href="{{ route('products.show', $product->id) }}">
+                    @else   <a href="{{ route('products.customize', $product->id) }}">
+                        @endif
                     <img src="{{ asset('storage/' . $product->image1) }}" class="card-img-top cover_news" id="im_news"
                         alt="{{ $product->title }}">
                 </a>

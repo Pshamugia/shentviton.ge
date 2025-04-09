@@ -27,6 +27,8 @@
                 </td>
             </tr>
             @endforeach
+
+            {{ $cliparts->links('pagination.custom-pagination') }}
         </tbody>
     </table>
 </div>

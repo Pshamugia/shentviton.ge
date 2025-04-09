@@ -139,6 +139,8 @@
                 <select class="form-control" id="type" name="type" required>
                     <option value="">-- Select Type --</option>
                     <option value="მაისური" {{ $product->type == 'მაისური' ? 'selected' : '' }}>მაისური</option>
+                    <option value="პოლო" {{ $product->type == 'პოლო' ? 'selected' : '' }}>პოლო</option>
+                    <option value="ჰუდი" {{ $product->type == 'ჰუდი' ? 'selected' : '' }}>ჰუდი</option>
                     <option value="კეპი" {{ $product->type == 'კეპი' ? 'selected' : '' }}>კეპი</option>
                     <option value="ქეისი" {{ $product->type == 'ქეისი' ? 'selected' : '' }}>ტელეფონის ქეისი</option>
                 </select>
@@ -172,10 +174,18 @@
                         let options = [];
             
                         if (type === 'მაისური') {
-                            options = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-                        } else if (type === 'კეპი') {
+                            options = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+                        } 
+                        else if (type === 'პოლო') {
+                            options = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+                        } 
+                        else if (type === 'ჰუდი') {
+                            options = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+                        } 
+                        else if (type === 'კეპი') {
                             options = ['6', '7', '7.5'];
-                        } else if (type === 'ქეისი') {
+                        } 
+                        else if (type === 'ქეისი') {
                             options = iphoneModels;
                         }
             

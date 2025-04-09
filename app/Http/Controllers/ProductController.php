@@ -6,11 +6,15 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Clipart;
 use App\Models\Product;
+use Illuminate\Support\Str;
 use App\Models\ProductColor;
 use Illuminate\Http\Request;
+use Intervention\Image\Image;
+use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\Storage; 
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+
+
 
 class ProductController extends Controller
 {
@@ -25,6 +29,18 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products')); // Update path
     }
 
+
+    public function show($id)
+    {
+        $product = Product::with('colors')->find($id);
+        $cliparts = Clipart::all(); // Ensure you fetch cliparts
+        $product->load('colors'); // ✅ Force load colors manually
+        $productArray = $product->toArray();
+
+        
+        return view('products.show', compact('product', 'cliparts', 'productArray'));
+    }
+
  
 
     public function showByType($type)
@@ -34,6 +50,7 @@ class ProductController extends Controller
             'hoodie' => 'ჰუდი',
             'phone-case' => 'ქეისი',
             'cap' => 'კეპი',
+            'polo' => 'პოლო',
         ];
     
         $typeSlug = $type;
@@ -106,8 +123,7 @@ class ProductController extends Controller
     
 
 
-    
-    
+ 
 
 
     public function edit($id)
@@ -127,124 +143,177 @@ class ProductController extends Controller
     }
     
 
-    
+
+   
+
     public function update(Request $request, $id)
-{
-    //dd($request->all());
-    $product = Product::findOrFail($id);
-
-    // Validate request
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'full_text' => 'nullable|string',
-        'size' => 'nullable|array',
-'size.*' => 'string|max:50', // each item in the size array
-        'type' => 'nullable|string|max:50',
-        'subtype' => 'required|string|max:50',
-        'quantity' => 'required|integer|min:0',
-        'price' => 'required|numeric|min:0',
-        'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        'image4' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-    ]);
-
-    // Update product details
-    $product->update([
-        'title' => $request->title,
-        'description' => $request->description,
-        'full_text' => $request->full_text,
-        'size' => is_array($request->size) ? implode(',', $request->size) : $request->size,
-        'quantity' => $request->quantity,
-        'price' => $request->price,
-        'type' => $request->type,
-        'subtype' => $request->subtype,
-    ]);
-
-    // ✅ Update Images
-    foreach (['image1', 'image2', 'image3', 'image4'] as $imageField) {
-        if ($request->hasFile($imageField)) {
-            // Delete old image
-            if ($product->$imageField) {
-                Storage::delete('public/' . $product->$imageField);
-            }
-            // Save new image
-            $product->$imageField = $request->file($imageField)->store('products', 'public');
-        }
-    }
-
-    $product->save(); // Save updated images
-
-    // ✅ Delete old colors before inserting new ones
-    ProductColor::where('product_id', $product->id)->delete();
-
-    // ✅ Insert new colors
-    if ($request->has('colors')) {
-        foreach ($request->colors as $color) {
-            ProductColor::create([
-                'product_id' => $product->id,
-                'color_name' => $color['color_name'],
-                'color_code' => $color['color_code'],
-                'front_image' => isset($color['front_image']) && $color['front_image'] instanceof \Illuminate\Http\UploadedFile
-                    ? $color['front_image']->store('colors', 'public')
-                    : ($color['existing_front_image'] ?? null),
-                'back_image' => isset($color['back_image']) && $color['back_image'] instanceof \Illuminate\Http\UploadedFile
-                    ? $color['back_image']->store('colors', 'public')
-                    : ($color['existing_back_image'] ?? null),
-            ]);
-        }
-    }
-    
-    return redirect()->route('admin.products.index')->with('success', 'Product updated successfully');
-}
-
-
-
-    public function store(Request $request)
     {
-        $product = Product::create([
+        $product = Product::findOrFail($id);
+    
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'full_text' => 'nullable|string',
+            'size' => 'nullable|array',
+            'size.*' => 'string|max:50',
+            'type' => 'nullable|string|max:50',
+            'subtype' => 'required|string|max:50',
+            'quantity' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
+            'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image3' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image4' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+    
+        $product->update([
             'title' => $request->title,
             'description' => $request->description,
             'full_text' => $request->full_text,
             'size' => is_array($request->size) ? implode(',', $request->size) : $request->size,
-            'type' => $request->type,
-            'subtype' => $request->subtype, // ✅ Added here
             'quantity' => $request->quantity,
             'price' => $request->price,
-            'image1' => $request->file('image1')->store('products', 'public'),
-            'image2' => $request->file('image2') ? $request->file('image2')->store('products', 'public') : null,
-            'image3' => $request->file('image3') ? $request->file('image3')->store('products', 'public') : null,
-            'image4' => $request->file('image4') ? $request->file('image4')->store('products', 'public') : null,
+            'type' => $request->type,
+            'subtype' => $request->subtype,
         ]);
-
+    
+        foreach (['image1', 'image2', 'image3', 'image4'] as $imageField) {
+            if ($request->hasFile($imageField)) {
+                if ($product->$imageField) {
+                    Storage::delete('public/' . $product->$imageField);
+                }
+                $product->$imageField = $this->convertToWebP($request->file($imageField), 'products');
+            }
+        }
+    
+        $product->save();
+    
+        ProductColor::where('product_id', $product->id)->delete();
+    
         if ($request->has('colors')) {
-            foreach ($request->colors as $color) {
+            foreach ($request->colors as $index => $color) {
+                $frontFile = $request->file("colors.$index.front_image");
+                $backFile = $request->file("colors.$index.back_image");
+    
+                $frontImage = $frontFile ? $this->convertToWebP($frontFile, 'colors') : ($color['existing_front_image'] ?? null);
+                $backImage = $backFile ? $this->convertToWebP($backFile, 'colors') : ($color['existing_back_image'] ?? null);
+    
                 ProductColor::create([
                     'product_id' => $product->id,
                     'color_name' => $color['color_name'],
                     'color_code' => $color['color_code'],
-                    'front_image' => $color['front_image']->store('colors', 'public'),
-                    'back_image' => isset($color['back_image']) && $color['back_image'] ? $color['back_image']->store('colors', 'public') : null,
-
+                    'front_image' => $frontImage,
+                    'back_image' => $backImage,
                 ]);
             }
         }
-
-        return redirect()->route('admin.products.index')->with('success', 'Product added successfully');
+    
+        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully');
     }
 
 
 
-    public function show($id)
-    {
-        $product = Product::with('colors')->find($id);
-        $cliparts = Clipart::all(); // Ensure you fetch cliparts
-        $product->load('colors'); // ✅ Force load colors manually
+    
 
-        return view('products.show', compact('product', 'cliparts'));
+public function store(Request $request)
+{
+    $image1 = $request->hasFile('image1') ? $this->convertToWebP($request->file('image1'), 'products') : null;
+    $image2 = $request->hasFile('image2') ? $this->convertToWebP($request->file('image2'), 'products') : null;
+    $image3 = $request->hasFile('image3') ? $this->convertToWebP($request->file('image3'), 'products') : null;
+    $image4 = $request->hasFile('image4') ? $this->convertToWebP($request->file('image4'), 'products') : null;
+
+    $product = Product::create([
+        'title' => $request->title,
+        'description' => $request->description,
+        'full_text' => $request->full_text,
+        'size' => is_array($request->size) ? implode(',', $request->size) : $request->size,
+        'type' => $request->type,
+        'subtype' => $request->subtype,
+        'quantity' => $request->quantity,
+        'price' => $request->price,
+        'image1' => $image1,
+        'image2' => $image2,
+        'image3' => $image3,
+        'image4' => $image4,
+    ]);
+
+    if ($request->has('colors')) {
+        foreach ($request->colors as $color) {
+            $frontImage = isset($color['front_image']) && $color['front_image'] instanceof \Illuminate\Http\UploadedFile
+                ? $this->convertToWebP($color['front_image'], 'colors')
+                : null;
+
+            $backImage = isset($color['back_image']) && $color['back_image'] instanceof \Illuminate\Http\UploadedFile
+                ? $this->convertToWebP($color['back_image'], 'colors')
+                : null;
+
+            ProductColor::create([
+                'product_id' => $product->id,
+                'color_name' => $color['color_name'],
+                'color_code' => $color['color_code'],
+                'front_image' => $frontImage,
+                'back_image' => $backImage,
+            ]);
+        }
     }
 
+    return redirect()->route('admin.products.index')->with('success', 'Product added successfully');
+}
+
+
+
+
+
+private function convertToWebP($file, $folder)
+{
+    $extension = strtolower($file->getClientOriginalExtension());
+    $path = $file->getPathname();
+    $mime = $file->getMimeType();
+
+    logger()->info("Converting file", [
+        'extension' => $extension,
+        'mime' => $mime,
+        'original_name' => $file->getClientOriginalName(),
+    ]);
+
+    switch ($extension) {
+        case 'jpeg':
+        case 'jpg':
+            $src = @imagecreatefromjpeg($path);
+            break;
+        case 'png':
+            $src = @imagecreatefrompng($path);
+            break;
+        case 'gif':
+            $src = @imagecreatefromgif($path);
+            break;
+        case 'webp':
+            $src = @imagecreatefromwebp($path);
+            break;
+        default:
+            logger()->error("Unsupported format: " . $extension);
+            return $file->store($folder, 'public');
+    }
+
+    if (!$src) {
+        logger()->error("Image creation failed. Storing original instead.");
+        return $file->store($folder, 'public');
+    }
+
+    $filename = Str::uuid() . '.webp';
+    $storagePath = storage_path("app/public/{$folder}/{$filename}");
+
+    imagepalettetotruecolor($src);
+    imagealphablending($src, true);
+    imagesavealpha($src, true);
+
+    imagewebp($src, $storagePath, 80);
+    imagedestroy($src);
+
+    logger()->info("Image saved to WebP: $storagePath");
+
+    return "{$folder}/{$filename}";
+}
 
 
 

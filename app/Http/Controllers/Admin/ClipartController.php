@@ -16,7 +16,7 @@ class ClipartController extends Controller
         //
     public function index()
     {
-        $cliparts = Clipart::all();
+        $cliparts = Clipart::paginate(12);
         return view('admin.cliparts.index', compact('cliparts'));
     }
 

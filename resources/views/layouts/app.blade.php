@@ -2,6 +2,15 @@
 <html lang="ka">
 
 <head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0X7N9V9R66"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0X7N9V9R66');
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
@@ -11,6 +20,11 @@
 <meta property="og:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))" />
 <meta property="og:url" content="{{ url()->current() }}" />
 <meta property="og:type" content="website" />
+<meta property="og:locale" content="ka_GE" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="@yield('og_title', 'Shentviton - შენი დიზაინი, შენი სტილი')">
+<meta name="twitter:description" content="@yield('og_description', 'გააფორმე შენ თვითონ და ატარე უნიკალური პროდუქტი')">
+<meta name="twitter:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))">
     <link rel="icon" href="{{ asset('storage/designs/favicon.ico') }}" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
@@ -29,6 +43,28 @@
     ])    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
+
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Shentviton",
+      "url": "https://shentviton.ge",
+      "logo": "{{ asset('storage/designs/shentviton_logo.png') }}",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+995-593-922217",
+        "contactType": "customer service",
+        "areaServed": "GE"
+      },
+      "sameAs": [
+        "https://www.facebook.com/YOUR_PAGE_NAME"
+      ]
+    }
+    </script>
+    
+    @stack('schema')
 </head>
 
 <body>
@@ -68,6 +104,12 @@
                                 <li><a class="dropdown-item"
                                         href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}">მაისური</a>
                                 </li>
+                                <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'polo', 'subtype' => 'custom']) }}">პოლო მაისური</a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                href="{{ route('products.byType', ['type' => 'hoodie', 'subtype' => 'custom']) }}">ჰუდი</a>
+                        </li>
                                 <li><a class="dropdown-item"
                                         href="{{ route('products.byType', ['type' => 'cap', 'subtype' => 'custom']) }}">კეპი</a>
                                 </li>

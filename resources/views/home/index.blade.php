@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'shentviton')
+@section('title', 'შენი დიზაინი, შენი სტილი | Shentviton')
+@section('meta_description', 'შენ თვითონ გააფორმე მაისური, ჰუდი, კეპი ან ქეისი. შენი დიზაინი — შენი სტილი.')
+@section('meta_keywords', 'დიზაინი, მაისური, ჰუდი, კეპი, უნიკალური პროდუქტი, ტანსაცმელი')
+@section('og_title', 'გააფორმე შენ თვითონ | Shentviton')
+@section('og_description', 'შეიმუშავე შენი სტილი და ატარე უნიკალური სამოსი')
+@section('og_image', asset('storage/designs/shentviton_logo.png'))
 
 @section('content')
 
@@ -49,7 +54,10 @@
         @foreach ($readyDesigns as $product)
             <div class="col-md-4 mb-4">
                 <div class="card">
+                    @if($product->subtype=='მზა')
                     <a href="{{ route('products.show', $product->id) }}">
+                        @else   <a href="{{ route('products.customize', $product->id) }}">
+                            @endif
                         <img src="{{ asset('storage/' . $product->image1) }}" class="card-img-top cover_news" id="im_news"
                             alt="{{ $product->title }}">
                     </a>
@@ -108,7 +116,10 @@
         @foreach ($customDesigns as $product)
             <div class="col-md-4 mb-4">
                 <div class="card">
+                    @if($product->subtype=='მზა')
                     <a href="{{ route('products.show', $product->id) }}">
+                        @else   <a href="{{ route('products.customize', $product->id) }}">
+                            @endif
                         <img src="{{ asset('storage/' . $product->image1) }}" class="card-img-top cover_news"
                             id="im_news" alt="{{ $product->title }}">
                     </a>
