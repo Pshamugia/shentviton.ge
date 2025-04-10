@@ -14,6 +14,31 @@ class ClipartController extends Controller
      */
  
         //
+        public function loadMore(Request $request)
+{
+    $offset = $request->input('offset', 0);
+    $limit = 10;
+
+    $cliparts = Clipart::skip($offset)->take($limit)->get();
+
+    $html = '';
+    foreach ($cliparts as $clipart) {
+        $html .= '<div class="clipart-item">';
+        $html .= '<img class="clipart-img" data-category="' . $clipart->category . '"';
+        $html .= ' data-image="' . asset('storage/' . $clipart->image) . '"';
+        $html .= ' src="' . asset('storage/' . $clipart->image) . '"';
+        $html .= ' alt="Clipart" loading="lazy">';
+        $html .= '</div>';
+    }
+
+    return response()->json([
+        'html' => $html,
+        'hasMore' => Clipart::count() > $offset + $limit,
+    ]);
+}
+
+
+
     public function index()
     {
         $cliparts = Clipart::paginate(12);

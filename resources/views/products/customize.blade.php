@@ -284,21 +284,12 @@
                             <option value="qatuli">ქართული თემა</option>
                         </select>
                     </div>
-                    <div id="clipartContainer">
-                        @foreach ($cliparts as $clipart)
-                            <div class="clipart-item">
-                                @if ($loop->first)
-                                    <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                        data-image="{{ asset('storage/' . $clipart->image) }}"
-                                        src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart"
-                                        fetchpriority="high">
-                                @else
-                                    <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                        data-image="{{ asset('storage/' . $clipart->image) }}"
-                                        src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart" loading="lazy">
-                                @endif
-                            </div>
-                        @endforeach
+                    <div id="clipartContainer" class="row">
+                        {{-- Cliparts will be loaded here via AJAX --}}
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button id="loadMoreCliparts" class="btn btn-outline-primary">მეტის ნახვა</button>
                     </div>
                 </div>
 
@@ -308,19 +299,7 @@
                     <div class="side-modals" style="padding:5px !important; background-color:#ccc">
 
                         <div class="customization-boxs">
-                            <div id="textInputsContainer">
-                                {{-- <div class="mb-3">
-                                    <label for="top_text" class="form-label">ზედა ტექსტი</label>
-                                    <input type="text" id="top_text" class="form-control input-styled"
-                                        placeholder="Enter top text">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="bottom_text" class="form-label">ქვედა ტექსტი</label>
-                                    <input type="text" id="bottom_text" class="form-control input-styled"
-                                        placeholder="Enter bottom text">
-                                </div> --}}
-
-                            </div>
+                             
                             <button type="button" id="addTextInput" class="btn btn-primary my-2">+ Add Text</button>
                             <div class="mb-3">
                                 <label for="text_color" class="form-label">ტექსტის ფერი</label>
@@ -441,7 +420,38 @@
 
 
 
+<script>
+    let clipartOffset = 0;
+const clipartLimit = 10;
 
+// Event delegation — this catches clicks even on future images
+document.getElementById("clipartContainer").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("clipart-img")) {
+        addClipArtToCanvas.call(e.target); // use your original function
+    }
+});
+
+function loadCliparts() {
+    axios.get('{{ route("cliparts.load") }}', {
+        params: { offset: clipartOffset }
+    }).then(response => {
+        document.getElementById('clipartContainer').insertAdjacentHTML('beforeend', response.data.html);
+        clipartOffset += clipartLimit;
+
+        if (!response.data.hasMore) {
+            document.getElementById('loadMoreCliparts').style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadCliparts(); // Load initial 10
+
+    document.getElementById('loadMoreCliparts').addEventListener('click', function () {
+        loadCliparts();
+    });
+});
+</script>
 
 
 

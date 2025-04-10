@@ -585,8 +585,7 @@ button {
 
 .clipart-item {
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+     border-radius: 5px;
     margin-bottom: 5px;
     text-align: center;
 }

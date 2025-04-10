@@ -23,6 +23,7 @@ Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.dest
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.destroy.all');
 Route::get('/cart/{id}', [CartController::class, 'show'])->name('cart.item.show');
 Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity']);
+Route::get('/load-cliparts', [ClipartController::class, 'loadMore'])->name('cliparts.load');
 
 
 

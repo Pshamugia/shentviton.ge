@@ -1348,3 +1348,4 @@ function proceedWithAddToCart() {
             alert("There was an error adding the item to cart");
         });
 }
+window.addClipArtToCanvas = addClipArtToCanvas;

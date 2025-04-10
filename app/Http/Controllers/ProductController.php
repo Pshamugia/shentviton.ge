@@ -343,6 +343,8 @@ private function convertToWebP($file, $folder)
 
 
 
+
+
     public function saveCustomization(Request $request, $id)
     {
         $request->validate([
