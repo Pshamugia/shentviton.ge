@@ -48,7 +48,6 @@ class NewPaymentMail extends Mailable
     {
         $attachments = [];
 
-
         foreach ($this->payment->cart_ids as $item) {
             $item = Cart::find($item);
             foreach (['design_front_image', 'design_back_image', 'front_assets', 'back_assets'] as $key) {
@@ -59,11 +58,23 @@ class NewPaymentMail extends Mailable
 
                     $attachments[] = Attachment::fromStorageDisk('public', $path)
                         ->as($filename)
-                        ->withMime('image/png');
+                        ->withMime(pathinfo($path, PATHINFO_EXTENSION));
+                }
+            }
+
+            if ($item->default_img && $item->baseProduct && $item->baseProduct->image1) {
+                $path = $item->baseProduct->image1;
+                if (Storage::disk('public')->exists($path)) {
+                    $filename = "cart_item_{$item->id}_default_image." . pathinfo($path, PATHINFO_EXTENSION);
+
+                    $attachments[] = Attachment::fromStorageDisk('public', $path)
+                        ->as($filename)
+                        ->withMime(pathinfo($path, PATHINFO_EXTENSION));
+                } else {
+                    dd("not exists");
                 }
             }
         }
-
         return $attachments;
     }
 }
