@@ -156,7 +156,7 @@
                     </button>
 
 
-                    <button class="tablinks icon-color" onclick="openCity(event, 'uploader')" id="defaultOpen">
+                    <button class="tablinks icon-color" onclick="openCity(event, 'uploader')">
                         <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
                         ატვირთე
                     </button>
