@@ -435,51 +435,51 @@
 
 <script>
     let clipartOffset = 0;
-    const clipartLimit = 10;
-    let selectedCategory = "all"; // default
-    
-    // Load cliparts with current category + offset
-    function loadCliparts() {
-        axios.get('{{ route("cliparts.load") }}', {
-            params: {
-                offset: clipartOffset,
-                category: selectedCategory
-            }
-        }).then(response => {
-            const container = document.getElementById('clipartContainer');
-            container.insertAdjacentHTML('beforeend', response.data.html);
-            clipartOffset += clipartLimit;
-    
-            if (!response.data.hasMore) {
-                document.getElementById('loadMoreCliparts').style.display = 'none';
-            } else {
-                document.getElementById('loadMoreCliparts').style.display = 'block';
-            }
-        });
-    }
-    
-    // Handle category change
-    document.getElementById("clipartCategory").addEventListener("change", function () {
-        selectedCategory = this.value;
-        clipartOffset = 0;
-        document.getElementById("clipartContainer").innerHTML = ""; // clear old
-        loadCliparts(); // load new
+const clipartLimit = 10;
+let selectedCategory = "all";
+
+function loadCliparts() {
+    axios.get('{{ route("cliparts.load") }}', {
+        params: {
+            offset: clipartOffset,
+            category: selectedCategory
+        }
+    }).then(response => {
+        const container = document.getElementById('clipartContainer');
+        container.insertAdjacentHTML('beforeend', response.data.html);
+
+        clipartOffset += clipartLimit;
+
+        if (!response.data.hasMore) {
+            document.getElementById('loadMoreCliparts').style.display = 'none';
+        } else {
+            document.getElementById('loadMoreCliparts').style.display = 'block';
+        }
     });
-    
-    document.addEventListener("DOMContentLoaded", function () {
+}
+
+document.getElementById("clipartCategory").addEventListener("change", function () {
+    selectedCategory = this.value;
+    clipartOffset = 0;
+    document.getElementById("clipartContainer").innerHTML = "";
+    loadCliparts();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadCliparts();
+
+    document.getElementById('loadMoreCliparts').addEventListener('click', function () {
         loadCliparts();
-    
-        document.getElementById('loadMoreCliparts').addEventListener('click', function () {
-            loadCliparts();
-        });
-    
-        // Click-to-add on canvas (delegated)
-        document.getElementById("clipartContainer").addEventListener("click", function (e) {
-            if (e.target && e.target.classList.contains("clipart-img")) {
-                window.addClipArtToCanvas.call(e.target);
-            }
-        });
     });
+
+    // Re-bind dynamic clipart click
+    document.getElementById("clipartContainer").addEventListener("click", function (e) {
+        if (e.target && e.target.classList.contains("clipart-img")) {
+            window.addClipArtToCanvas.call(e.target);
+        }
+    });
+});
+
     </script>
 
 

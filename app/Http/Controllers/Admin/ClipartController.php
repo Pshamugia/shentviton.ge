@@ -15,34 +15,43 @@ class ClipartController extends Controller
  
         //
         public function loadMore(Request $request)
-{
-    $offset = $request->input('offset', 0);
-    $limit = 10;
-    $category = $request->input('category', 'all');
-
-    $query = \App\Models\Clipart::query();
-
-    if ($category !== 'all') {
-        $query->where('category', $category);
-    }
-
-    $cliparts = $query->skip($offset)->take($limit)->get();
-
-    $html = '';
-    foreach ($cliparts as $clipart) {
-        $html .= '<div class="clipart-item">';
-        $html .= '<img class="clipart-img" data-category="' . $clipart->category . '"';
-        $html .= ' data-image="' . asset('storage/' . $clipart->image) . '"';
-        $html .= ' src="' . asset('storage/' . $clipart->image) . '"';
-        $html .= ' alt="Clipart" loading="lazy">';
-        $html .= '</div>';
-    }
-
-    return response()->json([
-        'html' => $html,
-        'hasMore' => $query->count() > $offset + $limit,
-    ]);
-}
+        {
+            $offset = (int) $request->input('offset', 0);
+            $limit = 10;
+            $category = $request->input('category', 'all');
+        
+            $query = \App\Models\Clipart::query();
+        
+            if ($category !== 'all') {
+                $query->where('category', $category);
+            }
+        
+            // clone for accurate count
+            $total = (clone $query)->count();
+        
+            $cliparts = $query
+                ->orderBy('id', 'desc')
+                ->skip($offset)
+                ->take($limit)
+                ->get();
+        
+            $html = '';
+            foreach ($cliparts as $clipart) {
+                if ($clipart->image) {
+                    $html .= '<div class="clipart-item">';
+                    $html .= '<img class="clipart-img" data-category="' . $clipart->category . '"';
+                    $html .= ' data-image="' . asset('storage/' . $clipart->image) . '"';
+                    $html .= ' src="' . asset('storage/' . $clipart->image) . '"';
+                    $html .= ' alt="Clipart" loading="lazy">';
+                    $html .= '</div>';
+                }
+            }
+        
+            return response()->json([
+                'html' => $html,
+                'hasMore' => ($offset + $limit) < $total, // ✅ correct logic now
+            ]);
+        }
 
 
     public function index()
