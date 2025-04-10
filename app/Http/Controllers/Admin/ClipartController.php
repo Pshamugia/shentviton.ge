@@ -18,8 +18,15 @@ class ClipartController extends Controller
 {
     $offset = $request->input('offset', 0);
     $limit = 10;
+    $category = $request->input('category', 'all');
 
-    $cliparts = Clipart::skip($offset)->take($limit)->get();
+    $query = \App\Models\Clipart::query();
+
+    if ($category !== 'all') {
+        $query->where('category', $category);
+    }
+
+    $cliparts = $query->skip($offset)->take($limit)->get();
 
     $html = '';
     foreach ($cliparts as $clipart) {
@@ -33,10 +40,9 @@ class ClipartController extends Controller
 
     return response()->json([
         'html' => $html,
-        'hasMore' => Clipart::count() > $offset + $limit,
+        'hasMore' => $query->count() > $offset + $limit,
     ]);
 }
-
 
 
     public function index()

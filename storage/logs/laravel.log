@@ -5549,3 +5549,24 @@
 #27 C:\\xampp\\htdocs\\tshirt_new-main\\public\\index.php(52): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
 #28 {main}
 "} 
+[2025-04-10 11:30:50] production.INFO: IsAdmin Middleware triggered.  
+[2025-04-10 11:30:50] production.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-10 11:30:50] production.INFO: User is admin. Access granted.  
+[2025-04-10 11:30:51] production.INFO: IsAdmin Middleware triggered.  
+[2025-04-10 11:30:51] production.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-10 11:30:51] production.INFO: User is admin. Access granted.  
+[2025-04-10 11:30:52] production.INFO: IsAdmin Middleware triggered.  
+[2025-04-10 11:30:52] production.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-10 11:30:52] production.INFO: User is admin. Access granted.  
+[2025-04-10 11:30:59] production.INFO: IsAdmin Middleware triggered.  
+[2025-04-10 11:30:59] production.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-10 11:30:59] production.INFO: User is admin. Access granted.  
+[2025-04-10 11:31:29] production.INFO: IsAdmin Middleware triggered.  
+[2025-04-10 11:31:29] production.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-10 11:31:29] production.INFO: User is admin. Access granted.  
+[2025-04-10 11:31:30] production.INFO: IsAdmin Middleware triggered.  
+[2025-04-10 11:31:30] production.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-10 11:31:30] production.INFO: User is admin. Access granted.  
+[2025-04-10 11:31:40] production.INFO: IsAdmin Middleware triggered.  
+[2025-04-10 11:31:40] production.INFO: User logged in: {"user":{"App\\Models\\User":{"id":1,"name":"Paata","email":"pshamugia@gmail.com","role":"admin","email_verified_at":null,"created_at":"2025-01-29T12:59:54.000000Z","updated_at":"2025-01-29T14:02:42.000000Z"}}} 
+[2025-04-10 11:31:40] production.INFO: User is admin. Access granted.  

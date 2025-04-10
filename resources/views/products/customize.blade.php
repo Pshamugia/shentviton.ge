@@ -281,7 +281,7 @@
                             <option value="emoji">ემოჯები</option>
                             <option value="tigerskin">ვეფხისტყაოსანი</option>
                             <option value="mamapapuri">მამაპაპური</option>
-                            <option value="qatuli">ქართული თემა</option>
+                            <option value="qartuli">ქართული თემა</option>
                         </select>
                     </div>
                     <div id="clipartContainer" class="row">
@@ -291,6 +291,7 @@
                     <div class="text-center mt-3">
                         <button id="loadMoreCliparts" class="btn btn-outline-primary">მეტის ნახვა</button>
                     </div>
+                    <Br>
                 </div>
 
                 <div id="text" class="tabcontent">
@@ -422,36 +423,52 @@
 
 <script>
     let clipartOffset = 0;
-const clipartLimit = 10;
-
-// Event delegation — this catches clicks even on future images
-document.getElementById("clipartContainer").addEventListener("click", function (e) {
-    if (e.target && e.target.classList.contains("clipart-img")) {
-        addClipArtToCanvas.call(e.target); // use your original function
+    const clipartLimit = 10;
+    let selectedCategory = "all"; // default
+    
+    // Load cliparts with current category + offset
+    function loadCliparts() {
+        axios.get('{{ route("cliparts.load") }}', {
+            params: {
+                offset: clipartOffset,
+                category: selectedCategory
+            }
+        }).then(response => {
+            const container = document.getElementById('clipartContainer');
+            container.insertAdjacentHTML('beforeend', response.data.html);
+            clipartOffset += clipartLimit;
+    
+            if (!response.data.hasMore) {
+                document.getElementById('loadMoreCliparts').style.display = 'none';
+            } else {
+                document.getElementById('loadMoreCliparts').style.display = 'block';
+            }
+        });
     }
-});
-
-function loadCliparts() {
-    axios.get('{{ route("cliparts.load") }}', {
-        params: { offset: clipartOffset }
-    }).then(response => {
-        document.getElementById('clipartContainer').insertAdjacentHTML('beforeend', response.data.html);
-        clipartOffset += clipartLimit;
-
-        if (!response.data.hasMore) {
-            document.getElementById('loadMoreCliparts').style.display = 'none';
-        }
+    
+    // Handle category change
+    document.getElementById("clipartCategory").addEventListener("change", function () {
+        selectedCategory = this.value;
+        clipartOffset = 0;
+        document.getElementById("clipartContainer").innerHTML = ""; // clear old
+        loadCliparts(); // load new
     });
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    loadCliparts(); // Load initial 10
-
-    document.getElementById('loadMoreCliparts').addEventListener('click', function () {
+    
+    document.addEventListener("DOMContentLoaded", function () {
         loadCliparts();
+    
+        document.getElementById('loadMoreCliparts').addEventListener('click', function () {
+            loadCliparts();
+        });
+    
+        // Click-to-add on canvas (delegated)
+        document.getElementById("clipartContainer").addEventListener("click", function (e) {
+            if (e.target && e.target.classList.contains("clipart-img")) {
+                window.addClipArtToCanvas.call(e.target);
+            }
+        });
     });
-});
-</script>
+    </script>
 
 
 
