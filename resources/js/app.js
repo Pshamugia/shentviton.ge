@@ -6,15 +6,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     let current_url = window.location.href;
     console.log("current_url: ", current_url);
     if (current_url.includes("customize")) {
-         const { default: main } = await import("./main");
+        const { default: main } = await import("./main");
         main();
+        cleanUp();
     }
 
     if (current_url.includes("home")) {
         //
     }
-
-
 });
 
 async function ensureVisitorTracking() {
@@ -44,4 +43,12 @@ async function ensureVisitorTracking() {
         console.error("Visitor tracking error:", error);
         return localStorage.getItem("v_hash");
     }
+}
+
+function cleanUp() {
+    Object.keys(localStorage).forEach((key) => {
+        if (key.includes("/colors/") || key.includes("design")) {
+            localStorage.removeItem(key);
+        }
+    });
 }
