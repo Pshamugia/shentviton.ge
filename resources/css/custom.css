@@ -242,7 +242,7 @@ body {
 }
 
 .icon-color {
-    color: #d6336c !important;
+    color: #336cd6 !important;
     text-align: center !important;
 }
 
@@ -253,22 +253,30 @@ body {
 .navbar {
     position: fixed;
     top: 0;
-    width: 100%;
+    width: 100%; 
+    background-color: #1ca4b6 !important;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     z-index: 1001; /* Ensure it's above other elements */
-    -webkit-box-shadow: 0 4px 6px -6px #222;
-    -moz-box-shadow: 0 4px 6px -6px #222;
-    box-shadow: 0px 15px 10px -15px #111;
+    margin-bottom:40px !important;
+
+}
+
+.chosen-container .chosen-single span {
+    font-family: inherit !important; /* fallback */
 }
 
 .navbar.scrolled {
-    background-color: #f0e3e7 !important; /* or any color you like */
+    background-color: #29bed1 !important; /* or any color you like */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .navbar.scrolled .cart-link {
-    background-color: rgb(236, 199, 210) !important; /* or any color you like */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#navbarNav
+{
+    margin-top: 10px; 
 }
 
 /* Show dropdown on hover */
@@ -277,12 +285,17 @@ body {
     margin-top: 0; /* Removes the default margin */
 }
 
+.dropdown-item:hover
+{
+    background-color: #1ca4b6;
+}
+
 .btn-outline-secondary {
     height: 38px !important;
 }
 
 .price-color {
-    background-color: #57595c;
+    background-color: #336cd6;
     padding: 5px;
     color: white;
 }
@@ -344,6 +357,8 @@ body {
     border: 1px solid #ddd;
     background-color: white;
 }
+
+
 /* Mobile tweaks */
 @media screen and (max-width: 768px) {
     #design-area {
@@ -359,7 +374,7 @@ body {
 
 
 .cart-link {
-    background-color: #f0e3e7;
+    background-color: #aacadf;
     border-radius: 25px;
     padding: 6px 15px;
     color: #1b1a1a !important;
@@ -370,9 +385,8 @@ body {
 }
 
 .cart-link:hover {
-    background-color: #d6336c;
-    text-decoration: none;
-    color: #fff !important;
+    background-color: #f0e3e7;
+    text-decoration: none; 
 }
 
 .cart-link .fas {
@@ -517,7 +531,7 @@ body {
 
 .container {
     max-width: 1000px;
-    margin: auto;
+    margin: auto; 
 }
 
  

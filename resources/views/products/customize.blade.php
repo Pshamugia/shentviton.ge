@@ -11,6 +11,8 @@
     @section('og_image', asset('storage/' . $product->image1))
 @endpush
 
+ 
+ 
 
 @push('schema')
 <script type="application/ld+json">
@@ -173,7 +175,8 @@
                 <div id="product" class="tabcontent">
 
                     <p>
-                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span
+                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> 
+                        <Br><span
                                 class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
                     </div>
 
@@ -269,8 +272,8 @@
 
                 <div id="cliparts" class="tabcontent">
                     <div class="clipart-header">
-                         <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
-                        <select id="clipartCategory">
+                         <input type="text" id="searchCliparts" class="chosen-select" placeholder="🔍 კლიპარტების ძიება">
+                         <select id="clipartCategory" class="chosen-select" data-placeholder="აირჩიეთ კატეგორია">
                             <option value="all">ყველა კატეგორია</option>
                             <option value="sport">სპორტი</option>
                             <option value="cars">მანქანები</option>
@@ -293,6 +296,21 @@
                     </div>
                     <Br>
                 </div>
+                <script>
+                    $(function () {
+                        $('#clipartCategory').chosen({
+                            width: '100%'
+                        });
+                
+                        // Rebind change handler after Chosen initializes
+                        $('#clipartCategory').on('change', function () {
+                            selectedCategory = this.value;
+                            clipartOffset = 0;
+                            $('#clipartContainer').html('');
+                            loadCliparts();
+                        });
+                    });
+                </script>
 
                 <div id="text" class="tabcontent">
                     <p>
@@ -346,7 +364,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="font_family" class="form-label">ფონტები</label>
-                                <select id="font_family" class="form-control input-styled">
+                                <select id="font_family" class="chosen-select" data-placeholder="აირჩიეთ ფონტი">
+                                    <option value=""></option>
                                     <option value="Arial">Arial</option>
                                     <option value="Lobster-Regular">Lobster-Regular</option>
                                     <option value="Orbitron">Orbitron</option>
@@ -394,6 +413,25 @@
                     </div>
 
                 </div>
+
+                {{-- <script>
+                  $(document).ready(function () {
+        $('#font_family').chosen({
+            width: '100%',
+            placeholder_text_single: "აირჩიეთ ფონტი"
+        });
+
+        function applyFont() {
+            const selectedFont = $('#font_family').val();
+            const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
+
+            $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
+        }
+
+        $('#font_family').on('change', applyFont);
+        $('#font_family').trigger('change');
+    });
+                </script> --}}
                 </p>
 
                 <div class="mb-4">
