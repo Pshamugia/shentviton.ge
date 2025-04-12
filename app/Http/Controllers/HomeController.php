@@ -36,8 +36,8 @@ class HomeController extends Controller
 
         $productIdsInCart = $cartItems->pluck('product_id')->toArray();
 
-        $readyDesigns = Product::where('subtype', 'მზა')->orderBy('id', 'desc')->get(); // მზა დიზაინებისთვის
-        $customDesigns = Product::where('subtype', 'custom')->orderBy('id', 'desc')->get(); // custom დიზაინების გამოსატანად
+        $readyDesigns = Product::where('subtype', 'მზა')->orderBy('id', 'desc')->take(9)->get(); // მზა დიზაინებისთვის
+        $customDesigns = Product::where('subtype', 'custom')->orderBy('id', 'desc')->take(9)->get(); // custom დიზაინების გამოსატანად
 
         return view('home.index', compact('readyDesigns', 'customDesigns', 'cartItems', 'productIdsInCart'));
     }

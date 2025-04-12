@@ -87,7 +87,7 @@ class ProductController extends Controller
                 break;
         }
     
-        $products = $query->paginate(12)->withQueryString();
+        $products = $query->paginate(9)->withQueryString();
     
         // 🛒 Cart logic
         $auth_id = auth()->id();
@@ -330,6 +330,8 @@ private function convertToWebP($file, $folder)
 
         return view('products.customize', compact('productArray', 'cliparts', 'product'));
     }
+
+
 
 
 

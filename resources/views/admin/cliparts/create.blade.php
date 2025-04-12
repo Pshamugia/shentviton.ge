@@ -25,7 +25,7 @@
                             <option value="emoji">ემოჯები</option>
                             <option value="tigerskin">ვეფხისტყაოსანი</option>
                             <option value="mamapapuri">მამაპაპური</option> 
-                            <option value="qatuli">ქართული თემა</option>
+                            <option value="qartuli">ქართული თემა</option>
             </select>
         </div>
 

@@ -19,11 +19,17 @@
                 <td><img src="{{ asset('storage/' . $clipart->image) }}" width="80"></td>
                 <td>{{ ucfirst($clipart->category) }}</td>
                 <td>
-                    <form action="{{ route('admin.cliparts.destroy', $clipart->id) }}" method="POST">
+                    <form action="{{ route('admin.cliparts.destroy', $clipart->id) }}" method="POST" onsubmit="return confirmDelete()">
                         @csrf
                         @method('DELETE')
                         <button class="btn btn-danger">Delete</button>
                     </form>
+                    
+                    <script>
+                        function confirmDelete() {
+                            return confirm('დარწმუნებული ხარ რომ გსურს ამ კლიპარტის წაშლა?');  
+                        }
+                    </script>
                 </td>
             </tr>
             @endforeach

@@ -27,6 +27,7 @@
 <meta name="twitter:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))">
     <link rel="icon" href="{{ asset('storage/designs/favicon.ico') }}" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Monoton&family=Creepster&family=Rubik+Bubbles&family=Gloria+Hallelujah&family=Black+Ops+One&family=Lobster&family=PlaywriteIN&family=Erica+One&family=Alk-rounded&family=Berkshire+Swash&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -87,12 +88,12 @@
                         <div class="dropdown-toggle-wrapper">
                             <a class="nav-link dropdown-toggle" href="#" id="readyDesignsDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false"
-                                style="background-color: #d6336c;  border-radius: 25px;
-                                padding: 6px 15px;
-                                color: #fff9f9 !important;
+                                style="background-color: #aacadf;  border-radius: 25px;
+                                padding: 6px 15px; 
                                 display: inline-flex;
                                 align-items: center;
                                 gap: 8px;
+                                font-weight: 500;
                                 transition: background 0.3s ease;">
                                 გააფორმე შენ თვითონ
                             </a>
@@ -139,8 +140,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link cart-link" href="{{ route('cart.index') }}">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-text">კალათა</span>
+                            <i class="fas fa-shopping-cart"></i> 
                             <span class="badge bg-danger" id="cart-count">{{ session('cart_count', 0) }}</span>
                         </a>
                     </li>
@@ -186,7 +186,7 @@
 
 
 
-    <div class="container mt-4">
+    <div class="container mt-4" style="margin-top:40px !important; position: relative;">
         @yield('content')
     </div>
 

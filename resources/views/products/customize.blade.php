@@ -12,6 +12,8 @@
 @endpush
 
 
+
+
 @push('schema')
 <script type="application/ld+json">
 {
@@ -157,10 +159,10 @@
                 </button>
 
 
-                <button class="tablinks icon-color" onclick="openCity(event, 'uploader')" id="defaultOpen">
-                    <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
-                    ატვირთე
-                </button>
+                    <button class="tablinks icon-color" onclick="openCity(event, 'uploader')">
+                        <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
+                        ატვირთე
+                    </button>
 
                 <button class="tablinks icon-color" onclick="openCity(event, 'cliparts')">
                     <i class="fas fa-palette icon-color" style="font-size: 20px"></i> <br>
@@ -173,10 +175,11 @@
 
             <div id="product" class="tabcontent">
 
-                <p>
-                <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span
-                            class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
-                </div>
+                    <p>
+                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b>
+                        <Br><span
+                                class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
+                    </div>
 
                 @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
@@ -254,51 +257,58 @@
 
                     </button>
 
-                    <div>
-                        <div class="upload-header">
-                            <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
-                            <h4>ატვირთე </h4>
-                        </div>
-                        <input type="file" accept="image/*" id="uploaded_image" class="form-control">
-                        <div id="imagePreviewContainer"></div>
-                    </div>
-                    </p>
-            </div>
+                        <div>
+                            <div class="upload-header">
+                                <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
+                                <h4>ატვირთე </h4>
+                            </div>
+                            <input type="file" accept="image/*" id="uploaded_image" class="form-control">
+                            <div id="imagePreviewContainer"></div>
+                        </div> </form>
+                        </p>
+                </div>
 
-            <div id="cliparts" class="tabcontent">
-                <div class="clipart-header">
-                    <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
-                    <select id="clipartCategory">
-                        <option value="all">ყველა კატეგორია</option>
-                        <option value="sport">სპორტი</option>
-                        <option value="cars">მანქანები</option>
-                        <option value="funny">სახალისო</option>
-                        <option value="love">სასიყვარულო</option>
-                        <option value="animation">ანიმაციური გმირები</option>
-                        <option value="animals">ცხოველთა სამყარო</option>
-                        <option value="emoji">ემოჯები</option>
-                        <option value="tigerskin">ვეფხისტყაოსანი</option>
-                        <option value="mamapapuri">მამაპაპური</option>
-                        <option value="qatuli">ქართული თემა</option>
-                    </select>
+                <div id="cliparts" class="tabcontent">
+                    <div class="clipart-header">
+                         <input type="text" id="searchCliparts" class="chosen-select" placeholder="🔍 კლიპარტების ძიება">
+                         <select id="clipartCategory" class="chosen-select" data-placeholder="აირჩიეთ კატეგორია">
+                            <option value="all">ყველა კატეგორია</option>
+                            <option value="sport">სპორტი</option>
+                            <option value="cars">მანქანები</option>
+                            <option value="funny">სახალისო</option>
+                            <option value="love">სასიყვარულო</option>
+                            <option value="animation">ანიმაციური გმირები</option>
+                            <option value="animals">ცხოველთა სამყარო</option>
+                            <option value="emoji">ემოჯები</option>
+                            <option value="tigerskin">ვეფხისტყაოსანი</option>
+                            <option value="mamapapuri">მამაპაპური</option>
+                            <option value="qartuli">ქართული თემა</option>
+                        </select>
+                    </div>
+                    <div id="clipartContainer" class="row">
+                        {{-- Cliparts will be loaded here via AJAX --}}
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button id="loadMoreCliparts" class="btn btn-outline-primary">მეტის ნახვა</button>
+                    </div>
+                    <Br>
                 </div>
-                <div id="clipartContainer">
-                    @foreach ($cliparts as $clipart)
-                        <div class="clipart-item">
-                            @if ($loop->first)
-                                <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                    data-image="{{ asset('storage/' . $clipart->image) }}"
-                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart"
-                                    fetchpriority="high">
-                            @else
-                                <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                    data-image="{{ asset('storage/' . $clipart->image) }}"
-                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart" loading="lazy">
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
+                <script>
+                    $(function () {
+                        $('#clipartCategory').chosen({
+                            width: '100%'
+                        });
+
+                        // Rebind change handler after Chosen initializes
+                        $('#clipartCategory').on('change', function () {
+                            selectedCategory = this.value;
+                            clipartOffset = 0;
+                            $('#clipartContainer').html('');
+                            loadCliparts();
+                        });
+                    });
+                </script>
 
             <div id="text" class="tabcontent">
                 <p>
@@ -326,81 +336,101 @@
                         </div>
 
 
-                        <div class="mb-3">
-                            <label class="form-label">ტექსტის სტილი</label>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-outline-dark text-style-btn" data-style="bold"
-                                    title="Bold">
-                                    <i class="fas fa-bold"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-dark text-style-btn"
-                                    data-style="italic" title="Italic">
-                                    <i class="fas fa-italic"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-dark text-style-btn"
-                                    data-style="underline" title="Underline">
-                                    <i class="fas fa-underline"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-dark text-style-btn"
-                                    data-style="curved">
-                                    <i class="fas fa-circle-notch"></i> <br> წრე
-                                </button>
-                                <button type="button" class="btn btn-outline-dark text-style-btn"
-                                    data-style="normal" title="Reset">
-                                    <i class="fas fa-undo"></i>
+                            <div class="mb-3">
+                                <label class="form-label">ტექსტის სტილი</label>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-dark text-style-btn" data-style="bold"
+                                        title="Bold">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-dark text-style-btn"
+                                        data-style="italic" title="Italic">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-dark text-style-btn"
+                                        data-style="underline" title="Underline">
+                                        <i class="fas fa-underline"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-dark text-style-btn"
+                                        data-style="curved">
+                                        <i class="fas fa-circle-notch"></i> <br> წრე
+                                    </button>
+                                    <button type="button" class="btn btn-outline-dark text-style-btn"
+                                        data-style="normal" title="Reset">
+                                        <i class="fas fa-undo"></i>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="font_family" class="form-label">ფონტები</label>
+                                <select id="font_family" class="chosen-select" data-placeholder="აირჩიეთ ფონტი">
+                                    <option value=""></option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Lobster-Regular">Lobster-Regular</option>
+                                    <option value="Orbitron">Orbitron</option>
+                                    <option value="Alk-rounded"
+                                        style="font-family: 'alk-rounded', sans-serif !important;">
+                                        <al> Alk-rounded </al>
+                                    </option>
+                                    <option value="PlaywriteIN"
+                                        style="font-family: 'PlaywriteIN', sans-serif !important;">
+                                        PlaywriteIN</option>
+                                    <option value="Lobster-Regular"
+                                        style="font-family: 'Lobster-Regular', sans-serif !important;">Lobster-Regular
+                                    </option>
+                                    <option value="Orbitron" style="font-family: 'Orbitron', sans-serif !important;">
+                                        Orbitron
+                                    </option>
+                                    <option value="Orbitron">Orbitron</option>
+                                    <option value="EricaOne" style="font-family: 'EricaOne', sans-serif !important;">
+                                        EricaOne
+                                    </option>
+                                    <option value="GloriaHallelujah"
+                                        style="font-family: 'GloriaHallelujah', sans-serif !important;">GloriaHallelujah
+                                    </option>
+                                    <option value="Creepster" style="font-family: 'Creepster', sans-serif !important;">
+                                        Creepster</option>
+                                    <option value="RubikBubbles"
+                                        style="font-family: 'RubikBubbles', sans-serif !important;">
+                                        RubikBubbles</option>
+                                    <option value="BerkshireSwash"
+                                        style="font-family: 'BerkshireSwash', sans-serif !important;">BerkshireSwash
+                                    </option>
+                                    <option value="Monoton" style="font-family: 'Monoton', sans-serif !important;">Monoton
+                                    </option>
+                                    <option value="BlackOpsOne"
+                                        style="font-family: 'BlackOpsOne', sans-serif !important;">
+                                        BlackOpsOne</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="font_size" class="form-label">ფონტის ზომა</label>
+                                <input type="number" id="font_size" class="form-control input-styled" value="30"
+                                    min="10" max="100">
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="font_family" class="form-label">ფონტები</label>
-                            <select id="font_family" class="form-control input-styled">
-                                <option value="Arial">Arial</option>
-                                <option value="Lobster-Regular">Lobster-Regular</option>
-                                <option value="Orbitron">Orbitron</option>
-                                <option value="Alk-rounded"
-                                    style="font-family: 'alk-rounded', sans-serif !important;">
-                                    <al> Alk-rounded </al>
-                                </option>
-                                <option value="PlaywriteIN"
-                                    style="font-family: 'PlaywriteIN', sans-serif !important;">
-                                    PlaywriteIN</option>
-                                <option value="Lobster-Regular"
-                                    style="font-family: 'Lobster-Regular', sans-serif !important;">Lobster-Regular
-                                </option>
-                                <option value="Orbitron" style="font-family: 'Orbitron', sans-serif !important;">
-                                    Orbitron
-                                </option>
-                                <option value="Orbitron">Orbitron</option>
-                                <option value="EricaOne" style="font-family: 'EricaOne', sans-serif !important;">
-                                    EricaOne
-                                </option>
-                                <option value="GloriaHallelujah"
-                                    style="font-family: 'GloriaHallelujah', sans-serif !important;">GloriaHallelujah
-                                </option>
-                                <option value="Creepster" style="font-family: 'Creepster', sans-serif !important;">
-                                    Creepster</option>
-                                <option value="RubikBubbles"
-                                    style="font-family: 'RubikBubbles', sans-serif !important;">
-                                    RubikBubbles</option>
-                                <option value="BerkshireSwash"
-                                    style="font-family: 'BerkshireSwash', sans-serif !important;">BerkshireSwash
-                                </option>
-                                <option value="Monoton" style="font-family: 'Monoton', sans-serif !important;">Monoton
-                                </option>
-                                <option value="BlackOpsOne"
-                                    style="font-family: 'BlackOpsOne', sans-serif !important;">
-                                    BlackOpsOne</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="font_size" class="form-label">ფონტის ზომა</label>
-                            <input type="number" id="font_size" class="form-control input-styled" value="30"
-                                min="10" max="100">
-                        </div>
                     </div>
+
                 </div>
 
-            </div>
-            </p>
+                {{-- <script>
+                  $(document).ready(function () {
+        $('#font_family').chosen({
+            width: '100%',
+            placeholder_text_single: "აირჩიეთ ფონტი"
+        });
+
+        function applyFont() {
+            const selectedFont = $('#font_family').val();
+            const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
+
+            $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
+        }
+
+        $('#font_family').on('change', applyFont);
+        $('#font_family').trigger('change');
+    });
+                </script> --}}
+                </p>
 
             <div class="mb-4">
                 <label class="form-label d-block">გადიდება:</label>
@@ -439,7 +469,54 @@
 
 
 
+<script>
+    let clipartOffset = 0;
+const clipartLimit = 10;
+let selectedCategory = "all";
 
+function loadCliparts() {
+    axios.get('{{ route("cliparts.load") }}', {
+        params: {
+            offset: clipartOffset,
+            category: selectedCategory
+        }
+    }).then(response => {
+        const container = document.getElementById('clipartContainer');
+        container.insertAdjacentHTML('beforeend', response.data.html);
+
+        clipartOffset += clipartLimit;
+
+        if (!response.data.hasMore) {
+            document.getElementById('loadMoreCliparts').style.display = 'none';
+        } else {
+            document.getElementById('loadMoreCliparts').style.display = 'block';
+        }
+    });
+}
+
+document.getElementById("clipartCategory").addEventListener("change", function () {
+    selectedCategory = this.value;
+    clipartOffset = 0;
+    document.getElementById("clipartContainer").innerHTML = "";
+    loadCliparts();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadCliparts();
+
+    document.getElementById('loadMoreCliparts').addEventListener('click', function () {
+        loadCliparts();
+    });
+
+    // Re-bind dynamic clipart click
+    document.getElementById("clipartContainer").addEventListener("click", function (e) {
+        if (e.target && e.target.classList.contains("clipart-img")) {
+            window.addClipArtToCanvas.call(e.target);
+        }
+    });
+});
+
+    </script>
 
 
 
