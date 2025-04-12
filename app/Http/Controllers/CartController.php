@@ -269,19 +269,16 @@ class CartController extends Controller
 
     public function show($id)
     {
-        // This loads the cart item and its related product in one query
         $cart_item = Cart::with('product')->findOrFail($id);
 
         $images = (object) [];
 
-        // Custom uploaded front image from cart
         if (!empty($cart_item->design_front_image)) {
             $images->first_image = Storage::url($cart_item->design_front_image);
         } else {
             $images->first_image = null;
         }
 
-        // Back image from the related product
         if (!empty($cart_item->design_back_image)) {
             $images->second_image = Storage::url($cart_item->design_back_image);
         } else {
