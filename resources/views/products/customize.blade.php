@@ -254,7 +254,7 @@
                 <div id="uploader" class="tabcontent">
 
                     <p>
-                    <form id="customizationForm">
+                  
                         <button type="button" id="toggleUploadSidebar" class="upload-btn" hidden>
 
                         </button>
@@ -266,7 +266,7 @@
                             </div>
                             <input type="file" accept="image/*" id="uploaded_image" class="form-control">
                             <div id="imagePreviewContainer"></div>
-                        </div> </form>
+                        </div>  
                         </p>
                 </div>
 
