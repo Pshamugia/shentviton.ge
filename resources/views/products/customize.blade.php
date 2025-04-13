@@ -257,14 +257,14 @@
 
                     </button>
 
-                        <div>
+                       <form> <div>
                             <div class="upload-header">
                                 <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
                                 <h4>ატვირთე </h4>
                             </div>
                             <input type="file" accept="image/*" id="uploaded_image" class="form-control">
                             <div id="imagePreviewContainer"></div>
-                        </div>  
+                        </div> </form> 
                         </p>
                 </div>
 
@@ -412,24 +412,24 @@
 
                 </div>
 
-                {{-- <script>
-                  $(document).ready(function () {
-        $('#font_family').chosen({
-            width: '100%',
-            placeholder_text_single: "აირჩიეთ ფონტი"
-        });
+                <script>
+    //               $(document).ready(function () {
+    //     $('#font_family').chosen({
+    //         width: '100%',
+    //         placeholder_text_single: "აირჩიეთ ფონტი"
+    //     });
 
-        function applyFont() {
-            const selectedFont = $('#font_family').val();
-            const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
+    //     function applyFont() {
+    //         const selectedFont = $('#font_family').val();
+    //         const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
 
-            $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
-        }
+    //         $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
+    //     }
 
-        $('#font_family').on('change', applyFont);
-        $('#font_family').trigger('change');
-    });
-                </script> --}}
+    //     $('#font_family').on('change', applyFont);
+    //     $('#font_family').trigger('change');
+    // });
+                </script>
                 </p>
 
             <div class="mb-4">

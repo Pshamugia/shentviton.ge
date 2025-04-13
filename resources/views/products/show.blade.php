@@ -80,22 +80,19 @@
                 @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
                     <div class="mb-3 pt-4 pb-4" style="background-color: #e2dfdf; padding-left:10px; border-radius: 5px">
-
-                        <label class="form-label text-start w-100">აირჩიეთ ფერი:</label>
+                            <label class="form-label text-start w-auto" style="white-space: nowrap;">აირჩიეთ ფერი:</label>
 
                         <div class="d-flex flex-wrap gap-2 mb-3">
-
                             @foreach ($productArray['colors'] as $color)
-                                <div class="col text-center">
-                                    <button class="color-option" data-color="{{ $color['color_code'] }}"
-                                        data-front-image="{{ asset('storage/' . $color['front_image']) }}"
-                                        data-back-image="{{ asset('storage/' . $color['back_image']) }}"
-                                        data-back-index={{ 'back-' . $color['id'] }}
-                                        data-front-index={{ 'front-' . $color['id'] }} data-index={{ $color['id'] }}
-                                        style="width: 38px; height: 38px; background-color: {{ $color['color_code'] }};;
+                                <button class="color-option rounded-circle border border-secondary"
+                                    data-color="{{ $color['color_code'] }}"
+                                    data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+                                    data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+                                    data-back-index={{ 'back-' . $color['id'] }}
+                                    data-front-index={{ 'front-' . $color['id'] }} data-index={{ $color['id'] }}
+                                    style="background-color: {{ $color['color_code'] }};
                      ">
-                                    </button>
-                                </div>
+                                </button>
                             @endforeach
 
                         </div>
@@ -116,84 +113,86 @@
 
 
 
-
-
-                <!-- Right Section -->
-                <div class="col-md-8 text-center">
-                    <img src="{{ asset('storage/' . $product->image1) }}" id="product-image" class="img-fluid"
-                        alt="{{ $product->title }}">
-
+                <!-- Zoom Controls -->
+                <div class="mb-4">
+                    <label class="form-label d-block">გადიდება:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-out">-</button>
+                        <span id="zoom-level" class="mx-2">100%</span>
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-in">+</button>
+                    </div>
                 </div>
+
+                <!-- Add to Cart Button -->
+                @if ($product->subtype == 'მზა')
+                    <button type="submit" class="btn btn-primary w-100 mb-2">კალათაში დამატება</button>
+                @endif
+            </form>
+
+            <!-- Customize Button -->
+            @if ($product->subtype !== 'მზა')
+                <a href="{{ route('products.customize', $product->id) }}" class="btn btn-success w-100">
+                    <i class="fas fa-paint-brush"></i> გააფორმე შენ თვითონ
+                </a>
+            @endif
         </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                        const incrementBtn = document.getElementById('increment');
-                        const decrementBtn = document.getElementById('decrement');
-                        const quantityInput = document.getElementById('quantity');
-                        const maxQuantity = {{ $product->quantity }};
 
 
 
 
-                        <
-                        !--Right Section-- >
-                        <
-                        div class = "col-md-8 order-1 order-md-2 text-center" >
-                        <
-                        img src = "{{ asset('storage/' . $product->image1) }}"
-                        id = "product-image"
-                        class = "img-fluid"
-                        alt = "{{ $product->title }}" >
 
-                            <
-                            /div> <
-                            /div>
+        <!-- Right Section -->
+        <div class="col-md-8 order-1 order-md-2 text-center">
+            <img src="{{ asset('storage/' . $product->image1) }}" id="product-image" class="img-fluid"
+                alt="{{ $product->title }}">
 
-                            <
-                            script >
-                            document.addEventListener('DOMContentLoaded', function() {
-                                // Existing quantity logic is already above...
+        </div>
+    </div>
 
-                                const colorButtons = document.querySelectorAll('.color-option');
-                                const productImage = document.getElementById('product-image');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Existing quantity logic is already above...
 
-                                colorButtons.forEach(button => {
-                                    button.addEventListener('click', function() {
-                                        const frontImage = this.getAttribute('data-front-image');
-                                        if (frontImage) {
-                                            productImage.src = frontImage;
-                                        }
+            const colorButtons = document.querySelectorAll('.color-option');
+            const productImage = document.getElementById('product-image');
 
-                                        // Optional: add an active border to selected color
-                                        colorButtons.forEach(btn => btn.classList.remove('selected-color'));
-                                        this.classList.add('selected-color');
-                                    });
-                                });
-                            });
-                        const colorButtons = document.querySelectorAll('.color-option');
-                        const productImage = document.getElementById('product-image');
+            colorButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const frontImage = this.getAttribute('data-front-image');
+                    if (frontImage) {
+                        productImage.src = frontImage;
+                    }
 
-                        colorButtons.forEach(button => {
-                            button.addEventListener('click', function(e) {
-                                e.preventDefault(); // ✅ Prevent triggering validation
+                    // Optional: add an active border to selected color
+                    colorButtons.forEach(btn => btn.classList.remove('selected-color'));
+                    this.classList.add('selected-color');
+                });
+            });
+        });
+        const colorButtons = document.querySelectorAll('.color-option');
+        const productImage = document.getElementById('product-image');
 
-                                const frontImage = this.getAttribute('data-front-image');
-                                if (frontImage) {
-                                    productImage.src = frontImage;
-                                }
+        colorButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault(); // ✅ Prevent triggering validation
 
-                                colorButtons.forEach(btn => btn.classList.remove('selected-color'));
-                                this.classList.add('selected-color');
-                            });
-                        });
-        </script>
+                const frontImage = this.getAttribute('data-front-image');
+                if (frontImage) {
+                    productImage.src = frontImage;
+                }
 
-        <style>
-            .color-option.selected-color {
-                border: 3px solid red !important;
-            }
-        </style>
+                colorButtons.forEach(btn => btn.classList.remove('selected-color'));
+                this.classList.add('selected-color');
+            });
+        });
+    </script>
+
+    <style>
+        .color-option.selected-color {
+            border: 3px solid red !important;
+        }
+    </style>
 
 
-    @endsection
+@endsection

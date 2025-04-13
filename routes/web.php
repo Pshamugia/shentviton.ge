@@ -25,6 +25,8 @@ Route::get('/cart/{id}', [CartController::class, 'show'])->name('cart.item.show'
 Route::post('/cart/update-quantity/{id}', [CartController::class, 'updateQuantity']);
 Route::get('/load-cliparts', [ClipartController::class, 'loadMore'])->name('cliparts.load');
 
+Route::get('/admin/cliparts/{clipart}/edit', [ClipartController::class, 'edit'])->name('admin.cliparts.edit');
+Route::put('/admin/cliparts/{clipart}', [ClipartController::class, 'update'])->name('admin.cliparts.update');
 
 
 Route::get('/search', [App\Http\Controllers\SearchController::class, 'search'])->name('search');

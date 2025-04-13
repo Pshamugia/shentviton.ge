@@ -19,6 +19,9 @@
                 <td><img src="{{ asset('storage/' . $clipart->image) }}" width="80"></td>
                 <td>{{ ucfirst($clipart->category) }}</td>
                 <td>
+                    <a href="{{ route('admin.cliparts.edit', $clipart->id) }}" class="btn btn-sm btn-primary">Edit</a>
+
+                    
                     <form action="{{ route('admin.cliparts.destroy', $clipart->id) }}" method="POST" onsubmit="return confirmDelete()">
                         @csrf
                         @method('DELETE')
