@@ -222,7 +222,7 @@
                 <div class="col-md-4 text-start">
 
                     <div style="margin-bottom:10px"> გამოგვყევი </div>
-                    <a href="#" class="text-white"><i class="fab fa-facebook custom-icon-facebook"></i></a>
+                    <a href="https://www.facebook.com/shentviton.ge" target="_blank" class="text-white"><i class="fab fa-facebook custom-icon-facebook"></i></a>
                     <a href="#" class="text-white mx-2"><i
                             class="fab fa-instagram custom-icon-instagram"></i></a>
                     <a href="#" class="text-white"><i class="fab fa-youtube custom-icon-youtube"></i></a>

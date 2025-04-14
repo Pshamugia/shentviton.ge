@@ -23,11 +23,21 @@ class ProductController extends Controller
         return view('admin.products.create');
     }
 
-    public function index()
+    
+
+    public function index(Request $request)
     {
-        $products = Product::all();
-        return view('admin.products.index', compact('products')); // Update path
+        $query = Product::query();
+    
+        if ($request->has('search') && $request->search != '') {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+    
+        $products = $query->orderBy('id', 'asc')->paginate(10);
+    
+        return view('admin.products.index', compact('products'));
     }
+    
 
 
     public function show($id)

@@ -43,6 +43,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('products', ProductController::class);
     Route::resource('cliparts', ClipartController::class);
     Route::put('/admin/products/{id}', [ProductController::class, 'update'])->name('admin.products.update');
+    Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products.index');
 
 });
 
