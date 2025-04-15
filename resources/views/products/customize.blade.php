@@ -118,53 +118,43 @@
         gap: 10px;
     }
 
-
-    /* @media screen and (max-width: 768px) {
-        .tab {
-            float: none;
-            width: 100%;
-            height: auto;
+    /* Add these styles to your existing CSS */
+    @media screen and (min-width: 768px) and (max-width: 1199px) {
+        #canvasWrapper {
+            margin-top: 0;
+            margin-bottom: 2rem;
             display: flex;
-            flex-direction: row;
-            overflow-x: auto;
-            border-bottom: 2px solid #ccc;
-            background-color: #272c33;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            position: relative;
         }
 
-        .tab button {
-            flex: 1;
-            width: 10px;
-            text-align: center;
-            padding: 5px 8px;
-            font-size: 11px;
-            color: white;
-            border-bottom: 2px solid transparent;
-        }
-
-
-        .tab button.active {
-            background-color: #444;
-            border-bottom: 2px solid yellow;
-            margin-left: 0;
+        #tshirtCanvas {
+            position: relative;
+            top: 0;
+            max-height: 100%;
+            object-fit: contain;
         }
 
         .tabcontent {
-            width: 100%;
-            float: none;
-            border-top: none;
             height: auto;
-            max-height: 400px;
+            min-height: 400px;
+            max-height: 600px;
         }
 
-        .tab::-webkit-scrollbar {
-            height: 4px;
+        #canvasContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2rem;
         }
 
-        .tab::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 2px;
+        .color-selection {
+            width: 100%;
         }
-    } */
+    }
 
     @media screen and (max-width: 1024px) {
         body.mobile-view {
@@ -224,8 +214,9 @@
             padding-bottom: 5rem;
         }
 
-        #canvasContainer {
-            margin-top: 20px;
+        #canvasWrapper {
+            margin-top: 5rem;
+            max-width: 500px;
         }
 
         .customization-container {
@@ -621,15 +612,14 @@
 
 
 
-        <div class="col-md-7 d-flex align-items-center justify-content-center tabcontent" id="canvasContainer"
-            style="">
-            <div id="design-area" class="w-100">
+        <div class="col-md-7 d-flex align-items-center justify-content-center" id="canvasContainer" style="">
+            <div id="design-area" class="w-100 h-auto">
                 <img id="product-image" data-default-image="{{ asset('storage/' . $product->image1) }}"
                     src="{{ asset('storage/' . $product->image1) }}" alt="{{ $product->title }}"
                     data-id="{{ $product->id }}" style="width: 100%; height: auto; display: none;"
                     data-type="{{ $product->type }}">
 
-                <div class="d-flex align-items-center justify-content-center">
+                <div class="d-flex align-items-center justify-content-center" id="canvasWrapper">
                     <canvas id="tshirtCanvas" style="max-width: 100%;"></canvas>
                 </div>
 

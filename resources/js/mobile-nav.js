@@ -1,8 +1,8 @@
-const isMobile = () => window.innerWidth <= 1024;
-
 function qs(arg) {
     return document.querySelector(arg);
 }
+
+const isMobile = () => window.innerWidth <= 1024;
 
 const tabButtons = {
     product: qs("#defaultOpen"),
@@ -28,36 +28,75 @@ const btnContentMap = {
 
 const buttonToTabName = new Map();
 
-initMobileNav();
+// Run initial setup
+initNavigation();
 
 document.addEventListener("addedToCanvas", function (e) {
-    Object.values(tabButtons).forEach((btn) => btn.classList.remove("active"));
+    if (!isMobile()) return;
 
+    Object.values(tabButtons).forEach((btn) => btn.classList.remove("active"));
     tabButtons?.canvas?.classList.add("active");
 
     Object.values(tabContents).forEach((content) =>
         content.classList.add("d-none")
     );
 
-    const selectedContent = tabContents['canvas'];
+    const selectedContent = tabContents["canvas"];
     if (selectedContent) {
         selectedContent.classList.remove("d-none");
+        if (isMobile()) {
+            selectedContent.classList.add("tabcontent");
+        }
     }
 });
 
 window.addEventListener("resize", function () {
-    if (isMobile()) {
-        initMobileNav();
-    } else {
-        document.body.classList.remove("mobile-view");
-        Object.values(tabContents).forEach((content) =>
-            content.classList.remove("d-none")
-        );
+    // Check if we crossed the mobile threshold
+    const wasMobile = document.body.classList.contains("mobile-view");
+    const isMobileNow = isMobile();
+
+    if (wasMobile !== isMobileNow) {
+        // We're crossing the mobile/desktop threshold
+        resetNavigation();
+        initNavigation();
     }
 });
 
+function initNavigation() {
+    if (isMobile()) {
+        initMobileNav();
+    } else {
+        initDesktopNav();
+    }
+}
+
+function resetNavigation() {
+    // Remove mobile-specific elements and classes
+    document.body.classList.remove("mobile-view");
+    const canvasBtn = qs("#canvasBtn");
+    if (canvasBtn) {
+        canvasBtn.remove();
+    }
+
+    // Remove event listeners (we'll add new ones as needed)
+    Object.values(tabButtons).forEach((btn) => {
+        if (btn) {
+            btn.removeEventListener("click", switchTabContent);
+        }
+    });
+
+    // Reset tab content display
+    Object.values(tabContents).forEach((content) => {
+        if (content) {
+            content.classList.remove("d-none", "tabcontent");
+        }
+    });
+
+    // Clear the button map
+    buttonToTabName.clear();
+}
+
 function initMobileNav() {
-    if (!isMobile()) return;
     document.body.classList.add("mobile-view");
 
     const canvasContainer = qs("#canvasContainer");
@@ -87,18 +126,57 @@ function initMobileNav() {
     }
 
     Object.keys(tabButtons).forEach((key) => {
-        buttonToTabName.set(tabButtons[key], key);
+        if (tabButtons[key]) {
+            buttonToTabName.set(tabButtons[key], key);
+        }
     });
 
-    Object.values(tabContents).forEach((content) =>
-        content.classList.add("d-none")
-    );
+    Object.values(tabContents).forEach((content) => {
+        if (content) {
+            content.classList.add("d-none");
+        }
+    });
 
-    tabContents.canvas.classList.remove("d-none");
+    if (tabContents.canvas) {
+        tabContents.canvas.classList.remove("d-none");
+        tabContents.canvas.classList.add("tabcontent");
+    }
 
     Object.values(tabButtons).forEach((btn) => {
-        btn.addEventListener("click", switchTabContent);
+        if (btn) {
+            btn.addEventListener("click", switchTabContent);
+        }
     });
+}
+
+function initDesktopNav() {
+    // Show default tab content (product)
+    if (tabContents.product) {
+        tabContents.product.style.display = "block";
+    }
+
+    // Make sure canvas container is visible but without tabcontent class
+    if (tabContents.canvas) {
+        tabContents.canvas.classList.remove("tabcontent", "d-none");
+        tabContents.canvas.style.display = "flex"; // Ensure proper display mode
+    }
+
+    // Hide other tab contents except the default one
+    ["uploader", "cliparts", "text"].forEach((key) => {
+        if (tabContents[key]) {
+            tabContents[key].style.display = "none";
+        }
+    });
+
+    // Set the default button as active
+    if (tabButtons.product) {
+        tabButtons.product.classList.add("active");
+        ["uploader", "cliparts", "text"].forEach((key) => {
+            if (tabButtons[key]) {
+                tabButtons[key].classList.remove("active");
+            }
+        });
+    }
 }
 
 function switchTabContent(evt) {
@@ -107,18 +185,29 @@ function switchTabContent(evt) {
     const clickedBtn = evt.currentTarget;
     const tabName = buttonToTabName.get(clickedBtn);
 
-    if (!tabName) return;
+    if (!tabName || !tabContents[tabName]) return;
 
-    Object.values(tabButtons).forEach((btn) => btn.classList.remove("active"));
+    Object.values(tabButtons).forEach((btn) => {
+        if (btn) {
+            btn.classList.remove("active");
+        }
+    });
 
     clickedBtn.classList.add("active");
 
-    Object.values(tabContents).forEach((content) =>
-        content.classList.add("d-none")
-    );
+    Object.values(tabContents).forEach((content) => {
+        if (content) {
+            content.classList.add("d-none");
+        }
+    });
 
     const selectedContent = tabContents[tabName];
     if (selectedContent) {
         selectedContent.classList.remove("d-none");
+
+        // Only add tabcontent class in mobile view
+        if (isMobile()) {
+            selectedContent.classList.add("tabcontent");
+        }
     }
 }
