@@ -123,11 +123,18 @@
         }
 
 
+<<<<<<< HEAD
         .tab button.active {
             background-color: #444;
             border-bottom: 2px solid yellow;
             margin-left: 0;
         }
+=======
+                    <button class="tablinks icon-color" onclick="openCity(event, 'uploader')">
+                        <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
+                        ატვირთე
+                    </button>
+>>>>>>> ae5323a8428360e18ebf9d88dc0e46c9ff9399d3
 
         .tabcontent {
             width: 100%;
@@ -159,10 +166,10 @@
                 </button>
 
 
-                    <button class="tablinks icon-color" onclick="openCity(event, 'uploader')">
-                        <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
-                        ატვირთე
-                    </button>
+                <button class="tablinks icon-color" onclick="openCity(event, 'uploader')" id="defaultOpen">
+                    <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
+                    ატვირთე
+                </button>
 
                 <button class="tablinks icon-color" onclick="openCity(event, 'cliparts')">
                     <i class="fas fa-palette icon-color" style="font-size: 20px"></i> <br>
@@ -175,16 +182,100 @@
 
             <div id="product" class="tabcontent">
 
+                <p>
+                <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span
+                            class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
+                </div>
+
+                @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
+
+                <div id="product" class="tabcontent">
+
                     <p>
                     <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b>
                         <Br><span
                                 class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
                     </div>
 
-                @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
+                    @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
-                    <!-- Color Selection (Left Side) -->
-                    <div class="color-box" style="margin-top:50px;">
+                        <!-- Color Selection (Left Side) -->
+                        <div class="color-box" style="margin-top:50px;">
+                            <div>
+                                <label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
+
+                                <div class="row row-cols-2 g-2 mb-3">
+                                    @foreach ($productArray['colors'] as $color)
+                                        <div class="col d-flex justify-content-center">
+                                            <div style="">
+                                                <button class="color-option rounded-full"
+                                                    data-color="{{ $color['color_code'] }}"
+                                                    data-front-image="{{ asset('storage/' . $color['front_image']) }}"
+                                                    data-back-image="{{ asset('storage/' . $color['back_image']) }}"
+                                                    data-back-index={{ 'back-' . $color['id'] }}
+                                                    data-front-index={{ 'front-' . $color['id'] }}
+                                                    data-index={{ $color['id'] }}
+                                                    style="background-color: {{ $color['color_code'] }};
+                                                 ">
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div>
+
+
+                                    <form id="customizationForm">
+                                        @if (!empty($product->size))
+                                            <div class="d-flex align-items-center mb-3">
+                                                <label class="form-label me-2 mb-0" style="white-space: nowrap;">
+                                                    @if ($product->type === 'ქეისი')
+                                                        აირჩიეთ მოდელი
+                                                    @elseif($product->type === 'მაისური')
+                                                        აირჩიეთ ზომა
+                                                    @else
+                                                        {{ '' }}
+                                                    @endif
+                                                </label>
+                                                <select id="sizeSelect" name="size" class="form-select">
+                                                    @foreach (explode(',', $product->size) as $sizes)
+                                                        <option value="{{ trim($sizes) }}">{{ trim($sizes) }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        @endif
+                                    </form>
+
+                                </div>
+
+
+                                <div class="d-flex align-items-center">
+                                    <label class="form-label me-2 mb-0" style="white-space: nowrap;">რაოდენობა:</label>
+                                    <div class="input-group" style="width: 140px;">
+                                        <button type="button" class="btn btn-outline-secondary" id="decrement">-</button>
+                                        <input type="number" name="quantity" id="quantity" value="1" min="1"
+                                            class="form-control text-center">
+                                        <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    @endif
+                    </p>
+                </div>
+
+                <div id="uploader" class="tabcontent">
+
+                    <p>
+                    <form id="customizationForm">
+                        <button type="button" id="toggleUploadSidebar" class="upload-btn" hidden>
+
+                        </button>
+
                         <div>
                             <label class="form-label text-start w-100">აირჩიეთ ფერი:</label>
 
@@ -203,6 +294,7 @@
                                     </div>
                                 @endforeach
                             </div>
+<<<<<<< HEAD
 
                             <div>
 
@@ -257,11 +349,52 @@
 
                     </button>
 
-                        <div>
-                            <div class="upload-header">
-                                <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
-                                <h4>ატვირთე </h4>
-                            </div>
+                    <div>
+                        <div class="upload-header">
+                            <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
+                            <h4>ატვირთე </h4>
+                        </div>
+                        <input type="file" accept="image/*" id="uploaded_image" class="form-control">
+                        <div id="imagePreviewContainer"></div>
+                    </div>
+                    </p>
+            </div>
+
+            <div id="cliparts" class="tabcontent">
+                <div class="clipart-header">
+                    <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
+                    <select id="clipartCategory">
+                        <option value="all">ყველა კატეგორია</option>
+                        <option value="sport">სპორტი</option>
+                        <option value="cars">მანქანები</option>
+                        <option value="funny">სახალისო</option>
+                        <option value="love">სასიყვარულო</option>
+                        <option value="animation">ანიმაციური გმირები</option>
+                        <option value="animals">ცხოველთა სამყარო</option>
+                        <option value="emoji">ემოჯები</option>
+                        <option value="tigerskin">ვეფხისტყაოსანი</option>
+                        <option value="mamapapuri">მამაპაპური</option>
+                        <option value="qatuli">ქართული თემა</option>
+                    </select>
+                </div>
+                <div id="clipartContainer">
+                    @foreach ($cliparts as $clipart)
+                        <div class="clipart-item">
+                            @if ($loop->first)
+                                <img class="clipart-img" data-category="{{ $clipart->category }}"
+                                    data-image="{{ asset('storage/' . $clipart->image) }}"
+                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart"
+                                    fetchpriority="high">
+                            @else
+                                <img class="clipart-img" data-category="{{ $clipart->category }}"
+                                    data-image="{{ asset('storage/' . $clipart->image) }}"
+                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart" loading="lazy">
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+=======
                             <input type="file" accept="image/*" id="uploaded_image" class="form-control">
                             <div id="imagePreviewContainer"></div>
                         </div> </form>
@@ -309,6 +442,7 @@
                         });
                     });
                 </script>
+>>>>>>> ae5323a8428360e18ebf9d88dc0e46c9ff9399d3
 
             <div id="text" class="tabcontent">
                 <p>
@@ -336,6 +470,78 @@
                         </div>
 
 
+<<<<<<< HEAD
+                        <div class="mb-3">
+                            <label class="form-label">ტექსტის სტილი</label>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-dark text-style-btn" data-style="bold"
+                                    title="Bold">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-dark text-style-btn"
+                                    data-style="italic" title="Italic">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-dark text-style-btn"
+                                    data-style="underline" title="Underline">
+                                    <i class="fas fa-underline"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-dark text-style-btn"
+                                    data-style="curved">
+                                    <i class="fas fa-circle-notch"></i> <br> წრე
+                                </button>
+                                <button type="button" class="btn btn-outline-dark text-style-btn"
+                                    data-style="normal" title="Reset">
+                                    <i class="fas fa-undo"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="font_family" class="form-label">ფონტები</label>
+                            <select id="font_family" class="form-control input-styled">
+                                <option value="Arial">Arial</option>
+                                <option value="Lobster-Regular">Lobster-Regular</option>
+                                <option value="Orbitron">Orbitron</option>
+                                <option value="Alk-rounded"
+                                    style="font-family: 'alk-rounded', sans-serif !important;">
+                                    <al> Alk-rounded </al>
+                                </option>
+                                <option value="PlaywriteIN"
+                                    style="font-family: 'PlaywriteIN', sans-serif !important;">
+                                    PlaywriteIN</option>
+                                <option value="Lobster-Regular"
+                                    style="font-family: 'Lobster-Regular', sans-serif !important;">Lobster-Regular
+                                </option>
+                                <option value="Orbitron" style="font-family: 'Orbitron', sans-serif !important;">
+                                    Orbitron
+                                </option>
+                                <option value="Orbitron">Orbitron</option>
+                                <option value="EricaOne" style="font-family: 'EricaOne', sans-serif !important;">
+                                    EricaOne
+                                </option>
+                                <option value="GloriaHallelujah"
+                                    style="font-family: 'GloriaHallelujah', sans-serif !important;">GloriaHallelujah
+                                </option>
+                                <option value="Creepster" style="font-family: 'Creepster', sans-serif !important;">
+                                    Creepster</option>
+                                <option value="RubikBubbles"
+                                    style="font-family: 'RubikBubbles', sans-serif !important;">
+                                    RubikBubbles</option>
+                                <option value="BerkshireSwash"
+                                    style="font-family: 'BerkshireSwash', sans-serif !important;">BerkshireSwash
+                                </option>
+                                <option value="Monoton" style="font-family: 'Monoton', sans-serif !important;">Monoton
+                                </option>
+                                <option value="BlackOpsOne"
+                                    style="font-family: 'BlackOpsOne', sans-serif !important;">
+                                    BlackOpsOne</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="font_size" class="form-label">ფონტის ზომა</label>
+                            <input type="number" id="font_size" class="form-control input-styled" value="30"
+                                min="10" max="100">
+                        </div>
+=======
                             <div class="mb-3">
                                 <label class="form-label">ტექსტის სტილი</label>
                                 <div class="btn-group">
@@ -431,6 +637,19 @@
     });
                 </script> --}}
                 </p>
+
+                <div class="mb-4">
+                    <label class="form-label d-block">გადიდება:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-out">-</button>
+                        <span id="zoom-level" class="mx-2">100%</span>
+                        <button type="button" class="btn btn-outline-secondary" id="zoom-in">+</button>
+>>>>>>> ae5323a8428360e18ebf9d88dc0e46c9ff9399d3
+                    </div>
+                </div>
+
+            </div>
+            </p>
 
             <div class="mb-4">
                 <label class="form-label d-block">გადიდება:</label>
