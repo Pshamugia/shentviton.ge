@@ -12,6 +12,11 @@ const back_state_key = `${product_id}.back_design`;
 
 const rand_key = Math.random().toString(36).substring(7);
 
+const emitAddedToCanvas = function () {
+    const event = new CustomEvent("addedToCanvas");
+    document.dispatchEvent(event);
+};
+
 let text_objects = {};
 let cbtns = [...document.querySelectorAll(".text-style-btn")];
 
@@ -403,7 +408,7 @@ function handleImageSwapping() {
     if (show_front_btn) {
         show_front_btn.addEventListener("click", function (e) {
             e.preventDefault();
-            console.log("clicked front");
+            // console.log("clicked front");
             if (!selectedFrontImage) {
                 return;
             }
@@ -415,8 +420,8 @@ function handleImageSwapping() {
     if (show_back_btn) {
         show_back_btn.addEventListener("click", function (e) {
             e.preventDefault();
-            console.log("selectedBackImage: ", selectedBackImage);
-            console.log("clicked back");
+            // console.log("selectedBackImage: ", selectedBackImage);
+            // console.log("clicked back");
             if (!selectedBackImage) {
                 return;
             }
@@ -467,15 +472,15 @@ function loadImage(
 
     state.current_image_url = imageURL;
 
-    console.log("imageURL: ", imageURL);
-    console.log("backImageURL: ", backImageURL);
+    // console.log("imageURL: ", imageURL);
+    // console.log("backImageURL: ", backImageURL);
 
     if (type === "pos") {
         state.current_image_side == "front"
             ? (state.current_image_side = "back")
             : (state.current_image_side = "front");
 
-        console.log("changing side to:  ", state.current_image_side);
+        // console.log("changing side to:  ", state.current_image_side);
 
         let key =
             state.current_image_side == "front"
@@ -534,7 +539,7 @@ function loadImage(
             canvas.clear();
 
             if (form.text_container) {
-                console.log("here??");
+                // console.log("here??");
                 Array.from(form.text_container.children).forEach((child) => {
                     if (child.id !== "addTextInput") {
                         child.remove();
@@ -583,7 +588,7 @@ function loadImage(
                             obj.input_id
                         );
 
-                        console.log("existingInput: ", existingInput);
+                        // console.log("existingInput: ", existingInput);
                         if (existingInput) {
                             existingInput.value = obj.text;
                         } else {
@@ -596,7 +601,7 @@ function loadImage(
                     ".dynamic-text-input"
                 );
 
-                console.log("dynamicInputs: ", dynamicInputs);
+                // console.log("dynamicInputs: ", dynamicInputs);
                 if (dynamicInputs.length > 0) {
                     handleTextInputs(Array.from(dynamicInputs));
                 }
@@ -771,6 +776,8 @@ function handleTextStyleButtons(buttons) {
 
             if (actions[style]) actions[style]();
             canvas.requestRenderAll();
+
+            emitAddedToCanvas();
         });
     });
 }
@@ -818,6 +825,7 @@ function applyCurvedTextEffect(obj) {
     canvas.requestRenderAll();
     save_side();
     save_state(state.current_image_url);
+    emitAddedToCanvas();
 }
 
 function handleFontSizeInput(input) {
@@ -827,6 +835,7 @@ function handleFontSizeInput(input) {
             canvas.requestRenderAll();
             save_side();
             save_state(state.current_image_url);
+            emitAddedToCanvas;
         }
     });
 }
@@ -843,25 +852,27 @@ function handleTextColorInput(input) {
 
             save_side();
             save_state(state.current_image_url);
+            emitAddedToCanvas();
         }
     });
 }
 
 function handleFontFamilyInput(input) {
     input.addEventListener("change", (e) => {
-        // console.log("change");
+        console.log("change");
         if (active_text_obj) {
             active_text_obj.set("fontFamily", input.value);
             canvas.requestRenderAll();
 
             save_side();
             save_state(state.current_image_url);
+            emitAddedToCanvas();
         }
     });
 }
 
 function handleTextInputs(inputs) {
-    console.log("inputs in handleTextInputs: ", inputs);
+    // console.log("inputs in handleTextInputs: ", inputs);
     let canvas_defaults = getCanvasDefaults(canvas);
 
     for (let input of inputs) {
@@ -919,13 +930,13 @@ function handleTextInputs(inputs) {
 }
 
 function handleInlineTextInputs(objects) {
-    console.log("objects in handleInlineTextInputs: ", objects);
+    // console.log("objects in handleInlineTextInputs: ", objects);
     canvas.on("text:changed", (e) => {
         let obj = e.target;
 
         if (obj.input_id) {
             const input = document.getElementById(obj.input_id);
-            console.log("input: ", input);
+            // console.log("input: ", input);
             if (input) {
                 input.value = obj.text;
             }
@@ -1089,6 +1100,7 @@ function uploadHandler() {
 
                     save_side();
                     save_state(state.current_image_url);
+                    emitAddedToCanvas();
                 });
             });
     }
@@ -1122,6 +1134,7 @@ function addClipArtToCanvas() {
         canvas.setActiveObject(img);
         canvas.requestRenderAll();
         save_state(state.current_image_url);
+        emitAddedToCanvas();
     });
 }
 
@@ -1333,14 +1346,14 @@ function proceedWithAddToCart() {
         formData.append("back_assets", back_assets);
     }
 
-    console.log("form: ", form);
+    // console.log("form: ", form);
 
     axios
         .post("/cart", formData)
         .then((response) => {
             alert("Item successfully added to cart");
             let count = document.getElementById("cart-count").textContent;
-            console.log("count is: ", count);
+            // console.log("count is: ", count);
             count++;
             document.getElementById("cart-count").textContent = count;
         })

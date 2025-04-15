@@ -253,7 +253,7 @@ body {
 .navbar {
     position: fixed;
     top: 0;
-    width: 100%; 
+    width: 100%;
     background-color: #1ca4b6 !important;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     z-index: 1001; /* Ensure it's above other elements */
@@ -276,7 +276,7 @@ body {
 
 #navbarNav
 {
-    margin-top: 10px; 
+    margin-top: 10px;
 }
 
 /* Show dropdown on hover */
@@ -386,7 +386,7 @@ body {
 
 .cart-link:hover {
     background-color: #f0e3e7;
-    text-decoration: none; 
+    text-decoration: none;
 }
 
 .cart-link .fas {
@@ -531,10 +531,10 @@ body {
 
 .container {
     max-width: 1000px;
-    margin: auto; 
+    margin: auto;
 }
 
- 
+
 
 select,
 input {
@@ -954,6 +954,7 @@ button {
 .save-btn:hover {
     background-color: #388e3c;
 }
+
 
 .color-selection {
     margin-top: 10px;

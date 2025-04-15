@@ -44,7 +44,6 @@
     }
 
 
-    /* Style the tab */
     .tab {
         float: left;
         background-color: #272c33;
@@ -54,8 +53,6 @@
 
     }
 
-
-    /* Style the buttons inside the tab */
     .tab button {
         display: block;
         background-color: inherit;
@@ -72,18 +69,15 @@
     }
 
 
-    /* Change background color of buttons on hover */
     .tab button:hover {
         background-color: #ddd;
     }
 
-    /* Create an active/current "tab button" class */
     .tab button.active {
         background-color: #ccc;
         margin-left: -20px;
     }
 
-    /* Style the tab content */
     .tabcontent {
         float: left;
         padding: 0px 12px;
@@ -92,15 +86,40 @@
         width: 70%;
         border-left: none;
         height: 400px;
-        /* ← limits the visible height. Content taller than 300px will scroll inside the tab */
         overflow-y: auto;
-        /* ← This enables vertical scrolling */
         overflow-x: hidden;
-        /* ← Optional: disables horizontal scroll */
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 
-    /* Make tab horizontal on mobile */
-    @media screen and (max-width: 768px) {
+    .color-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+    }
+
+    .color-box,
+    .side-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .colors,
+    .switch-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+
+    /* @media screen and (max-width: 768px) {
         .tab {
             float: none;
             width: 100%;
@@ -123,18 +142,11 @@
         }
 
 
-<<<<<<< HEAD
         .tab button.active {
             background-color: #444;
             border-bottom: 2px solid yellow;
             margin-left: 0;
         }
-=======
-                    <button class="tablinks icon-color" onclick="openCity(event, 'uploader')">
-                        <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
-                        ატვირთე
-                    </button>
->>>>>>> ae5323a8428360e18ebf9d88dc0e46c9ff9399d3
 
         .tabcontent {
             width: 100%;
@@ -152,13 +164,91 @@
             background: #888;
             border-radius: 2px;
         }
+    } */
+
+    @media screen and (max-width: 1024px) {
+        body.mobile-view {
+            padding-bottom: 60px;
+        }
+
+        .tab {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+            background-color: #272c33;
+            z-index: 1000;
+            border-bottom: none;
+            border-top: 1px solid #444;
+            justify-content: space-between;
+        }
+
+        .tab button {
+            flex: 1;
+            width: auto;
+            height: 60px;
+            text-align: center;
+            padding: 8px 5px;
+            color: white;
+            border-bottom: none;
+            border-top: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab button.active {
+            background-color: #444;
+            border-top: 3px solid yellow;
+            margin-left: 0;
+            color: yellow;
+        }
+
+        .tabcontent {
+            width: 100%;
+            max-width: 100%;
+            height: calc(100vh - 60px);
+            max-height: none;
+            overflow-y: auto;
+            border: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+
+        #canvasContainer {
+            margin-top: 20px;
+        }
+
+        .customization-container {
+            padding: 0;
+            max-width: 100%;
+        }
+
+        .customization-container .row {
+            margin: 0;
+        }
+
+        .col-md-5,
+        .col-md-7 {
+            padding: 0;
+        }
     }
 </style>
-<div class="container">
+<div class="container customization-container">
 
     <div class="row flex-column-reverse flex-md-row">
         <div class="col-md-5">
 
+            {{-- TAB CONTROLS --}}
             <div class="tab">
                 <button class="tablinks icon-color" onclick="openCity(event, 'product')" id="defaultOpen">
                     <i class="bi bi-clipboard-check-fill icon-color" style="font-size: 20px"></i> <br>
@@ -166,116 +256,32 @@
                 </button>
 
 
-                <button class="tablinks icon-color" onclick="openCity(event, 'uploader')" id="defaultOpen">
+                <button class="tablinks icon-color" onclick="openCity(event, 'uploader')" id="uploadBtn">
                     <i class="bi bi-card-image icon-color" style="font-size: 20px"></i> <br>
                     ატვირთე
                 </button>
 
-                <button class="tablinks icon-color" onclick="openCity(event, 'cliparts')">
-                    <i class="fas fa-palette icon-color" style="font-size: 20px"></i> <br>
+                <button class="tablinks icon-color" onclick="openCity(event, 'cliparts')" id="clipartBtn">
+                    <i class="bi bi-palette icon-color" style="font-size: 20px"></i> <br>
                     კლიპარტი</button>
-                <button class="tablinks icon-color" onclick="openCity(event, 'text')">
+                <button class="tablinks icon-color" onclick="openCity(event, 'text')" id="textBtn">
                     <i class="bi bi-chat-square-quote-fill icon-color" style="font-size:20px"></i> <br>
                     ტექსტი</button>
             </div>
 
-
+            {{-- PRODUCT --}}
             <div id="product" class="tabcontent">
 
                 <p>
-                <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b> <span
-                            class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
+                <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b>
+                        <Br><span class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span>
+                    </label>
                 </div>
 
                 @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
 
-                <div id="product" class="tabcontent">
-
-                    <p>
-                    <div style="text-align: right !important"> <label> <b> {{ $product->title }} </b>
-                        <Br><span
-                                class="price-color" id="total-price"> {{ intval($product->price) }} ლარი </span> </label>
-                    </div>
-
-                    @if (!empty($productArray['colors']) && count($productArray['colors']) > 0)
-
-                        <!-- Color Selection (Left Side) -->
-                        <div class="color-box" style="margin-top:50px;">
-                            <div>
-                                <label class="form-label" style="white-space: nowrap; float:left">აირჩიეთ ფერი:</label>
-
-                                <div class="row row-cols-2 g-2 mb-3">
-                                    @foreach ($productArray['colors'] as $color)
-                                        <div class="col d-flex justify-content-center">
-                                            <div style="">
-                                                <button class="color-option rounded-full"
-                                                    data-color="{{ $color['color_code'] }}"
-                                                    data-front-image="{{ asset('storage/' . $color['front_image']) }}"
-                                                    data-back-image="{{ asset('storage/' . $color['back_image']) }}"
-                                                    data-back-index={{ 'back-' . $color['id'] }}
-                                                    data-front-index={{ 'front-' . $color['id'] }}
-                                                    data-index={{ $color['id'] }}
-                                                    style="background-color: {{ $color['color_code'] }};
-                                                 ">
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-                                <div>
-
-
-                                    <form id="customizationForm">
-                                        @if (!empty($product->size))
-                                            <div class="d-flex align-items-center mb-3">
-                                                <label class="form-label me-2 mb-0" style="white-space: nowrap;">
-                                                    @if ($product->type === 'ქეისი')
-                                                        აირჩიეთ მოდელი
-                                                    @elseif($product->type === 'მაისური')
-                                                        აირჩიეთ ზომა
-                                                    @else
-                                                        {{ '' }}
-                                                    @endif
-                                                </label>
-                                                <select id="sizeSelect" name="size" class="form-select">
-                                                    @foreach (explode(',', $product->size) as $sizes)
-                                                        <option value="{{ trim($sizes) }}">{{ trim($sizes) }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        @endif
-                                    </form>
-
-                                </div>
-
-
-                                <div class="d-flex align-items-center">
-                                    <label class="form-label me-2 mb-0" style="white-space: nowrap;">რაოდენობა:</label>
-                                    <div class="input-group" style="width: 140px;">
-                                        <button type="button" class="btn btn-outline-secondary" id="decrement">-</button>
-                                        <input type="number" name="quantity" id="quantity" value="1" min="1"
-                                            class="form-control text-center">
-                                        <button type="button" class="btn btn-outline-secondary" id="increment">+</button>
-                                    </div>
-                                </div>
-
-
-
-                            </div>
-                        </div>
-                    @endif
-                    </p>
-                </div>
-
-                <div id="uploader" class="tabcontent">
-
-                    <p>
-                    <form id="customizationForm">
-                        <button type="button" id="toggleUploadSidebar" class="upload-btn" hidden>
-
-                        </button>
-
+                    <!-- Color Selection (Left Side) -->
+                    <div class="color-box" style="margin-top:50px;">
                         <div>
                             <label class="form-label text-start w-100">აირჩიეთ ფერი:</label>
 
@@ -294,7 +300,6 @@
                                     </div>
                                 @endforeach
                             </div>
-<<<<<<< HEAD
 
                             <div>
 
@@ -333,76 +338,77 @@
                                 </div>
                             </div>
 
-
-
+                            <button id="addToCart" class="d-block d-md-none btn save-btn">დაამატე კალათაში</button>
                         </div>
                     </div>
                 @endif
                 </p>
             </div>
 
+            {{-- UPLOADER --}}
             <div id="uploader" class="tabcontent">
 
-                <p>
                 <form id="customizationForm">
                     <button type="button" id="toggleUploadSidebar" class="upload-btn" hidden>
 
                     </button>
 
-                       <form> <div>
+                    <form>
+                        <div>
                             <div class="upload-header">
                                 <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
                                 <h4>ატვირთე </h4>
                             </div>
                             <input type="file" accept="image/*" id="uploaded_image" class="form-control">
                             <div id="imagePreviewContainer"></div>
-                        </div> </form>
-                        </p>
+                        </div>
+                    </form>
+            </div>
+
+            {{-- CLIPARTS --}}
+            <div id="cliparts" class="tabcontent">
+                <div class="clipart-header">
+                    <input type="text" id="searchCliparts" class="chosen-select" placeholder="🔍 კლიპარტების ძიება">
+                    <select id="clipartCategory" class="chosen-select" data-placeholder="აირჩიეთ კატეგორია">
+                        <option value="all">ყველა კატეგორია</option>
+                        <option value="sport">სპორტი</option>
+                        <option value="cars">მანქანები</option>
+                        <option value="funny">სახალისო</option>
+                        <option value="love">სასიყვარულო</option>
+                        <option value="animation">ანიმაციური გმირები</option>
+                        <option value="animals">ცხოველთა სამყარო</option>
+                        <option value="emoji">ემოჯები</option>
+                        <option value="tigerskin">ვეფხისტყაოსანი</option>
+                        <option value="mamapapuri">მამაპაპური</option>
+                        <option value="qartuli">ქართული თემა</option>
+                    </select>
+                </div>
+                <div id="clipartContainer" class="row">
+                    {{-- Cliparts will be loaded here via AJAX --}}
                 </div>
 
-                <div id="cliparts" class="tabcontent">
-                    <div class="clipart-header">
-                         <input type="text" id="searchCliparts" class="chosen-select" placeholder="🔍 კლიპარტების ძიება">
-                         <select id="clipartCategory" class="chosen-select" data-placeholder="აირჩიეთ კატეგორია">
-                            <option value="all">ყველა კატეგორია</option>
-                            <option value="sport">სპორტი</option>
-                            <option value="cars">მანქანები</option>
-                            <option value="funny">სახალისო</option>
-                            <option value="love">სასიყვარულო</option>
-                            <option value="animation">ანიმაციური გმირები</option>
-                            <option value="animals">ცხოველთა სამყარო</option>
-                            <option value="emoji">ემოჯები</option>
-                            <option value="tigerskin">ვეფხისტყაოსანი</option>
-                            <option value="mamapapuri">მამაპაპური</option>
-                            <option value="qartuli">ქართული თემა</option>
-                        </select>
-                    </div>
-                    <div id="clipartContainer" class="row">
-                        {{-- Cliparts will be loaded here via AJAX --}}
-                    </div>
-
-                    <div class="text-center mt-3">
-                        <button id="loadMoreCliparts" class="btn btn-outline-primary">მეტის ნახვა</button>
-                    </div>
-                    <Br>
+                <div class="text-center mt-3">
+                    <button id="loadMoreCliparts" class="btn btn-outline-primary">მეტის ნახვა</button>
                 </div>
-                <script>
-                    $(function () {
-                        $('#clipartCategory').chosen({
-                            width: '100%'
-                        });
-
-                        // Rebind change handler after Chosen initializes
-                        $('#clipartCategory').on('change', function () {
-                            selectedCategory = this.value;
-                            clipartOffset = 0;
-                            $('#clipartContainer').html('');
-                            loadCliparts();
-                        });
+                <Br>
+            </div>
+            <script>
+                $(function() {
+                    $('#clipartCategory').chosen({
+                        width: '100%'
                     });
-                </script>
->>>>>>> ae5323a8428360e18ebf9d88dc0e46c9ff9399d3
 
+                    // Rebind change handler after Chosen initializes
+                    $('#clipartCategory').on('change', function() {
+                        selectedCategory = this.value;
+                        clipartOffset = 0;
+                        $('#clipartContainer').html('');
+                        loadCliparts();
+                    });
+                });
+            </script>
+
+            {{-- TEXT --}}
             <div id="text" class="tabcontent">
                 <p>
                     <!-- Text Customization Sidebar -->
@@ -429,7 +435,6 @@
                         </div>
 
 
-<<<<<<< HEAD
                         <div class="mb-3">
                             <label class="form-label">ტექსტის სტილი</label>
                             <div class="btn-group">
@@ -456,7 +461,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="font_family" class="form-label">ფონტები</label>
-                            <select id="font_family" class="form-control input-styled">
+                            <select id="font_family" class="chosen-select" data-placeholder="აირჩიეთ ფონტი">
+                                <option value=""></option>
                                 <option value="Arial">Arial</option>
                                 <option value="Lobster-Regular">Lobster-Regular</option>
                                 <option value="Orbitron">Orbitron</option>
@@ -500,105 +506,33 @@
                             <input type="number" id="font_size" class="form-control input-styled" value="30"
                                 min="10" max="100">
                         </div>
-=======
-                            <div class="mb-3">
-                                <label class="form-label">ტექსტის სტილი</label>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-outline-dark text-style-btn" data-style="bold"
-                                        title="Bold">
-                                        <i class="fas fa-bold"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-dark text-style-btn"
-                                        data-style="italic" title="Italic">
-                                        <i class="fas fa-italic"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-dark text-style-btn"
-                                        data-style="underline" title="Underline">
-                                        <i class="fas fa-underline"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-dark text-style-btn"
-                                        data-style="curved">
-                                        <i class="fas fa-circle-notch"></i> <br> წრე
-                                    </button>
-                                    <button type="button" class="btn btn-outline-dark text-style-btn"
-                                        data-style="normal" title="Reset">
-                                        <i class="fas fa-undo"></i>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="font_family" class="form-label">ფონტები</label>
-                                <select id="font_family" class="chosen-select" data-placeholder="აირჩიეთ ფონტი">
-                                    <option value=""></option>
-                                    <option value="Arial">Arial</option>
-                                    <option value="Lobster-Regular">Lobster-Regular</option>
-                                    <option value="Orbitron">Orbitron</option>
-                                    <option value="Alk-rounded"
-                                        style="font-family: 'alk-rounded', sans-serif !important;">
-                                        <al> Alk-rounded </al>
-                                    </option>
-                                    <option value="PlaywriteIN"
-                                        style="font-family: 'PlaywriteIN', sans-serif !important;">
-                                        PlaywriteIN</option>
-                                    <option value="Lobster-Regular"
-                                        style="font-family: 'Lobster-Regular', sans-serif !important;">Lobster-Regular
-                                    </option>
-                                    <option value="Orbitron" style="font-family: 'Orbitron', sans-serif !important;">
-                                        Orbitron
-                                    </option>
-                                    <option value="Orbitron">Orbitron</option>
-                                    <option value="EricaOne" style="font-family: 'EricaOne', sans-serif !important;">
-                                        EricaOne
-                                    </option>
-                                    <option value="GloriaHallelujah"
-                                        style="font-family: 'GloriaHallelujah', sans-serif !important;">GloriaHallelujah
-                                    </option>
-                                    <option value="Creepster" style="font-family: 'Creepster', sans-serif !important;">
-                                        Creepster</option>
-                                    <option value="RubikBubbles"
-                                        style="font-family: 'RubikBubbles', sans-serif !important;">
-                                        RubikBubbles</option>
-                                    <option value="BerkshireSwash"
-                                        style="font-family: 'BerkshireSwash', sans-serif !important;">BerkshireSwash
-                                    </option>
-                                    <option value="Monoton" style="font-family: 'Monoton', sans-serif !important;">Monoton
-                                    </option>
-                                    <option value="BlackOpsOne"
-                                        style="font-family: 'BlackOpsOne', sans-serif !important;">
-                                        BlackOpsOne</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="font_size" class="form-label">ფონტის ზომა</label>
-                                <input type="number" id="font_size" class="form-control input-styled" value="30"
-                                    min="10" max="100">
-                            </div>
-                        </div>
                     </div>
-
                 </div>
 
-                <script>
-    //               $(document).ready(function () {
-    //     $('#font_family').chosen({
-    //         width: '100%',
-    //         placeholder_text_single: "აირჩიეთ ფონტი"
-    //     });
+            </div>
 
-    //     function applyFont() {
-    //         const selectedFont = $('#font_family').val();
-    //         const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
+            <script>
+                //               $(document).ready(function () {
+                //     $('#font_family').chosen({
+                //         width: '100%',
+                //         placeholder_text_single: "აირჩიეთ ფონტი"
+                //     });
 
-    //         $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
-    //     }
+                //     function applyFont() {
+                //         const selectedFont = $('#font_family').val();
+                //         const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
 
-    //     $('#font_family').on('change', applyFont);
-    //     $('#font_family').trigger('change');
-    // });
-                </script>
-                </p>
+                //         $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
+                //     }
 
-            <div class="mb-4">
-                <label class="form-label d-block">გადიდება:</label>
+                //     $('#font_family').on('change', applyFont);
+                //     $('#font_family').trigger('change');
+                // });
+            </script>
+            </p>
+
+            <div class="mb-4 d-none d-md-block">
+                <label class="form-label ">გადიდება:</label>
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-outline-secondary" id="zoom-out">-</button>
                     <span id="zoom-level" class="mx-2">100%</span>
@@ -606,14 +540,18 @@
                 </div>
             </div>
 
-            <button id="addToCart" class="btn save-btn">დაამატე კალათაში</button>
+            <button id="addToCart" class="d-none d-md-block btn save-btn">დაამატე კალათაში</button>
 
-            <a id="previewDesign" class="btn save-btn" style="display: none">Preview Design</a>
             </form>
         </div>
 
         <script>
             function openCity(evt, cityName) {
+                // Skip this function entirely on mobile
+                if (window.innerWidth <= 1024) {
+                    return;
+                }
+
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName("tabcontent");
                 for (i = 0; i < tabcontent.length; i++) {
@@ -627,119 +565,76 @@
                 evt.currentTarget.className += " active";
             }
 
-            // Get the element with id="defaultOpen" and click on it
             document.getElementById("defaultOpen").click();
         </script>
 
 
 
 
-<script>
-    let clipartOffset = 0;
-const clipartLimit = 10;
-let selectedCategory = "all";
+        <script>
+            let clipartOffset = 0;
+            const clipartLimit = 10;
+            let selectedCategory = "all";
 
-function loadCliparts() {
-    axios.get('{{ route("cliparts.load") }}', {
-        params: {
-            offset: clipartOffset,
-            category: selectedCategory
-        }
-    }).then(response => {
-        const container = document.getElementById('clipartContainer');
-        container.insertAdjacentHTML('beforeend', response.data.html);
+            function loadCliparts() {
+                axios.get('{{ route('cliparts.load') }}', {
+                    params: {
+                        offset: clipartOffset,
+                        category: selectedCategory
+                    }
+                }).then(response => {
+                    const container = document.getElementById('clipartContainer');
+                    container.insertAdjacentHTML('beforeend', response.data.html);
 
-        clipartOffset += clipartLimit;
+                    clipartOffset += clipartLimit;
 
-        if (!response.data.hasMore) {
-            document.getElementById('loadMoreCliparts').style.display = 'none';
-        } else {
-            document.getElementById('loadMoreCliparts').style.display = 'block';
-        }
-    });
-}
+                    if (!response.data.hasMore) {
+                        document.getElementById('loadMoreCliparts').style.display = 'none';
+                    } else {
+                        document.getElementById('loadMoreCliparts').style.display = 'block';
+                    }
+                });
+            }
 
-document.getElementById("clipartCategory").addEventListener("change", function () {
-    selectedCategory = this.value;
-    clipartOffset = 0;
-    document.getElementById("clipartContainer").innerHTML = "";
-    loadCliparts();
-});
+            document.getElementById("clipartCategory").addEventListener("change", function() {
+                selectedCategory = this.value;
+                clipartOffset = 0;
+                document.getElementById("clipartContainer").innerHTML = "";
+                loadCliparts();
+            });
 
-document.addEventListener("DOMContentLoaded", function () {
-    loadCliparts();
+            document.addEventListener("DOMContentLoaded", function() {
+                loadCliparts();
 
-    document.getElementById('loadMoreCliparts').addEventListener('click', function () {
-        loadCliparts();
-    });
+                document.getElementById('loadMoreCliparts').addEventListener('click', function() {
+                    loadCliparts();
+                });
 
-    // Re-bind dynamic clipart click
-    document.getElementById("clipartContainer").addEventListener("click", function (e) {
-        if (e.target && e.target.classList.contains("clipart-img")) {
-            window.addClipArtToCanvas.call(e.target);
-        }
-    });
-});
-
-    </script>
-
+                // Re-bind dynamic clipart click
+                document.getElementById("clipartContainer").addEventListener("click", function(e) {
+                    if (e.target && e.target.classList.contains("clipart-img")) {
+                        window.addClipArtToCanvas.call(e.target);
+                    }
+                });
+            });
+        </script>
 
 
-        <div class="col-md-7 d-flex align-items-center justify-content-center"
-            style="background-color: #f0f0f0;  position: relative;">
-            <div id="design-area">
+
+        <div class="col-md-7 d-flex align-items-center justify-content-center tabcontent" id="canvasContainer"
+            style="">
+            <div id="design-area" class="w-100">
                 <img id="product-image" data-default-image="{{ asset('storage/' . $product->image1) }}"
                     src="{{ asset('storage/' . $product->image1) }}" alt="{{ $product->title }}"
                     data-id="{{ $product->id }}" style="width: 100%; height: auto; display: none;"
-                    data-type={{ $product->type }}>
+                    data-type="{{ $product->type }}">
 
-                <canvas id="tshirtCanvas"></canvas>
-                <style>
-                    .color-container {
-                        display: flex;
-                        align-items: center;
-                        /* Aligns both sides vertically */
-                        justify-content: center;
-                        /* Keeps everything centered */
-                        gap: 40px;
-                        /* Space between sections */
-                    }
+                <div class="d-flex align-items-center justify-content-center">
+                    <canvas id="tshirtCanvas" style="max-width: 100%;"></canvas>
+                </div>
 
-                    .color-box,
-                    .side-box {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        /* Center content */
-                        text-align: center;
-                    }
-
-                    .label {
-                        font-weight: bold;
-                        margin-bottom: 5px;
-                        /* Adds space between text and buttons */
-                    }
-
-                    .colors {
-                        display: flex;
-                        gap: 10px;
-                        /* Space between color buttons */
-                    }
-
-                    .switch-buttons {
-                        display: flex;
-                        gap: 10px;
-                        /* Space between Front/Back buttons */
-                    }
-                </style>
-                <div class="color-selection" style="top: -100px !important; position: relative;">
+                <div class="color-selection mt-3">
                     <div class="color-container">
-
-
-
-                        <!-- Side Selection (Right Side) -->
-
-
                         @php
                             $all_colors_have_front_and_back_images = true;
 
@@ -752,20 +647,18 @@ document.addEventListener("DOMContentLoaded", function () {
                         @endphp
 
                         @if ($all_colors_have_front_and_back_images)
-                            <div class="side-box">
-                                <p class="label">აირჩიეთ მხარე:</p>
-                                <div class="switch-buttons">
-
-                                    <button id="showFront" class="btn btn-primary" data-image="">წინა</button>
-                                    <button id="showBack" class="btn btn-secondary" data-image="">უკანა</button>
+                            <div class="side-box w-100">
+                                <p class="label mb-1">აირჩიეთ მხარე:</p>
+                                <div class="switch-buttons d-flex">
+                                    <button id="showFront" class="btn btn-primary flex-grow-1 me-1"
+                                        data-image="">წინა</button>
+                                    <button id="showBack" class="btn btn-secondary flex-grow-1 ms-1"
+                                        data-image="">უკანა</button>
                                 </div>
                             </div>
                         @endif
                     </div>
                 </div>
-
-
-
             </div>
         </div>
     </div>
