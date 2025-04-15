@@ -849,6 +849,7 @@ function handleTextColorInput(input) {
 
 function handleFontFamilyInput(input) {
     input.addEventListener("change", (e) => {
+        // console.log("change");
         if (active_text_obj) {
             active_text_obj.set("fontFamily", input.value);
             canvas.requestRenderAll();

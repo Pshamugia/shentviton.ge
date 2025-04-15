@@ -349,52 +349,11 @@
 
                     </button>
 
-                    <div>
-                        <div class="upload-header">
-                            <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
-                            <h4>ატვირთე </h4>
-                        </div>
-                        <input type="file" accept="image/*" id="uploaded_image" class="form-control">
-                        <div id="imagePreviewContainer"></div>
-                    </div>
-                    </p>
-            </div>
-
-            <div id="cliparts" class="tabcontent">
-                <div class="clipart-header">
-                    <input type="text" id="searchCliparts" class="form-control" placeholder="🔍 კლიპარტების ძიება">
-                    <select id="clipartCategory">
-                        <option value="all">ყველა კატეგორია</option>
-                        <option value="sport">სპორტი</option>
-                        <option value="cars">მანქანები</option>
-                        <option value="funny">სახალისო</option>
-                        <option value="love">სასიყვარულო</option>
-                        <option value="animation">ანიმაციური გმირები</option>
-                        <option value="animals">ცხოველთა სამყარო</option>
-                        <option value="emoji">ემოჯები</option>
-                        <option value="tigerskin">ვეფხისტყაოსანი</option>
-                        <option value="mamapapuri">მამაპაპური</option>
-                        <option value="qatuli">ქართული თემა</option>
-                    </select>
-                </div>
-                <div id="clipartContainer">
-                    @foreach ($cliparts as $clipart)
-                        <div class="clipart-item">
-                            @if ($loop->first)
-                                <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                    data-image="{{ asset('storage/' . $clipart->image) }}"
-                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart"
-                                    fetchpriority="high">
-                            @else
-                                <img class="clipart-img" data-category="{{ $clipart->category }}"
-                                    data-image="{{ asset('storage/' . $clipart->image) }}"
-                                    src="{{ asset('storage/' . $clipart->image) }}" alt="Clipart" loading="lazy">
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-=======
+                       <form> <div>
+                            <div class="upload-header">
+                                <button id="closeUploadSidebar" class="close-btn" hidden>&times;</button>
+                                <h4>ატვირთე </h4>
+                            </div>
                             <input type="file" accept="image/*" id="uploaded_image" class="form-control">
                             <div id="imagePreviewContainer"></div>
                         </div> </form>
@@ -618,38 +577,25 @@
 
                 </div>
 
-                {{-- <script>
-                  $(document).ready(function () {
-        $('#font_family').chosen({
-            width: '100%',
-            placeholder_text_single: "აირჩიეთ ფონტი"
-        });
+                <script>
+    //               $(document).ready(function () {
+    //     $('#font_family').chosen({
+    //         width: '100%',
+    //         placeholder_text_single: "აირჩიეთ ფონტი"
+    //     });
 
-        function applyFont() {
-            const selectedFont = $('#font_family').val();
-            const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
+    //     function applyFont() {
+    //         const selectedFont = $('#font_family').val();
+    //         const $chosenSpan = $('#font_family').next('.chosen-container').find('.chosen-single span');
 
-            $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
-        }
+    //         $chosenSpan.attr('style', `font-family: "${selectedFont}" !important`);
+    //     }
 
-        $('#font_family').on('change', applyFont);
-        $('#font_family').trigger('change');
-    });
-                </script> --}}
+    //     $('#font_family').on('change', applyFont);
+    //     $('#font_family').trigger('change');
+    // });
+                </script>
                 </p>
-
-                <div class="mb-4">
-                    <label class="form-label d-block">გადიდება:</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-outline-secondary" id="zoom-out">-</button>
-                        <span id="zoom-level" class="mx-2">100%</span>
-                        <button type="button" class="btn btn-outline-secondary" id="zoom-in">+</button>
->>>>>>> ae5323a8428360e18ebf9d88dc0e46c9ff9399d3
-                    </div>
-                </div>
-
-            </div>
-            </p>
 
             <div class="mb-4">
                 <label class="form-label d-block">გადიდება:</label>
