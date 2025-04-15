@@ -836,6 +836,8 @@ function handleFontSizeInput(input) {
             save_side();
             save_state(state.current_image_url);
             emitAddedToCanvas;
+        } else {
+            alert("Please select a text object first");
         }
     });
 }
@@ -853,20 +855,22 @@ function handleTextColorInput(input) {
             save_side();
             save_state(state.current_image_url);
             emitAddedToCanvas();
+        } else {
+            alert("Please select a text object first");
         }
     });
 }
 
 function handleFontFamilyInput(input) {
     input.addEventListener("change", (e) => {
-        console.log("change");
         if (active_text_obj) {
             active_text_obj.set("fontFamily", input.value);
             canvas.requestRenderAll();
-
             save_side();
             save_state(state.current_image_url);
             emitAddedToCanvas();
+        } else {
+            alert("Please select a text object first");
         }
     });
 }
