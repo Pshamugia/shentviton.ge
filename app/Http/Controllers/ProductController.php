@@ -59,6 +59,8 @@ class ProductController extends Controller
             't-shirt' => 'მაისური',
             'hoodie' => 'ჰუდი',
             'phone-case' => 'ქეისი',
+            'bomber' => 'ბომბერი',
+            'bag' => 'ჩანთა',
             'cap' => 'კეპი',
             'polo' => 'პოლო',
         ];

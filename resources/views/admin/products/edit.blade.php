@@ -140,7 +140,9 @@
                     <option value="">-- Select Type --</option>
                     <option value="მაისური" {{ $product->type == 'მაისური' ? 'selected' : '' }}>მაისური</option>
                     <option value="პოლო" {{ $product->type == 'პოლო' ? 'selected' : '' }}>პოლო</option>
+                    <option value="ბომბერი" {{ $product->type == 'ბომბერი' ? 'selected' : '' }}>ბომბერი</option>
                     <option value="ჰუდი" {{ $product->type == 'ჰუდი' ? 'selected' : '' }}>ჰუდი</option>
+                    <option value="ჩანთა" {{ $product->type == 'ჩანთა' ? 'selected' : '' }}>ჩანთა</option>
                     <option value="კეპი" {{ $product->type == 'კეპი' ? 'selected' : '' }}>კეპი</option>
                     <option value="ქეისი" {{ $product->type == 'ქეისი' ? 'selected' : '' }}>ტელეფონის ქეისი</option>
                 </select>

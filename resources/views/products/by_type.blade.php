@@ -1,5 +1,12 @@
 @extends('layouts.app') {{-- or your main layout --}}
 
+@section('title', 'შენი დიზაინი, შენი სტილი | Shentviton')
+@section('meta_description', 'შენ თვითონ გააფორმე მაისური, ჰუდი, კეპი ან ქეისი. შენი დიზაინი — შენი სტილი.')
+@section('meta_keywords', 'დიზაინი, მაისური, ჰუდი, კეპი, უნიკალური პროდუქტი, ტანსაცმელი')
+@section('og_title', 'გააფორმე შენ თვითონ | Shentviton')
+@section('og_description', 'შეიმუშავე შენი სტილი და ატარე უნიკალური სამოსი')
+@section('og_image', asset('storage/designs/shentviton_logo.png'))
+
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -82,7 +89,11 @@
             </div>
         </div>
         @empty
-            <p>ამ ტიპის პროდუქტი ვერ მოიძებნა.</p>
+        <div class="out-of-stock-section">
+            <p>მარაგი ამ ეტაპზე ამოწურულია. მალე განახლდება</p>
+            <img src="{{ asset('storage/designs/out-stock.png') }}" alt="Out of stock">
+           
+        </div>
         @endforelse
     </div>
    <div class="d-flex justify-content-left">

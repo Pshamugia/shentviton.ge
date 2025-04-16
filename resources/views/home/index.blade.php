@@ -43,12 +43,63 @@
 
 
 
+    
+
+
+    <div class="category-icons">
+        <a href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}" class="category-item">
+            <div class="category-icon">
+                <img src="{{ asset('storage/designs/tshirt-customizable.png') }}" alt="მაისური">
+            </div>
+            <div class="category-label">მაისური</div>
+        </a>
+
+        <a href="{{ route('products.byType', ['type' => 'polo', 'subtype' => 'custom']) }}" class="category-item">
+            <div class="category-icon">
+                <img src="{{ asset('storage/designs/polo-customizable.png') }}" alt="პოლო">
+            </div>
+            <div class="category-label">პოლო </div>
+        </a>
+    
+        <a href="{{ route('products.byType', ['type' => 'hoodie', 'subtype' => 'custom']) }}" class="category-item">
+            <div class="category-icon">
+                <img src="{{ asset('storage/designs/hoodie-customizable.png') }}" alt="ჰუდი">
+            </div>
+            <div class="category-label">ჰუდი</div>
+        </a>
+
+
+        <a href="{{ route('products.byType', ['type' => 'bomber', 'subtype' => 'custom']) }}" class="category-item">
+            <div class="category-icon">
+                <img src="{{ asset('storage/designs/sweater-customizable.png') }}" alt="ბომბერი">
+            </div>
+            <div class="category-label">ბომბერი</div>
+        </a>
+        
+        
+        <a href="{{ route('products.byType', ['type' => 'bag', 'subtype' => 'custom']) }}" class="category-item">
+            <div class="category-icon">
+                <img src="{{ asset('storage/designs/bag-customizable.png') }}" alt="ჩანთა">
+            </div>
+            <div class="category-label">ჩანთა</div>
+        </a>
+    
+    
+        <a href="{{ route('products.byType', ['type' => 'phone-case', 'subtype' => 'custom']) }}" class="category-item">
+            <div class="category-icon">
+                <img src="{{ asset('storage/designs/mobile-case-customizable.png') }}" alt="ქეისი">
+            </div>
+            <div class="category-label">ქეისი</div>
+        </a>
+    </div>
+    
+
+
     <div class="hr-with-text" style="position: relative; ">
         <h2 style="position: relative; font-size: 26px; ">
 
             მზა დიზაინები </h2>
     </div>
-
 
     <div class="row">
         @foreach ($readyDesigns as $product)

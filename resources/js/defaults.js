@@ -73,6 +73,44 @@ const getCanvasDefaults = (canvas) => {
             },
         },
 
+        ბომბერი: {
+            box: {
+                // strokeWidth: 2,
+                strokeDashArray: [5, 5],
+                fill: "transparent",
+                // stroke: "#ccc",
+                selectable: false,
+                evented: false,
+                stay: true,
+                stay_when_pos: true,
+                left: canvas.width / 2,
+                top: (canvas.height / 2) - 20,
+                width: canvas.width * 0.4,
+                height: canvas.height * 0.4,
+                originX: "center",
+                originY: "center",
+            },
+        },
+
+
+        ჩანთა: {
+            box: {
+                // strokeWidth: 2,
+                strokeDashArray: [5, 5],
+                fill: "transparent",
+                // stroke: "#ccc",
+                selectable: false,
+                evented: false,
+                stay: true,
+                stay_when_pos: true,
+                left: canvas.width / 2,
+                top: (canvas.height / 2) - 20,
+                width: canvas.width * 0.4,
+                height: canvas.height * 0.4,
+                originX: "center",
+                originY: "center",
+            },
+        },
 
         ჰუდი: {
             box: {
