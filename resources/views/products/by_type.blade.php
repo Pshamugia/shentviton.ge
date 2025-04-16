@@ -11,8 +11,18 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="justify-content-start">
-            <i class="bi bi-app-indicator"></i>  {{ $subtype }} / {{ $type === 'all' ? 'ყველა' : $type }}
+            <i class="bi bi-app-indicator"></i>
+            @if($subtype === 'custom')
+                გააფორმე შენ თვითონ /
+            @else
+                {{ $subtype }} /
+            @endif
+        
+            {{ $type === 'all' ? 'ყველა' : $type }}
         </div>
+        
+
+      
     
         @if($type !== 'all')
     <div class="d-flex justify-content-end">
