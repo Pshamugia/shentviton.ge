@@ -9,6 +9,7 @@ const tabButtons = {
     uploader: qs("#uploadBtn"),
     cliparts: qs("#clipartBtn"),
     text: qs("#textBtn"),
+     canvas: null,
 };
 
 const tabContents = {
@@ -26,9 +27,9 @@ const btnContentMap = {
     text: tabContents.text,
 };
 
+
 const buttonToTabName = new Map();
 
-// Run initial setup
 initNavigation();
 
 document.addEventListener("addedToCanvas", function (e) {
@@ -51,12 +52,10 @@ document.addEventListener("addedToCanvas", function (e) {
 });
 
 window.addEventListener("resize", function () {
-    // Check if we crossed the mobile threshold
     const wasMobile = document.body.classList.contains("mobile-view");
     const isMobileNow = isMobile();
 
     if (wasMobile !== isMobileNow) {
-        // We're crossing the mobile/desktop threshold
         resetNavigation();
         initNavigation();
     }
@@ -71,28 +70,24 @@ function initNavigation() {
 }
 
 function resetNavigation() {
-    // Remove mobile-specific elements and classes
     document.body.classList.remove("mobile-view");
     const canvasBtn = qs("#canvasBtn");
     if (canvasBtn) {
         canvasBtn.remove();
     }
 
-    // Remove event listeners (we'll add new ones as needed)
     Object.values(tabButtons).forEach((btn) => {
         if (btn) {
             btn.removeEventListener("click", switchTabContent);
         }
     });
 
-    // Reset tab content display
     Object.values(tabContents).forEach((content) => {
         if (content) {
             content.classList.remove("d-none", "tabcontent");
         }
     });
 
-    // Clear the button map
     buttonToTabName.clear();
 }
 
@@ -150,18 +145,15 @@ function initMobileNav() {
 }
 
 function initDesktopNav() {
-    // Show default tab content (product)
     if (tabContents.product) {
         tabContents.product.style.display = "block";
     }
 
-    // Make sure canvas container is visible but without tabcontent class
     if (tabContents.canvas) {
         tabContents.canvas.classList.remove("tabcontent", "d-none");
-        tabContents.canvas.style.display = "flex"; // Ensure proper display mode
+        tabContents.canvas.style.display = "flex";
     }
 
-    // Hide other tab contents except the default one
     ["uploader", "cliparts", "text"].forEach((key) => {
         if (tabContents[key]) {
             tabContents[key].style.display = "none";

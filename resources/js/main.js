@@ -1,8 +1,14 @@
 import toggleSideBar from "./utils";
 import getCanvasDefaults from "./defaults.js";
+// const canvasContainer = document.querySelector("#canvasContainer");
+const designArea = document.querySelector("#design-area");
 const canvas = new fabric.Canvas("tshirtCanvas");
 const product_image = document.querySelector("#product-image");
-const designArea = document.querySelector("#design-area");
+
+// canvas.setHeight(canvasContainer.clientHeight);
+// canvas.setWidth(canvasContainer.clientWidth);
+// canvas.requestRenderAll();
+
 const product_type = product_image?.getAttribute("data-type") || "default";
 const default_stroke_width = 2;
 const default_stoke_fill = "#ccc";
@@ -122,6 +128,7 @@ function initCanvas() {
 }
 
 function initGlobalEvents() {
+
     document.getElementById("zoom-in").addEventListener("click", () => {
         if (zoomLevel < 2) {
             zoomLevel += zoomStep;
