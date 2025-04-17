@@ -160,7 +160,6 @@ function initDesktopNav() {
         }
     });
 
-    // Set the default button as active
     if (tabButtons.product) {
         tabButtons.product.classList.add("active");
         ["uploader", "cliparts", "text"].forEach((key) => {
@@ -197,7 +196,6 @@ function switchTabContent(evt) {
     if (selectedContent) {
         selectedContent.classList.remove("d-none");
 
-        // Only add tabcontent class in mobile view
         if (isMobile()) {
             selectedContent.classList.add("tabcontent");
         }
