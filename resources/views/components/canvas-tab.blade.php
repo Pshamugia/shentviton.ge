@@ -35,6 +35,7 @@
                     </div>
                 @endif
             </div>
+            <button id="addToCartMobile" class="d-block d-lg-none small_save_btn">კალათაში დამატება</button>
         </div>
     </div>
 </div>

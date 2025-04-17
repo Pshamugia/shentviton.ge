@@ -250,3 +250,14 @@
     }
 }
 
+.small_save_btn {
+    border-radius: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 20px 2px;
+}

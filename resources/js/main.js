@@ -128,7 +128,6 @@ function initCanvas() {
 }
 
 function initGlobalEvents() {
-
     document.getElementById("zoom-in").addEventListener("click", () => {
         if (zoomLevel < 2) {
             zoomLevel += zoomStep;
@@ -1194,38 +1193,40 @@ let final_design = {
 };
 
 function handleAddToCart() {
-    document
-        .querySelector("#addToCart")
-        .addEventListener("click", async function (e) {
-            e.preventDefault();
+    ["#addToCart", "#addToCartMobile"].forEach((selector) => {
+        document
+            .querySelector(selector)
+            .addEventListener("click", async function (e) {
+                e.preventDefault();
 
-            const currentSide = state.current_image_side;
+                const currentSide = state.current_image_side;
 
-            try {
-                await saveDesignAndImage(currentSide);
+                try {
+                    await saveDesignAndImage(currentSide);
 
-                if (selectedBackImage) {
-                    if (currentSide === "front") {
-                        loadImage(selectedBackImage, "pos");
-                        setTimeout(async () => {
-                            await saveDesignAndImage("back");
-                            proceedWithAddToCart();
-                        }, 500);
-                    } else if (currentSide === "back") {
-                        loadImage(selectedFrontImage, "pos");
-                        setTimeout(async () => {
-                            await saveDesignAndImage("front");
-                            proceedWithAddToCart();
-                        }, 500);
+                    if (selectedBackImage) {
+                        if (currentSide === "front") {
+                            loadImage(selectedBackImage, "pos");
+                            setTimeout(async () => {
+                                await saveDesignAndImage("back");
+                                proceedWithAddToCart();
+                            }, 500);
+                        } else if (currentSide === "back") {
+                            loadImage(selectedFrontImage, "pos");
+                            setTimeout(async () => {
+                                await saveDesignAndImage("front");
+                                proceedWithAddToCart();
+                            }, 500);
+                        }
+                    } else {
+                        proceedWithAddToCart();
                     }
-                } else {
-                    proceedWithAddToCart();
+                } catch (err) {
+                    alert("Failed to save design before adding to cart.");
+                    console.error(err);
                 }
-            } catch (err) {
-                alert("Failed to save design before adding to cart.");
-                console.error(err);
-            }
-        });
+            });
+    });
 }
 
 function saveDesignAndImage(side) {
