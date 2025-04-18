@@ -33,7 +33,7 @@ class ProductController extends Controller
             $query->where('title', 'like', '%' . $request->search . '%');
         }
     
-        $products = $query->orderBy('id', 'asc')->paginate(10);
+        $products = $query->orderBy('id', 'desc')->paginate(10);
     
         return view('admin.products.index', compact('products'));
     }
