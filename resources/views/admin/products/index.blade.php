@@ -4,6 +4,15 @@
 
 @section('content')
 <div class="container">
+
+    <form action="{{ route('admin.products.index') }}" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search by title..." value="{{ request('search') }}">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    
     <h3 class="mb-4">Manage Products</h3>
 
     <a href="{{ route('admin.products.create') }}" class="btn btn-success">Add Product</a>
@@ -40,6 +49,10 @@
                 </td>
             </tr>
             @endforeach
+
+        <td>     <div>  {{ $products->appends(['search' => request('search')])->links('pagination.custom-pagination') }}
+        </div></td>
+        </tr>
         </tbody>
     </table>
 </div>

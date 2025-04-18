@@ -3,31 +3,36 @@
 
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0X7N9V9R66"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0X7N9V9R66"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
 
-  gtag('config', 'G-0X7N9V9R66');
-</script>
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-0X7N9V9R66');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
- <!-- ✅ Facebook Open Graph Meta Tags -->
-<meta property="og:title" content="@yield('og_title', 'Shentviton - შენი დიზაინი, შენი სტილი')" />
-<meta property="og:description" content="@yield('og_description', 'გააფორმე შენ თვითონ და ატარე უნიკალური პროდუქტი')" />
-<meta property="og:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))" />
-<meta property="og:url" content="{{ url()->current() }}" />
-<meta property="og:type" content="website" />
-<meta property="og:locale" content="ka_GE" />
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="@yield('og_title', 'Shentviton - შენი დიზაინი, შენი სტილი')">
-<meta name="twitter:description" content="@yield('og_description', 'გააფორმე შენ თვითონ და ატარე უნიკალური პროდუქტი')">
-<meta name="twitter:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))">
+    <!-- ✅ Facebook Open Graph Meta Tags -->
+    <meta property="og:title" content="@yield('og_title', 'Shentviton - შენი დიზაინი, შენი სტილი')" />
+    <meta property="og:description" content="@yield('og_description', 'გააფორმე შენ თვითონ და ატარე უნიკალური პროდუქტი')" />
+    <meta property="og:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ka_GE" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', 'Shentviton - შენი დიზაინი, შენი სტილი')">
+    <meta name="twitter:description" content="@yield('og_description', 'გააფორმე შენ თვითონ და ატარე უნიკალური პროდუქტი')">
+    <meta name="twitter:image" content="@yield('og_image', asset('storage/designs/shentviton_logo.png'))">
     <link rel="icon" href="{{ asset('storage/designs/favicon.ico') }}" type="image/x-icon" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Monoton&family=Creepster&family=Rubik+Bubbles&family=Gloria+Hallelujah&family=Black+Ops+One&family=Lobster&family=PlaywriteIN&family=Erica+One&family=Alk-rounded&family=Berkshire+Swash&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron&family=Monoton&family=Creepster&family=Rubik+Bubbles&family=Gloria+Hallelujah&family=Black+Ops+One&family=Lobster&family=PlaywriteIN&family=Erica+One&family=Alk-rounded&family=Berkshire+Swash&display=swap"
+        rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -35,18 +40,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 
-    @vite([
-        'resources/css/sass/app.scss',
-        'resources/css/app.css',
-        'resources/css/tabmenu.css',
-        'resources/js/app.js',
-        'resources/js/product.js',
-    ])    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite(['resources/css/sass/app.scss', 'resources/css/app.css', 'resources/css/tabmenu.css', 'resources/js/app.js', 'resources/js/product.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
 
 
-<script type="application/ld+json">
+    <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -64,7 +64,7 @@
       ]
     }
     </script>
-    
+
     @stack('schema')
 </head>
 
@@ -93,7 +93,7 @@
                                 display: inline-flex;
                                 align-items: center;
                                 gap: 8px;
-                                font-weight: 500;
+                                color:black;
                                 transition: background 0.3s ease;">
                                 გააფორმე შენ თვითონ
                             </a>
@@ -106,15 +106,25 @@
                                         href="{{ route('products.byType', ['type' => 't-shirt', 'subtype' => 'custom']) }}">მაისური</a>
                                 </li>
                                 <li><a class="dropdown-item"
-                                    href="{{ route('products.byType', ['type' => 'polo', 'subtype' => 'custom']) }}">პოლო მაისური</a>
-                            </li>
-                            <li><a class="dropdown-item"
-                                href="{{ route('products.byType', ['type' => 'hoodie', 'subtype' => 'custom']) }}">ჰუდი</a>
-                        </li>
+                                        href="{{ route('products.byType', ['type' => 'polo', 'subtype' => 'custom']) }}">პოლო
+                                        მაისური</a>
+                                </li>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('products.byType', ['type' => 'bomber', 'subtype' => 'custom']) }}">ბომბერი</a>
+                                </li>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('products.byType', ['type' => 'hoodie', 'subtype' => 'custom']) }}">ჰუდი</a>
+                                </li>
                                 <li><a class="dropdown-item"
                                         href="{{ route('products.byType', ['type' => 'cap', 'subtype' => 'custom']) }}">კეპი</a>
                                 </li>
+
                                 <li><a class="dropdown-item"
+                                    href="{{ route('products.byType', ['type' => 'bag', 'subtype' => 'custom']) }}">
+                                    ჩანთა</a></li>
+                            <li>
+                                
+                                    <a class="dropdown-item"
                                         href="{{ route('products.byType', ['type' => 'phone-case', 'subtype' => 'custom']) }}">ტელეფონის
                                         ქეისი</a></li>
                             </ul>
@@ -133,14 +143,15 @@
                             <li><a class="dropdown-item"
                                     href="{{ route('products.byType', ['type' => 'cap']) }}">კეპი</a></li>
                             <li><a class="dropdown-item"
-                                    href="{{ route('products.byType', ['type' => 'phone-case']) }}">ტელეფონის ქეისი</a>
+                                    href="{{ route('products.byType', ['type' => 'phone-case']) }}">ტელეფონის
+                                    ქეისი</a>
                             </li>
                         </ul>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link cart-link" href="{{ route('cart.index') }}">
-                            <i class="fas fa-shopping-cart"></i> 
+                            <i class="fas fa-shopping-cart"></i>
                             <span class="badge bg-danger" id="cart-count">{{ session('cart_count', 0) }}</span>
                         </a>
                     </li>
@@ -153,7 +164,7 @@
                             <form action="{{ route('search') }}" method="GET" class="d-flex">
                                 <input type="text" name="query" class="form-control me-2"
                                     placeholder="საძიებო სიტყვა..." required>
-                                <button type="submit" class="btn search-button" style="">ძებნა</button>
+                                <button type="submit" class="btn search-button">ძებნა</button>
                             </form>
                         </div>
                     </li>
@@ -161,18 +172,18 @@
 
 
                     <!--      @guest
-                                <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
 @else
     <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        Logout
-                                    </a>
-                                </li>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
+                                        <a class="nav-link" href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            Logout
+                                        </a>
+                                    </li>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
                     @endguest -->
 
                 </ul>
@@ -192,7 +203,7 @@
 
     <footer class="bg-dark text-white text-center py-4 mt-5">
         <div class="container" style="padding: 20px">
-            <div class="row text-center" >
+            <div class="row text-center">
                 <!-- First Column -->
                 <div class="col-md-4 text-start">
 
@@ -202,7 +213,7 @@
 
                 <!-- Second Column -->
                 <div class="col-md-4 text-start">
-                    <div style="margin-bottom:10px">   </div>
+                    <div style="margin-bottom:10px"> </div>
                     <ul class="list-inline">
                         <li class="list-inline-item"><a href="{{ route('home') }}" class="nav-link"> <i
                                     class="bi bi-house-door"></i> &nbsp; საწყისი</a>
@@ -222,7 +233,8 @@
                 <div class="col-md-4 text-start">
 
                     <div style="margin-bottom:10px"> გამოგვყევი </div>
-                    <a href="#" class="text-white"><i class="fab fa-facebook custom-icon-facebook"></i></a>
+                    <a href="https://www.facebook.com/shentviton.ge" target="_blank" class="text-white"><i
+                            class="fab fa-facebook custom-icon-facebook"></i></a>
                     <a href="#" class="text-white mx-2"><i
                             class="fab fa-instagram custom-icon-instagram"></i></a>
                     <a href="#" class="text-white"><i class="fab fa-youtube custom-icon-youtube"></i></a>
@@ -325,8 +337,8 @@
                                     button.classList.add('btn-success');
                                     button.dataset.cartItemId = data.cartItemId;
 
-                                    console.log("data.cartCOunt: ",data
-                                        .cartCount )
+                                    console.log("data.cartCOunt: ", data
+                                        .cartCount)
 
                                     document.getElementById('cart-count').textContent = data
                                         .cartCount;

@@ -77,7 +77,9 @@
                     <option value="">-- Select Type --</option>
                     <option value="მაისური">მაისური</option>
                     <option value="პოლო">პოლო მაისური</option>
+                    <option value="ბომბერი">ბომბერი</option>
                     <option value="ჰუდი">ჰუდი</option>
+                    <option value="ჩანთა">ჩანთა</option>
                     <option value="კეპი">კეპი</option>
                     <option value="ქეისი">ტელეფონის ქეისი</option>
                 </select>
