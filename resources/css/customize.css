@@ -140,15 +140,16 @@
     }
 
     #design-area {
-        width: 100%;
-        height: auto;
         max-width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        align-items: center;
+        justify-content: flex-start; /* Don't center vertically */
         padding: 0 1rem;
+        height: auto;
+        max-height: 100vh;
+        overflow-y: auto; /* Enables scrolling if content is taller than viewport */
+        box-sizing: border-box;
     }
 
     .customization-container .row {
@@ -246,13 +247,12 @@
     }
 
     #tshirtCanvas {
-
     }
 }
 
 .small_save_btn {
     border-radius: 10px;
-    background-color: #4CAF50;
+    background-color: #4caf50;
     color: white;
     border: none;
     padding: 10px 20px;
