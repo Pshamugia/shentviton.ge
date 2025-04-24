@@ -1,9 +1,12 @@
 import toggleSideBar from "./utils";
 import getCanvasDefaults from "./defaults.js";
+import MemStorage from "./memstorage.js";
 // const canvasContainer = document.querySelector("#canvasContainer");
 const designArea = document.querySelector("#design-area");
 const canvas = new fabric.Canvas("tshirtCanvas");
 const product_image = document.querySelector("#product-image");
+
+const memStorage = new MemStorage();
 
 // canvas.setHeight(canvasContainer.clientHeight);
 // canvas.setWidth(canvasContainer.clientWidth);
@@ -154,8 +157,23 @@ function initGlobalEvents() {
     }
     window.addEventListener("beforeunload", clearLocalStorageOnExit);
     function clearLocalStorageOnExit() {
-        Object.keys(localStorage).forEach((key) => {
-            if (
+        // Object.keys(localStorage).forEach((key) => {
+        //     if (
+        //         key.includes("/colors/") ||
+        //         key === front_state_key ||
+        //         key === back_state_key ||
+        //         key === state.current_image_side ||
+        //         key === rand_key + ".front_design" ||
+        //         key === rand_key + ".back_design" ||
+        //         key === rand_key + ".front_image" ||
+        //         key === rand_key + ".back_image"
+        //     ) {
+        //         localStorage.removeItem(key);
+        //     }
+        // });
+
+        memStorage.clearMatching(
+            (key) =>
                 key.includes("/colors/") ||
                 key === front_state_key ||
                 key === back_state_key ||
@@ -164,10 +182,7 @@ function initGlobalEvents() {
                 key === rand_key + ".back_design" ||
                 key === rand_key + ".front_image" ||
                 key === rand_key + ".back_image"
-            ) {
-                localStorage.removeItem(key);
-            }
-        });
+        );
     }
     handleDeleteOnKeyDown();
     handleAddToCart();
@@ -493,7 +508,7 @@ function loadImage(
                 ? front_state_key
                 : back_state_key;
 
-        let obj_state = localStorage.getItem(key);
+        let obj_state = memStorage.getItem(key);
         if (!obj_state) {
             Array.from(form.text_container.children).forEach((child) => {
                 if (child.id !== "addTextInput") {
@@ -539,7 +554,7 @@ function loadImage(
                 canvas.sendToBack(img);
                 canvas.requestRenderAll();
 
-                localStorage.setItem(imageURL, JSON.stringify(canvas));
+                memStorage.setItem(imageURL, JSON.stringify(canvas));
             });
         } else {
             canvas.clear();
@@ -649,7 +664,7 @@ function loadImage(
                 state.current_image_side == "front"
                     ? front_state_key
                     : back_state_key;
-            let obj_state = localStorage.getItem(key);
+            let obj_state = memStorage.getItem(key);
 
             if (obj_state) {
                 canvas.loadFromJSON(obj_state);
@@ -868,9 +883,17 @@ function handleTextColorInput(input) {
 }
 
 function handleFontFamilyInput(input) {
-    input.addEventListener("change", (e) => {
+    let $input = $(input);
+
+    $input.chosen({
+        width: "100%",
+    });
+
+    $input.on("change", function () {
+        const selectedFont = $(this).val();
+
         if (active_text_obj) {
-            active_text_obj.set("fontFamily", input.value);
+            active_text_obj.set("fontFamily", selectedFont);
             canvas.requestRenderAll();
             save_side();
             save_state(state.current_image_url);
@@ -879,6 +902,18 @@ function handleFontFamilyInput(input) {
             alert("Please select a text object first");
         }
     });
+
+    // input.addEventListener("change", (e) => {
+    //     if (active_text_obj) {
+    //         active_text_obj.set("fontFamily", input.value);
+    //         canvas.requestRenderAll();
+    //         save_side();
+    //         save_state(state.current_image_url);
+    //         emitAddedToCanvas();
+    //     } else {
+    //         alert("Please select a text object first");
+    //     }
+    // });
 }
 
 function handleTextInputs(inputs) {
@@ -1011,7 +1046,7 @@ function initProductImage() {
 
     preloadImage(first_front_image).then(() => {
         const key = front_state_key;
-        const canvas_state = localStorage.getItem(key);
+        const canvas_state = memStorage.getItem(key);
 
         if (canvas_state) {
             requestAnimationFrame(() => {
@@ -1164,7 +1199,7 @@ function switchClipArtCats(e) {
 function resizeCanvas(defaulting) {
     if (defaulting) {
         canvas.setWidth(designArea.clientWidth);
-        canvas.setHeight(designArea.clientWidth * 1.5);
+        canvas.setHeight(designArea.clientWidth);
     }
 }
 
@@ -1178,11 +1213,11 @@ function save_side() {
         (obj) => !obj.src || !obj.src.includes("color")
     );
 
-    localStorage.setItem(key, JSON.stringify(canvasData));
+    memStorage.setItem(key, JSON.stringify(canvasData));
 }
 
 function save_state(image_url) {
-    localStorage.setItem(image_url, JSON.stringify(canvas));
+    memStorage.setItem(image_url, JSON.stringify(canvas));
 }
 
 let final_design = {
@@ -1238,7 +1273,7 @@ function saveDesignAndImage(side) {
 
             const stateKey =
                 side === "front" ? front_state_key : back_state_key;
-            localStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
+            memStorage.setItem(stateKey, JSON.stringify(canvas.toJSON()));
 
             const tempCanvas = new fabric.Canvas(null, {
                 width: canvas.width,
