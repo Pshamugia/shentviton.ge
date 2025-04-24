@@ -11,7 +11,7 @@
 
 
 
-    <div id="imageCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+    <div id="imageCarousel" class="carousel slide mb-4" data-bs-ride="carousel" style="position: relative; top:-10px;">
         <!-- Indicators -->
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="0" class="active" aria-current="true"

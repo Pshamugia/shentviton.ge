@@ -32,7 +32,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Dv9_HLcc.css",
+    "file": "assets/app-DDXOr4ig.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -92,11 +92,12 @@
     "src": "resources/fonts/bpg_boxo-boxo.ttf"
   },
   "resources/js/app.js": {
-    "file": "assets/app-DUYCGVpF.js",
+    "file": "assets/app-ZQDMO3uY.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "dynamicImports": [
+      "resources/js/mobile-nav.js",
       "resources/js/main.js"
     ],
     "css": [
@@ -114,9 +115,15 @@
     ]
   },
   "resources/js/main.js": {
-    "file": "assets/main-l6VBBVMp.js",
+    "file": "assets/main-DDN01QAx.js",
     "name": "main",
     "src": "resources/js/main.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/mobile-nav.js": {
+    "file": "assets/mobile-nav-C6Pj1KGK.js",
+    "name": "mobile-nav",
+    "src": "resources/js/mobile-nav.js",
     "isDynamicEntry": true
   },
   "resources/js/product.js": {
