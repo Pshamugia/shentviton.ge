@@ -6,12 +6,14 @@ use Exception;
 use App\Models\Cart;
 use App\Models\Payment;
 use App\Mail\NewPaymentMail;
+use Illuminate\Http\Request;
 use App\Mail\OrderStatusMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\PaymentRequest;
 use App\Repositories\PaymentRepository;
 use App\Services\Payments\PaymentProcessor;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PaymentController extends Controller
 {
@@ -65,7 +67,6 @@ class PaymentController extends Controller
             abort(403, 'Invalid or tampered payment URL.');
         }
 
-
         $status = request('status_string') ?? null;
         $payment_id = request('payment_id') ?? null;
 
@@ -77,33 +78,83 @@ class PaymentController extends Controller
             abort(400, 'Invalid request.');
         }
 
+        return redirect()->to(route('payment.status.public', ['id' => $payment_id]));
+    }
+
+    public function callback(Request $request)
+    {
+        $payload = $request->getContent();
+        $signature = $request->header('Callback-Signature');
+
+        $this->ensureSignatureIsValid($payload, $signature, config('services.bog.id'));
+
+        $data = json_decode($payload, true);
+
+        $payment_id = $data['external_order_id'] ?? null;
+        $order_status = $data['order_status']['key'] ?? null;
+
+        if (!$payment_id || !$order_status) {
+            Log::error('Invalid callback payload', ['data' => $data]);
+            return response('Invalid payload', 400);
+        }
+
+        $status = match ($order_status) {
+            'completed' => 'success',
+            'processing' => 'pending',
+            default => $order_status,
+        };
 
         $payment_status_updated = $this->repository->updatePaymentStatus($payment_id, $status);
         $cart_updated = $this->repository->updateCarts($payment_id, $status);
 
         $payment = Payment::find($payment_id);
 
-        Mail::to(config('mail.to.admin.address'))
-            ->send(new NewPaymentMail($payment));
-
-        Mail::to($payment->u_email)
-            ->send(new OrderStatusMail($payment));
+        if (!$payment) {
+            Log::error('Payment not found', ['payment_id' => $payment_id]);
+            return response('Payment not found', 404);
+        }
 
         if ($payment_status_updated && $cart_updated) {
-            return redirect()->to(route('payment.status.public', ['id' => $payment_id]));
+            if ($status === 'success') {
+                Mail::to(config('mail.to.admin.address'))
+                    ->send(new NewPaymentMail($payment));
+            }
+
+            Mail::to($payment->u_email)
+                ->send(new OrderStatusMail($payment));
         } else {
             Log::error('Payment status update failed.', [
                 'status' => $status,
                 'payment_id' => $payment_id,
             ]);
-            abort(500, 'Payment status update failed.');
+        }
+
+        return response('OK', 200);
+    }
+
+
+    private function ensureSignatureIsValid(string $data, ?string $signature, ?string $publicKey)
+    {
+        if (! $this->verifySignature($data, $signature, $publicKey)) {
+            Log::error('Invalid RSA Signature', [
+                'signature' => $signature,
+                'payload' => $data,
+            ]);
+            throw new HttpException(401, 'Invalid Signature');
         }
     }
 
-    public function callback()
+
+    private function verifySignature(string $data, ?string $signature, ?string $publicKey): bool
     {
-        dd("callback");
+        $decodedSignature = base64_decode($signature);
+
+        $publicKey = openssl_pkey_get_public($publicKey);
+        $verified = openssl_verify($data, $decodedSignature, $publicKey, 'RSA-SHA256');
+
+        return $verified === 1;
     }
+
 
     public function publicStatus($id)
     {
