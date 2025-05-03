@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container my-5 min-vh-100">
         <div class="row">
@@ -18,22 +17,17 @@
                                         $imageUrl = $image ? Storage::url($image) : 'https://via.placeholder.com/50';
                                     @endphp
 
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ $imageUrl }}" alt="Product Image" class="me-3" width="50"
-                                                height="50" style="object-fit: cover; border-radius: 5px;">
-                                            <div>
-                                                <h6 class="mb-0">{{ optional($product)->title ?? 'Unnamed Product' }}</h6>
-                                                <small>Type: {{ optional($product)->type ?? 'N/A' }}</small><br>
-                                                <small>Subtype: {{ optional($product)->subtype ?? 'N/A' }}</small><br>
-                                                <small>Quantity: {{ $item->quantity ?? 'N/A' }}</small><br>
-                                                <small>
-                                                    Color:
-                                                    <span style="color: {{ optional($item->product)->color_code ?? '#000' }}">
-                                                        {{ optional($item->product)->color_name ?? 'N/A' }}
-                                                    </span>
-                                                </small>
-                                            </div>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ Storage::url($image) }}" alt="Product Image" class="me-3" width="50"
+                                            height="50" style="object-fit: cover; border-radius: 5px;">
+                                        <div>
+                                            <h6 class="mb-0">{{ $product->title ?? 'Unnamed Product' }}</h6>
+                                            <small>Type: {{ $product->type }}</small><br>
+                                            <small>Subtype: {{ $product->subtype }}</small><br>
+                                            <small>Quantity: {{ $item->quantity }}</small><br>
+                                            <small>Color: <span
+                                                    style="color: {{ $item->product->color_code }}">{{ $item->product->color_name }}</span></small>
                                         </div>
                                         <span class="badge bg-secondary">{{ $item->total_price ?? '0.00' }} GEL</span>
                                     </li>
@@ -46,32 +40,30 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">გადახდის სტატუსი</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="text-center">
-                            @php $status = $payment->status ?? 'unknown'; @endphp
-
-                            @if ($status === 'success')
-                                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-                                <h5 class="mt-3 text-success">წარმატებული გადახდა</h5>
-                            @elseif ($status === 'pending')
-                                <i class="bi bi-hourglass-split text-warning" style="font-size: 3rem;"></i>
-                                <h5 class="mt-3 text-warning">გადახდა არ არის დასრულებული</h5>
-                                <p>გადახდა მიმდინარეობს.</p>
-                            @else
-                                <i class="bi bi-x-circle text-danger" style="font-size: 3rem;"></i>
-                                <h5 class="mt-3 text-danger">Payment Failed</h5>
-                                <p>შეფერხებაა. გთხოვთ ხელახლა სცადოთ.</p>
-                            @endif
-                        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Payment Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        @if ($payment->status === 'success')
+                            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3 text-success">Payment Successful</h5>
+                        @elseif($payment->status === 'pending')
+                            <i class="bi bi-hourglass-split text-warning" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3 text-warning">Payment Pending</h5>
+                            <p>Your payment is being processed.</p>
+                        @else
+                            <i class="bi bi-x-circle text-danger" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3 text-danger">Payment Failed</h5>
+                            <p>Please try again.</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 @endsection
 

@@ -7,4 +7,5 @@ enum CartStatus: string
     case PENDING = "pending";
     case PAID = "paid";
     case PROCESSED = "processed";
+    case FAILED = "failed";
 }
