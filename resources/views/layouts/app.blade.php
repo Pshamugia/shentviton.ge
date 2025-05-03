@@ -207,8 +207,12 @@
                 <!-- First Column -->
                 <div class="col-md-4 text-start">
 
-                    <i class="bi bi-telephone"></i> &nbsp; 593922217 <br>
-                    <i class="bi bi-envelope"></i> &nbsp; info@shentviton.ge
+                    <i class="bi bi-telephone"></i> &nbsp; 555 389 965 <br>
+                    <i class="bi bi-envelope"></i> &nbsp; shenviton@gmail.com  
+                       <!-- TOP.GE ASYNC COUNTER CODE -->
+                       <div id="top-ge-counter-container" data-site-id="118054" style="position: relative; top:7px;"></div>
+                       <script async src="//counter.top.ge/counter.js"></script>
+                       <!-- / END OF TOP.GE COUNTER CODE -->
                 </div>
 
                 <!-- Second Column -->
@@ -230,16 +234,21 @@
                 </div>
 
                 <!-- Third Column -->
-                <div class="col-md-4 text-start">
+                <div class="col-md-2 text-start">
 
                     <div style="margin-bottom:10px"> გამოგვყევი </div>
                     <a href="https://www.facebook.com/shentviton.ge" target="_blank" class="text-white"><i
                             class="fab fa-facebook custom-icon-facebook"></i></a>
-                    <a href="#" class="text-white mx-2"><i
+                    <a href="https://www.instagram.com/shentviton.ge/" target="_blank" class="text-white mx-2"><i
                             class="fab fa-instagram custom-icon-instagram"></i></a>
-                    <a href="#" class="text-white"><i class="fab fa-youtube custom-icon-youtube"></i></a>
+                    <a href="https://www.youtube.com/@shentviton-ge" target="_blank" class="text-white"><i class="fab fa-youtube custom-icon-youtube"></i></a>
 
                     </p>
+                </div>
+
+
+                <div class="col-md-2 text-start">
+                 
                 </div>
             </div>
         </div>

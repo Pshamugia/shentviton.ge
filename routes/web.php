@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\ClipartController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\TransactionController;
 
 
 
@@ -44,6 +45,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('cliparts', ClipartController::class);
     Route::put('/admin/products/{id}', [ProductController::class, 'update'])->name('admin.products.update');
     Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products.index');
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::put('/transactions/{id}/mark-as-delivered', [TransactionController::class, 'markAsDelivered'])->name('transactions.markAsDelivered');
+    Route::put('/transactions/{id}/undo-delivered', [TransactionController::class, 'undoDelivered'])->name('transactions.undoDelivered');
+    Route::get('/transactions/user/{paymentId}', [\App\Http\Controllers\Admin\TransactionController::class, 'userTransactions'])->name('transactions.userTransactions');
 
 });
 

@@ -261,8 +261,65 @@ body {
 
 }
 
+
+
+
 .chosen-container .chosen-single span {
     font-family: inherit !important; /* fallback */
+}
+
+
+.chosen-container-single .chosen-default {
+    color: #000;
+    /* height: 35px; */
+    /* align-content: flex-start; */
+}
+.chosen-container-single .chosen-single {
+    height: 37px;
+    padding: 4px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    color: #333;
+}
+
+.chosen-container-single .chosen-single span {
+    margin-top: 2px;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single {
+    background: #fff;
+    border: 1px solid #007bff;
+    box-shadow: 0 0 8px rgba(0,123,255,0.2);
+}
+
+/* Style the dropdown menu */
+.chosen-container .chosen-drop {
+    border-radius: 0 0 12px 12px;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+
+/* Style search inside dropdown */
+.chosen-container .chosen-search input {
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+}
+
+/* No results message */
+.chosen-container .no-results {
+    color: #dc3545;
+    padding: 8px;
+}
+
+/* Responsive for mobile */
+@media (max-width: 576px) {
+    .chosen-container {
+        width: 100% !important;
+    }
 }
 
 .navbar.scrolled {
@@ -476,6 +533,7 @@ body {
     font-weight: normal;
     font-style: normal;
 }
+
 
 @font-face {
     font-family: "Orbitron";

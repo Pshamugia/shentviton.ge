@@ -20,12 +20,15 @@ class PaymentRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'name' => 'required|string|min:2|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string', //there is a phone validator package, recommended to use: https://github.com/Propaganistas/Laravel-Phone
-            'address' => 'required|string|max:255',
-        ];
-    }
+{
+    return [
+        'name' => 'required|string|min:2|max:255',
+        'email' => 'required|email|max:255',
+        'phone' => 'required|string',
+        'address' => 'required|string|max:255',
+        'city' => 'required|string|max:255',            // 🛑 Add city
+        'delivery_price' => 'required|numeric|min:0',    // 🛑 Add delivery_price
+    ];
+}
+
 }

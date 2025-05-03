@@ -24,6 +24,11 @@
                 <label for="description" class="form-label">Product Description</label>
                 <textarea name="description" id="description" class="form-control" required>{{ $product->description }}</textarea>
             </div>
+                          {{-- CKEditor --}}
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('description');
+</script>
 
             <div class="mb-3">
                 <label class="form-label">Available Colors</label>

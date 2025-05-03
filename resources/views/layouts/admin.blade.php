@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
         /* Sidebar styling */
         .admin-sidebar {
@@ -45,8 +46,11 @@
     <!-- Admin Sidebar -->
     <div class="admin-sidebar">
         <h4 class="text-center">Admin Panel</h4>
+        <a href="{{ route('admin.dashboard') }}"><i class="fas fa-home"></i> Home</a>
+
         <a href="{{ route('admin.products.index') }}"><i class="fas fa-box"></i> Manage Products</a>
         <a href="{{ route('admin.cliparts.index') }}"><i class="fas fa-images"></i> Manage Cliparts</a>
+        <a href="{{ route('admin.transactions.index') }}"><i class="fas fa-money-check-alt"></i> Transactions</a>
 
         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
             @csrf
@@ -59,6 +63,7 @@
     <div class="admin-content">
         @yield('content')
     </div>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
 </body>
 

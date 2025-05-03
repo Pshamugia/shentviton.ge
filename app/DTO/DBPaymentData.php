@@ -18,7 +18,12 @@ class DBPaymentData
     public static function fromCartCollectionandFormData($cart_items, $form_data): self
     {
         $total = $cart_items->sum('total_price');
-
+    
+        // Add delivery_price if provided
+        if (isset($form_data['delivery_price'])) {
+            $total += (float) $form_data['delivery_price'];
+        }
+    
         return new self(
             user_id: $cart_items->first()->user_id,
             visitor_hash: $cart_items->first()->visitor_hash,
@@ -30,4 +35,5 @@ class DBPaymentData
             u_address: $form_data['address'],
         );
     }
+    
 }

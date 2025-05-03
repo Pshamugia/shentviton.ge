@@ -100,23 +100,24 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm mt-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">სრული გადასახდელი თანხა</h5>
-                        <h5 class="mb-0" id="grand-total">{{ number_format($cartItems->sum('total_price')) }} ლარი</h5>
-                    </div>
+            <div class="d-flex justify-content-between align-items-center" style="text-align: right;">
+                <div>
+                    <div id="product-total-text">პროდუქციის ფასი: {{ number_format($cartItems->sum('total_price')) }} ლარი</div>
+                    <div id="delivery-price-text">ემატება მიწოდების ფასი: თბილისში - 5 ლარი, რეგიონებში - 7 ლარი</div>
+                    <strong id="grand-total-text">ჯამური: {{ number_format($cartItems->sum('total_price')) }} ლარი</strong>
+
                 </div>
+                
             </div>
 
-            <div class="dropdown">
+            <div class="dropdown" style="position: relative; top:10px;">
                 <!-- Payment Button -->
                 <button id="paymentButton" class="btn btn-success" type="button">
                     გადახდა
                 </button>
 
                 <!-- Hidden Form -->
-                <div id="paymentDropdown" class="dropdown-menu show p-4" style="min-width: 300px; display: none;">
+                <div id="paymentDropdown" class="dropdown-menu show p-4" style="min-width: 300px; display: none; background-color: #e7e2e2">
                     <form action="{{ route('payment.pay') }}">
                         <!-- Name Field -->
                         <div class="mb-2">
@@ -143,8 +144,88 @@
                             </div>
                         </div>
 
+
+                        <div class="mb-2" style="margin-bottom: 17px !important">
+                            <label for="address" class="form-label">ქალაქი</label>
+                            <div class="input-group">
+                                <select name="city" class="form-control chosen-select" id="city" data-placeholder="მონიშნე ქალაქი" required>
+                                     <option value="">  მონიშნე ქალაქი</option> 
+                                <option value="თბილისი">თბილისი</option>
+                                <option value="ბათუმი">ბათუმი</option>
+                                <option value="ქუთაისი">ქუთაისი</option>
+                                <option value="გურჯაანის მუნიციპალიტეტი">გურჯაანის მუნიციპალიტეტი</option>
+                                <option value="თელავის მუნიციპალიტეტი">თელავის მუნიციპალიტეტი</option>
+                                <option value="ზუგდიდის მუნიციპალიტეტი">ზუგდიდის მუნიციპალიტეტი</option>
+                                <option value="ბაკურიანი">ბაკურიანი</option>
+                                <option value="გორის მუნიციპალიტეტი">გორის მუნიციპალიტეტი</option>
+                                <option value="რუსთავი">რუსთავი</option>
+                                <option value="ფოთი">ფოთი</option>
+                                <option value="აბაშის მუნიციპალიტეტი">აბაშის მუნიციპალიტეტი</option>
+                                <option value="ადიგენის მუნიციპალიტეტი">ადიგენის მუნიციპალიტეტი</option>
+                                <option value="ამბროლაურის მუნიციპალიტეტი">ამბროლაურის მუნიციპალიტეტი</option>
+                                <option value="ასპინძის მუნიციპალიტეტი">ასპინძის მუნიციპალიტეტი</option>
+                                <option value="ახალგორის მუნიციპალიტეტი">ახალგორის მუნიციპალიტეტი</option>
+                                <option value="ახალქალაქის მუნიციპალიტეტი">ახალქალაქის მუნიციპალიტეტი</option>
+                                <option value="ახალციხის მუნიციპალიტეტი">ახალციხის მუნიციპალიტეტი</option>
+                                <option value="ახმეტის მუნიციპალიტეტი">ახმეტის მუნიციპალიტეტი</option>
+                                <option value="ბაღდათის მუნიციპალიტეტი">ბაღდათის მუნიციპალიტეტი</option>
+                                <option value="ბოლნისის მუნიციპალიტეტი">ბოლნისის მუნიციპალიტეტი</option>
+                                <option value="ბორჯომის მუნიციპალიტეტი">ბორჯომის მუნიციპალიტეტი</option>
+                                <option value="გარდაბნის მუნიციპალიტეტი">გარდაბნის მუნიციპალიტეტი</option>
+                                <option value="დედოფლისწყაროს მუნიციპალიტეტი">დედოფლისწყაროს მუნიციპალიტეტი</option>
+                                <option value="დმანისის მუნიციპალიტეტი">დმანისის მუნიციპალიტეტი</option>
+                                <option value="დუშეთის მუნიციპალიტეტი">დუშეთის მუნიციპალიტეტი</option>
+                                <option value="ვანის მუნიციპალიტეტი">ვანის მუნიციპალიტეტი</option>
+                                <option value="ზესტაფონის მუნიციპალიტეტი">ზესტაფონის მუნიციპალიტეტი</option>
+                                <option value="თეთრი წყაროს მუნიციპალიტეტი">თეთრი წყაროს მუნიციპალიტეტი</option>
+                                <option value="თერჯოლის მუნიციპალიტეტი">თერჯოლის მუნიციპალიტეტი</option>
+                                <option value="თიანეთის მუნიციპალიტეტი">თიანეთის მუნიციპალიტეტი</option>
+                                <option value="კასპის მუნიციპალიტეტი">კასპის მუნიციპალიტეტი</option>
+                                <option value="ლაგოდეხის მუნიციპალიტეტი">ლაგოდეხის მუნიციპალიტეტი</option>
+                                <option value="ლანჩხუთის მუნიციპალიტეტი">ლანჩხუთის მუნიციპალიტეტი</option>
+                                <option value="ლენტეხის მუნიციპალიტეტი">ლენტეხის მუნიციპალიტეტი</option>
+                                <option value="მარნეულის მუნიციპალიტეტი">მარნეულის მუნიციპალიტეტი</option>
+                                <option value="მარტვილის მუნიციპალიტეტი">მარტვილის მუნიციპალიტეტი</option>
+                                <option value="მესტიის მუნიციპალიტეტი">მესტიის მუნიციპალიტეტი</option>
+                                <option value="მცხეთის მუნიციპალიტეტი">მცხეთის მუნიციპალიტეტი</option>
+                                <option value="ნინოწმინდის მუნიციპალიტეტი">ნინოწმინდის მუნიციპალიტეტი</option>
+                                <option value="ოზურგეთის მუნიციპალიტეტი">ოზურგეთის მუნიციპალიტეტი</option>
+                                <option value="ონის მუნიციპალიტეტი">ონის მუნიციპალიტეტი</option>
+                                <option value="საგარეჯოს მუნიციპალიტეტი">საგარეჯოს მუნიციპალიტეტი</option>
+                                <option value="სამტრედიის მუნიციპალიტეტი">სამტრედიის მუნიციპალიტეტი</option>
+                                <option value="საჩხერის მუნიციპალიტეტი">საჩხერის მუნიციპალიტეტი</option>
+                                <option value="სენაკის მუნიციპალიტეტი">სენაკის მუნიციპალიტეტი</option>
+                                <option value="სიღნაღის მუნიციპალიტეტი">სიღნაღის მუნიციპალიტეტი</option>
+                                <option value="ტყიბულის მუნიციპალიტეტი">ტყიბულის მუნიციპალიტეტი</option>
+                                <option value="ქარელის მუნიციპალიტეტი">ქარელის მუნიციპალიტეტი</option>
+                                <option value="ქედის მუნიციპალიტეტი">ქედის მუნიციპალიტეტი</option>
+                                <option value="ქობულეთის მუნიციპალიტეტი">ქობულეთის მუნიციპალიტეტი</option>
+                                <option value="ყაზბეგის მუნიციპალიტეტი">ყაზბეგის მუნიციპალიტეტი</option>
+                                <option value="ყვარლის მუნიციპალიტეტი">ყვარლის მუნიციპალიტეტი</option>
+                                <option value="შუახევის მუნიციპალიტეტი">შუახევის მუნიციპალიტეტი</option>
+                                <option value="ჩოხატაურის მუნიციპალიტეტი">ჩოხატაურის მუნიციპალიტეტი</option>
+                                <option value="ჩხოროწყუს მუნიციპალიტეტი">ჩხოროწყუს მუნიციპალიტეტი</option>
+                                <option value="ცაგერის მუნიციპალიტეტი">ცაგერის მუნიციპალიტეტი</option>
+                                <option value="წალენჯიხის მუნიციპალიტეტი">წალენჯიხის მუნიციპალიტეტი</option>
+                                <option value="წალკის მუნიციპალიტეტი">წალკის მუნიციპალიტეტი</option>
+                                <option value="წყალტუბოს მუნიციპალიტეტი">წყალტუბოს მუნიციპალიტეტი</option>
+                                <option value="ჭიათურის მუნიციპალიტეტი">ჭიათურის მუნიციპალიტეტი</option>
+                                <option value="ხარაგაულის მუნიციპალიტეტი">ხარაგაულის მუნიციპალიტეტი</option>
+                                <option value="ხაშურის მუნიციპალიტეტი">ხაშურის მუნიციპალიტეტი</option>
+                                <option value="ხელვაჩაურის მუნიციპალიტეტი">ხელვაჩაურის მუნიციპალიტეტი</option>
+                                <option value="ხობის მუნიციპალიტეტი">ხობის მუნიციპალიტეტი</option>
+                                <option value="ხონის მუნიციპალიტეტი">ხონის მუნიციპალიტეტი</option>
+                                <option value="ხულოს მუნიციპალიტეტი">ხულოს მუნიციპალიტეტი</option>
+                                <option value="ჯავის მუნიციპალიტეტი">ჯავის მუნიციპალიტეტი</option> 
+        
+                            </select>  
+                         </div>
+                    </div>
+                    <!-- Hidden Delivery Price Field -->
+<input type="hidden" id="delivery_price" name="delivery_price" value="0">
+
                         <div class="mb-2">
-                            <label for="address" class="form-label">მისამართი</label>
+                            <label for="address" class="form-label">ზუსტი მისამართი</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
                                 <input type="text" class="form-control" id="address" name="address" required>
@@ -211,7 +292,68 @@
                         document.getElementById("grand-total").textContent =
                             new Intl.NumberFormat().format(grandTotal) + " ლარი";
                     });
+
+                    
                 });
+
+                //CHosen 
+                $(document).ready(function() {
+    $(".chosen-select").chosen({
+        width: "100%",
+        no_results_text: "ვერ მოიძებნა",
+        placeholder_text_single: "მონიშნე ქალაქი"
+    });
+
+    // Listen when city is changed
+    $("#city").on("change", function() {
+        const selectedCity = $(this).val();
+        let deliveryPrice = 0;
+
+        if (selectedCity === "თბილისი") {
+            deliveryPrice = 5;
+        } else if (selectedCity) {
+            deliveryPrice = 7;
+        }
+
+        // Set hidden input
+        $("#delivery_price").val(deliveryPrice);
+
+        // Update Grand Total
+        updateGrandTotal(deliveryPrice);
+    });
+
+    function updateGrandTotal(deliveryPrice) {
+    let cartTotal = 0;
+
+    document.querySelectorAll(".cart-qty-input").forEach(input => {
+        const price = parseFloat(input.dataset.price);
+        const quantity = parseInt(input.value);
+        if (!isNaN(price) && !isNaN(quantity)) {
+            cartTotal += price * quantity;
+        }
+    });
+
+    let totalWithDelivery = cartTotal + deliveryPrice;
+
+    // Update product total
+    document.getElementById("product-total-text").textContent = 
+        "პროდუქციის ფასი: " + new Intl.NumberFormat().format(cartTotal) + " ლარი";
+
+    // Update delivery price text
+    if (deliveryPrice === 0) {
+        document.getElementById("delivery-price-text").textContent = 
+            "ემატება მიწოდების ფასი: თბილისში - 5 ლარი, რეგიონებში - 7 ლარი";
+    } else {
+        document.getElementById("delivery-price-text").textContent = 
+            "მიწოდების ფასი: " + new Intl.NumberFormat().format(deliveryPrice) + " ლარი";
+    }
+
+    // Update grand total
+    document.getElementById("grand-total-text").textContent = 
+        "ჯამური: " + new Intl.NumberFormat().format(totalWithDelivery) + " ლარი";
+}
+});
+                
             </script>
 
 

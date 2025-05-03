@@ -103,7 +103,6 @@
         color: white;
         border-bottom: none;
         border-top: 3px solid transparent;
-        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;

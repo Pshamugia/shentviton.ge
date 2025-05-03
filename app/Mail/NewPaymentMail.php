@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Payment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\File;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
@@ -48,33 +49,48 @@ class NewPaymentMail extends Mailable
     {
         $attachments = [];
 
-        foreach ($this->payment->cart_ids as $item) {
-            $item = Cart::find($item);
-            foreach (['design_front_image', 'design_back_image', 'front_assets', 'back_assets'] as $key) {
+        foreach ($this->payment->cart_ids as $id) {
+            $item = Cart::find($id);
+            if (!$item) {
+                continue;
+            }
+
+            $imageKeys = ['design_front_image', 'design_back_image', 'front_assets', 'back_assets'];
+
+            foreach ($imageKeys as $key) {
                 $path = $item->$key ?? null;
 
-                if ($path && Storage::disk('public')->exists($path)) {
-                    $filename = "cart_item_{$item->id}_" . $key . '.' . pathinfo($path, PATHINFO_EXTENSION);
-
-                    $attachments[] = Attachment::fromStorageDisk('public', $path)
-                        ->as($filename)
-                        ->withMime(pathinfo($path, PATHINFO_EXTENSION));
+                if (!$path || !Storage::disk('public')->exists($path)) {
+                    continue;
                 }
+
+                $filename = "cart_item_{$item->id}_{$key}." . pathinfo($path, PATHINFO_EXTENSION);
+                $fullPath = Storage::disk('public')->path($path);
+                $mime = File::mimeType($fullPath) ?? 'application/octet-stream';
+
+                $attachments[] = Attachment::fromStorageDisk('public', $path)
+                    ->as($filename)
+                    ->withMime($mime);
             }
 
-            if ($item->default_img && $item->baseProduct && $item->baseProduct->image1) {
+            if (
+                $item->default_img &&
+                $item->baseProduct &&
+                $item->baseProduct->image1 &&
+                Storage::disk('public')->exists($item->baseProduct->image1)
+            ) {
                 $path = $item->baseProduct->image1;
-                if (Storage::disk('public')->exists($path)) {
-                    $filename = "cart_item_{$item->id}_default_image." . pathinfo($path, PATHINFO_EXTENSION);
+                $filename = "cart_item_{$item->id}_default_image." . pathinfo($path, PATHINFO_EXTENSION);
+                $fullPath = Storage::disk('public')->path($path);
+                $mime = File::mimeType($fullPath) ?? 'application/octet-stream';
 
-                    $attachments[] = Attachment::fromStorageDisk('public', $path)
-                        ->as($filename)
-                        ->withMime(pathinfo($path, PATHINFO_EXTENSION));
-                } else {
-                    dd("not exists");
-                }
+                $attachments[] = Attachment::fromStorageDisk('public', $path)
+                    ->as($filename)
+                    ->withMime($mime);
             }
         }
+
         return $attachments;
     }
 }
+

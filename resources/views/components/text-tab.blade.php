@@ -3,7 +3,7 @@
         <div class="customization-boxs">
             <div id="textInputsContainer">
             </div>
-            <button type="button" id="addTextInput" class="btn btn-primary my-2">+ Add Text</button>
+            <button type="button" id="addTextInput" class="btn btn-primary my-2">+ ტექსტი</button>
             <div class="mb-3">
                 <label for="text_color" class="form-label">ტექსტის ფერი</label>
                 <input type="color" id="text_color" class="color-picker">

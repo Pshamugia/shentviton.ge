@@ -41,7 +41,7 @@
         <!-- Left Sidebar -->
         <div class="col-md-4 order-2 order-md-1 bg-light p-4 rounded shadow-sm">
             <h4 class="mb-3">{{ $product->title }}</h4>
-            <p><strong>ფასი:</strong> {{ intval($product->price) }} ლარი</p>
+            <p><strong>ფასი:</strong> <span id="price-display">{{ intval($product->price) }} ლარი</span></p>
 
             <form action="{{ route('cart.store') }}" method="POST">
                 @csrf
@@ -97,6 +97,7 @@
 
                         </div>
                     </div>
+                   
                 @endif
 
                 <!-- Quantity Adjustment -->
@@ -129,6 +130,12 @@
                 @endif
             </form>
 
+            <div class="mt-2" style="background-color: #e2dfdf; padding:10px; border-radius:5px;" >
+                <div style="background-color: #ca0404; padding:4px; border-radius:2px;"> <span style=" color:white; margin-left:10px "> <i class="bi bi-info-circle"></i> აღწერა </span> </div> 
+                <div style="margin-top:10px; position:relative;"> {!! $product->description !!} </div>
+
+            </div>
+
             <!-- Customize Button -->
             @if ($product->subtype !== 'მზა')
                 <a href="{{ route('products.customize', $product->id) }}" class="btn btn-success w-100">
@@ -148,6 +155,7 @@
                 alt="{{ $product->title }}">
 
         </div>
+       
     </div>
 
     <script>
@@ -186,6 +194,47 @@
                 this.classList.add('selected-color');
             });
         });
+
+
+        // Quantity Buttons
+    // Quantity Buttons
+     const decrementButton = document.getElementById('decrement');
+    const incrementButton = document.getElementById('increment');
+    const quantityInput = document.getElementById('quantity');
+    const priceDisplay = document.getElementById('price-display');
+
+    const basePrice = parseFloat({{ intval($product->price) }});
+
+    function updateTotalPrice() {
+        const quantity = parseInt(quantityInput.value) || 1;
+        const totalPrice = basePrice * quantity;
+        if (priceDisplay) {
+            priceDisplay.textContent = `${totalPrice} ლარი`;
+        }
+    }
+
+    decrementButton.addEventListener('click', function() {
+        let quantity = parseInt(quantityInput.value) || 1;
+        if (quantity > 1) {
+            quantity--;
+            quantityInput.value = quantity;
+            updateTotalPrice();
+        }
+    });
+
+    incrementButton.addEventListener('click', function() {
+        let quantity = parseInt(quantityInput.value) || 1;
+        quantity++;
+        quantityInput.value = quantity;
+        updateTotalPrice();
+    });
+
+    quantityInput.addEventListener('input', function() {
+        updateTotalPrice();
+    });
+ 
+
+
     </script>
 
     <style>
